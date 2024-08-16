@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "react-toastify";
 import { create } from "zustand";
 
 interface Input {
@@ -42,11 +43,16 @@ interface LoginState {
 }
 
 const useLoginStore = create<LoginState>((set, get) => ({
-    isLoggedIn: !!sessionStorage.getItem("token"),
-    token: sessionStorage.getItem("token"),
 
-    // token: "",
+
+    // isLoggedIn: !!sessionStorage.getItem("token") || false,
+    // token: sessionStorage.getItem("token") || null,
+
+    isLoggedIn: false, // Default value
+    token: null,       // Default value
     user: null,
+
+
 
     login: async (data: Input) => {
         try {
@@ -66,9 +72,9 @@ const useLoginStore = create<LoginState>((set, get) => ({
             const resData = await response.json();
             const accessToken = resData["access_token"];
             sessionStorage.setItem("token", accessToken);
-
             // Update token in state
             set({ isLoggedIn: true, token: accessToken });
+            toast.success("Login successful");
 
             // Fetch user profile after login
             // await get().fetchUser();
@@ -78,7 +84,7 @@ const useLoginStore = create<LoginState>((set, get) => ({
             } else {
                 console.error("Login failed:", error);
             }
-            throw new Error('Login failed');
+            toast.error("Email or password is incorrect");
         }
     },
 

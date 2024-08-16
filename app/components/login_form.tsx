@@ -34,13 +34,13 @@ const LoginForm = () => {
 
     await fetchUser();
     const user = useLoginStore.getState().user;
+    const token = useLoginStore.getState().token;
 
-    console.log(user?._doc?.role);
-    if (user?._doc?.role === "admin") {
+    if (user?._doc?.role === "admin" && token) {
       router.push("/admin");
-    } else if (user?._doc?.role === "patient") {
+    } else if (user?._doc?.role === "patient" && token) {
       router.push("/patient");
-    } else if (user?._doc?.role === "doctor") {
+    } else if (user?._doc?.role === "doctor" && token) {
       router.push("/doctor");
     }
     // router.push("/doctor");
@@ -49,7 +49,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="py-16">
+    <div className="py-24">
       <div className="flex bg-white rounded-lg shadow-lg overflow-hidden mx-auto max-w-sm lg:max-w-4xl">
         <div
           className="hidden lg:block lg:w-1/2 bg-cover"

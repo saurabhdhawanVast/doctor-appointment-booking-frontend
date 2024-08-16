@@ -31,7 +31,7 @@ export default function Home() {
       {/* Header Section */}
 
       {/* Hero Section */}
-      <section className="hero bg-blue-500 text-white text-center py-16">
+      <section className="hero bg-blue-500 text-white text-center py-24 ">
         <div className="container mx-auto">
           <h1 className="text-4xl font-bold mb-4">
             We Help You Find the Best Doctors

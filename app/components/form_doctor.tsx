@@ -8,10 +8,12 @@ import { z } from "zod";
 import { FormDataSchemaDoctor } from "../lib/schema_doctor";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { ToastContainer, toast } from "react-toastify";
 
 import useRegisterDoctorStore from "@/store/useRegisterDoctorStore";
-import { profile } from "console";
+
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
+import Loading from "../loading";
 
 type Inputs = z.infer<typeof FormDataSchemaDoctor>;
 
@@ -78,9 +80,13 @@ interface City {
 }
 
 export default function Form_Doctor() {
+  const router = useRouter();
   const [previousStep, setPreviousStep] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
   const delta = currentStep - previousStep;
+
+  //loading state
+  const [isLoading, setIsLoading] = useState(false);
 
   //signup User and Doctor
   const signup = useRegisterDoctorStore((state) => state.signup);
@@ -117,53 +123,107 @@ export default function Form_Doctor() {
     resolver: zodResolver(FormDataSchemaDoctor),
   });
 
+  // const processForm: SubmitHandler<Inputs> = async (data) => {
+  //   console.log("Processing form...");
+  //   //getUrl
+  //   const profilePic = data.profilePic[0];
+  //   const document = data.document[0];
+
+  //   const uploadDataArray = [profilePic, document];
+
+  //   //profilePic
+  //   for (const uploadDataElement of uploadDataArray) {
+  //     // console.log(uploadDataElement);
+  //     const uploadData = new FormData();
+  //     uploadData.append("file", uploadDataElement);
+  //     uploadData.append("upload_preset", "doctors-app");
+  //     uploadData.append("cloud_name", "dicldxhya");
+  //     // console.log(uploadData);
+  //     await fetch("https://api.cloudinary.com/v1_1/dicldxhya/image/upload", {
+  //       method: "post",
+  //       body: uploadData,
+  //     })
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         url.push(data.url);
+  //       })
+  //       .catch((err) => {
+  //         console.log(err);
+  //       });
+  //   }
+
+  //   //remove Confirm password field
+  //   const { confirmPassword, ...dataWithoutPassword } = data;
+
+  //   //add role and coordinates.
+  //   const formData = {
+  //     ...dataWithoutPassword,
+  //     role: "doctor",
+  //     coordinates: {
+  //       latitude: latitude,
+  //       longitude: longitude,
+  //     },
+  //     profilePic: url[0],
+  //     document: url[1],
+  //   };
+  //   toast.info("Please wait form being processed");
+  //   signup(formData);
+  //   reset();
+  //   router.push("/login");
+  // };
+
+  //chat
   const processForm: SubmitHandler<Inputs> = async (data) => {
-    console.log("Processing form...");
-    //getUrl
-    const profilePic = data.profilePic[0];
-    const document = data.document[0];
+    try {
+      setIsLoading(true);
+      console.log("Processing form...");
+      const profilePic = data.profilePic[0];
+      const document = data.document[0];
+      const uploadDataArray = [profilePic, document];
+      const url: string[] = [];
 
-    const uploadDataArray = [profilePic, document];
+      for (const uploadDataElement of uploadDataArray) {
+        const uploadData = new FormData();
+        uploadData.append("file", uploadDataElement);
+        uploadData.append("upload_preset", "doctors-app");
+        uploadData.append("cloud_name", "dicldxhya");
 
-    //profilePic
-    for (const uploadDataElement of uploadDataArray) {
-      // console.log(uploadDataElement);
-      const uploadData = new FormData();
-      uploadData.append("file", uploadDataElement);
-      uploadData.append("upload_preset", "doctors-app");
-      uploadData.append("cloud_name", "dicldxhya");
-      // console.log(uploadData);
-      await fetch("https://api.cloudinary.com/v1_1/dicldxhya/image/upload", {
-        method: "post",
-        body: uploadData,
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          url.push(data.url);
+        await fetch("https://api.cloudinary.com/v1_1/dicldxhya/image/upload", {
+          method: "post",
+          body: uploadData,
         })
-        .catch((err) => {
-          console.log(err);
-        });
+          .then((res) => res.json())
+          .then((data) => {
+            url.push(data.url);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+
+      const { confirmPassword, ...dataWithoutPassword } = data;
+
+      const formData = {
+        ...dataWithoutPassword,
+        role: "doctor",
+        coordinates: {
+          latitude: latitude,
+          longitude: longitude,
+        },
+        profilePic: url[0],
+        document: url[1],
+      };
+
+      toast.info("Please wait, form is being processed...");
+      await signup(formData); // Assuming signup is an async function
+      reset();
+      toast.success("Signup successful!");
+      router.push("/login");
+    } catch (error) {
+      toast.error("There was an error processing the form.");
+    } finally {
+      setIsLoading(false);
     }
-
-    //remove Confirm password field
-    const { confirmPassword, ...dataWithoutPassword } = data;
-
-    //add role and coordinates.
-    const formData = {
-      ...dataWithoutPassword,
-      role: "doctor",
-      coordinates: {
-        latitude: latitude,
-        longitude: longitude,
-      },
-      profilePic: url[0],
-      document: url[1],
-    };
-
-    console.log("formData Before Sending", formData);
-    signup(formData);
-    reset();
   };
 
   type FieldName = keyof Inputs;
@@ -177,36 +237,14 @@ export default function Form_Doctor() {
       const confirmPassword = watch("confirmPassword");
 
       if (password !== confirmPassword) {
-        toast.error("Passwords do not match.", {
-          type: "error",
-          position: "top-right",
-          autoClose: 5000,
-
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+        toast.error("Passwords do not match");
         return;
       }
     }
 
     if (currentStep === 2) {
       if (latitude === 0 && longitude === 0) {
-        toast.error("Please Click on Set Location", {
-          type: "error",
-          position: "top-right",
-          autoClose: 5000,
-
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+        toast.error("Please enable your location");
         return;
       }
     }
@@ -393,7 +431,15 @@ export default function Form_Doctor() {
   // ];
 
   return (
-    <div className="flex h-screen items-center justify-center py-6 px-4 sm:px-2 lg:px-4">
+    <div className="flex  items-center justify-center py-12 px-4 sm:px-2 lg:px-4">
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
+          <div className="loader">
+            <Loading />
+          </div>{" "}
+          {/* Customize your loader */}
+        </div>
+      )}
       <section className=" w-full max-w-12xl h-screen inset-0 flex flex-col justify-between p-12">
         {/* steps */}
 
