@@ -7,7 +7,7 @@ import { z } from "zod";
 import { FormDataSchemaPatient } from "../lib/schema_patient";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 import useRegisterPatientStore from "@/store/useRegisterPatientStore";
 
@@ -129,18 +129,7 @@ const Form_Patient = () => {
       const confirmPassword = watch("confirmPassword");
 
       if (password !== confirmPassword) {
-        toast.error("Passwords do not match.", {
-          type: "error",
-          position: "top-right",
-          autoClose: 5000,
-
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+        toast.error("Passwords do not match");
         return;
       }
     }
@@ -228,7 +217,7 @@ const Form_Patient = () => {
   }, [selectedState]);
 
   return (
-    <div className="flex h-screen items-center justify-center py-6 px-4 sm:px-2 lg:px-4">
+    <div className="flex h- items-center justify-center py-12 px-4 sm:px-2 lg:px-4">
       <section className=" w-full max-w-12xl h-screen inset-0 flex flex-col justify-between p-12">
         {/* steps */}
 
