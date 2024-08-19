@@ -37,7 +37,6 @@ export interface Doctor {
   slotDuration: number;
 }
 
-
 const https = axios.create({
   baseURL: "http://localhost:3000",
 });
@@ -79,7 +78,6 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
       console.log("fetching doctors");
       const response = await https.get("/doctors");
       set({ doctors: response.data });
-
     } catch (error: any) {
       console.error(`Error fetching doctors: ${error.message}`);
     }
@@ -87,13 +85,3 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
 }));
 
 export default useDoctorStore;
-
-
-
-
-
-
-
-
-
-

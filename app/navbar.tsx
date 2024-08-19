@@ -4,15 +4,17 @@ import Link from "next/link";
 import useLoginStore from "@/store/useLoginStore";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-
 import imageDemo from "../public/images/avatar-icon.png";
+
 const Navbar = () => {
   const isLoggedIn = useLoginStore((state) => state.isLoggedIn);
   const user = useLoginStore((state) => state.user);
   const logout = useLoginStore((state) => state.logout);
+  const doctor = useLoginStore((state) => state.doctor);
   const fetchUser = useLoginStore((state) => state.fetchUser);
   const router = useRouter();
   const role = user?._doc?.role;
+  const doctorId = doctor?._id; // Ensure doctorId is available
 
   useEffect(() => {
     // Fetch user details if logged in
@@ -75,7 +77,10 @@ const Navbar = () => {
               <Link href="/appointments">Appointments</Link>
             </li>
             <li>
-              <Link href="/schedule">Manage Schedule</Link>
+              {/* Updated to include dynamic path */}
+              <Link href={`/doctor/mark-available/${doctorId}`}>
+                Manage Schedule
+              </Link>
             </li>
             <li>
               <Link href="/patients">My Patients</Link>

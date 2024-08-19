@@ -1,12 +1,10 @@
 "use client";
 import Image from "next/image";
-
 import useDoctorStore from "@/store/useDoctorStore";
-
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 // Importing assets
-
 import icon01 from "../public/images/icon01.png";
 import icon02 from "../public/images/icon02.png";
 import icon03 from "../public/images/icon03.png";
@@ -14,17 +12,25 @@ import featureImg from "../public/images/feature-img.png";
 import faqImg from "../public/images/faq-img.png";
 import videoIcon from "../public/images/video-icon.png";
 import avatarIcon from "../public/images/avatar-icon.png";
-import { useEffect } from "react";
 
 export default function Home() {
-  const doctors = useDoctorStore((state) => state.doctors);
-
+  const [doctors, setDoctors] = useState<any[]>([]);
   const fetchDoctors = useDoctorStore((state) => state.fetchDoctors);
 
   useEffect(() => {
-    fetchDoctors();
-    console.log(doctors);
-  }, []);
+    const getDoctors = async () => {
+      await fetchDoctors();
+      // Access the Zustand state directly to get doctors
+      const fetchedDoctors = useDoctorStore.getState().doctors;
+      // Ensure fetchedDoctors is an array
+      if (Array.isArray(fetchedDoctors)) {
+        setDoctors(fetchedDoctors);
+      } else {
+        console.error("Doctors data is not an array:", fetchedDoctors);
+      }
+    };
+    getDoctors();
+  }, [fetchDoctors]);
 
   return (
     <>
@@ -39,17 +45,6 @@ export default function Home() {
           <p className="text-xl mb-6">
             Easily book your appointments and get the best healthcare services.
           </p>
-          {/* <div className="flex justify-center mb-6">
-            <input
-              type="text"
-              placeholder="Search for doctors or services..."
-              className="p-2 rounded-l-lg border-none"
-            />
-            <button className="btn btn-primary rounded-r-lg">Search</button>
-          </div>
-          <Link href="/book-appointment" className="btn btn-secondary">
-            Book an Appointment
-          </Link> */}
         </div>
       </section>
 
@@ -57,7 +52,7 @@ export default function Home() {
       <section className="features py-16">
         <div className="container mx-auto text-center">
           <h2 className="text-3xl font-bold mb-8">Why Choose Us?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-9  ">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-9">
             {[
               {
                 title: "Easy Appointment Scheduling",
@@ -77,7 +72,7 @@ export default function Home() {
             ].map((feature, index) => (
               <div
                 key={index}
-                className="feature-card p-6 bg-slate-200 border rounded-lg shadow-2xl drop-shadow-2xl "
+                className="feature-card p-6 bg-slate-200 border rounded-lg shadow-2xl drop-shadow-2xl"
               >
                 <Image
                   src={feature.icon}
@@ -117,7 +112,7 @@ export default function Home() {
             ].map((step, index) => (
               <div
                 key={index}
-                className="step-card p-6  border rounded-lg bg-slate-200 shadow-2xl drop-shadow-2xl"
+                className="step-card p-6 border rounded-lg bg-slate-200 shadow-2xl drop-shadow-2xl"
               >
                 <h3 className="text-2xl font-semibold">Step {step.step}</h3>
                 <h4 className="text-xl font-semibold mt-2">{step.title}</h4>
@@ -142,22 +137,25 @@ export default function Home() {
             />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {doctors.map((doctor: any) => (
-              <div
-                key={doctor._id} // Use MongoDB's _id for unique key
-                className="doctor-card p-6 bg-white border rounded-lg shadow-md"
-              >
-                <h3 className="text-xl font-semibold">{doctor.name}</h3>
-                <p className="mt-2">{doctor.speciality || ""}</p>
-                {/* <p className="mt-2">Rating: {doctor.rating}</p> */}
-                <Link
-                  href={`/doctor/${doctor._id}`}
-                  className="btn btn-primary mt-4"
+            {doctors.length > 0 ? (
+              doctors.map((doctor: any) => (
+                <div
+                  key={doctor._id} // Use MongoDB's _id for unique key
+                  className="doctor-card p-6 bg-white border rounded-lg shadow-md"
                 >
-                  View Profile
-                </Link>
-              </div>
-            ))}
+                  <h3 className="text-xl font-semibold">{doctor.name}</h3>
+                  <p className="mt-2">{doctor.speciality || ""}</p>
+                  <Link
+                    href={`/doctor/${doctor._id}`}
+                    className="btn btn-primary mt-4"
+                  >
+                    View Profile
+                  </Link>
+                </div>
+              ))
+            ) : (
+              <p className="text-center col-span-full">No doctors found</p>
+            )}
           </div>
         </div>
       </section>
