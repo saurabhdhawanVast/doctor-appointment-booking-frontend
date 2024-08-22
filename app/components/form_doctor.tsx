@@ -186,12 +186,15 @@ export default function Form_Doctor() {
         const uploadData = new FormData();
         uploadData.append("file", uploadDataElement);
         uploadData.append("upload_preset", "doctors-app");
-        uploadData.append("cloud_name", "dicldxhya");
+        uploadData.append("cloud_name", `${process.env.CLOUDINARY_CLOUD_NAME}`);
 
-        await fetch("https://api.cloudinary.com/v1_1/dicldxhya/image/upload", {
-          method: "post",
-          body: uploadData,
-        })
+        await fetch(
+          `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload`,
+          {
+            method: "post",
+            body: uploadData,
+          }
+        )
           .then((res) => res.json())
           .then((data) => {
             url.push(data.url);

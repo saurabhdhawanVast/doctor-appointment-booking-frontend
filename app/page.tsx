@@ -1,8 +1,9 @@
 "use client";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import useDoctorStore from "@/store/useDoctorStore";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
 // Importing assets
 import icon01 from "../public/images/icon01.png";
@@ -32,12 +33,16 @@ export default function Home() {
     getDoctors();
   }, [fetchDoctors]);
 
+  // Framer Motion scroll animations
+  const { scrollY } = useScroll();
+  const yRange = useTransform(scrollY, [0, 500], [0, -100]);
+
   return (
     <>
       {/* Header Section */}
 
       {/* Hero Section */}
-      <section className="hero bg-blue-500 text-white text-center py-24 ">
+      <section className="hero bg-blue-500 text-white text-center py-24">
         <div className="container mx-auto">
           <h1 className="text-4xl font-bold mb-4">
             We Help You Find the Best Doctors
@@ -70,9 +75,12 @@ export default function Home() {
                 icon: icon03,
               },
             ].map((feature, index) => (
-              <div
+              <motion.div
                 key={index}
                 className="feature-card p-6 bg-slate-200 border rounded-lg shadow-2xl drop-shadow-2xl"
+                initial={{ scale: 1 }}
+                whileInView={{ scale: 1.05 }}
+                transition={{ duration: 0.7 }}
               >
                 <Image
                   src={feature.icon}
@@ -82,7 +90,7 @@ export default function Home() {
                 />
                 <h3 className="text-xl font-semibold mt-4">{feature.title}</h3>
                 <p className="mt-2">{feature.desc}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -110,14 +118,17 @@ export default function Home() {
                 desc: "Confirm your details and book your appointment.",
               },
             ].map((step, index) => (
-              <div
+              <motion.div
                 key={index}
                 className="step-card p-6 border rounded-lg bg-slate-200 shadow-2xl drop-shadow-2xl"
+                initial={{ scale: 1 }}
+                whileInView={{ scale: 1.05 }}
+                transition={{ duration: 0.7 }}
               >
                 <h3 className="text-2xl font-semibold">Step {step.step}</h3>
                 <h4 className="text-xl font-semibold mt-2">{step.title}</h4>
                 <p className="mt-2">{step.desc}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -139,9 +150,12 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {doctors.length > 0 ? (
               doctors.map((doctor: any) => (
-                <div
-                  key={doctor._id} // Use MongoDB's _id for unique key
+                <motion.div
+                  key={doctor._id}
                   className="doctor-card p-6 bg-white border rounded-lg shadow-md"
+                  initial={{ scale: 0.9 }}
+                  whileInView={{ scale: 1.05 }}
+                  transition={{ duration: 0.9 }}
                 >
                   <h3 className="text-xl font-semibold">{doctor.name}</h3>
                   <p className="mt-2">{doctor.speciality || ""}</p>
@@ -151,7 +165,7 @@ export default function Home() {
                   >
                     View Profile
                   </Link>
-                </div>
+                </motion.div>
               ))
             ) : (
               <p className="text-center col-span-full">No doctors found</p>
@@ -180,13 +194,16 @@ export default function Home() {
                 review: "The support team was very helpful with my queries.",
               },
             ].map((testimonial, index) => (
-              <div
+              <motion.div
                 key={index}
                 className="testimonial-card p-6 bg-white border rounded-lg shadow-md"
+                initial={{ scale: 0.9 }}
+                whileInView={{ scale: 1.05 }}
+                transition={{ duration: 0.7 }}
               >
                 <p className="text-md mb-4">"{testimonial.review}"</p>
                 <p className="font-semibold">- {testimonial.name}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -212,41 +229,48 @@ export default function Home() {
             </Link>
           </div>
           <div className="lg:w-1/2 mt-8 lg:mt-0 relative">
-            <Image
-              src={featureImg}
-              alt="Feature Image"
-              layout="responsive"
-              width={700}
-              height={500}
-            />
-            <div className="absolute bottom-4 left-4 bg-white p-4 rounded-lg shadow-lg">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <p className="text-lg font-semibold">Tue, 24</p>
-                  <p className="text-lg">10:00AM</p>
+            <motion.div
+              className="relative"
+              initial={{ scale: 1 }}
+              whileInView={{ scale: 1.05 }}
+              transition={{ duration: 0.7 }}
+            >
+              <Image
+                src={featureImg}
+                alt="Feature Image"
+                layout="responsive"
+                width={700}
+                height={500}
+              />
+              <div className="absolute bottom-4 left-4 bg-white p-4 rounded-lg shadow-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <p className="text-lg font-semibold">Tue, 24</p>
+                    <p className="text-lg">10:00AM</p>
+                  </div>
+                  <span className="w-8 h-8 bg-yellow-300 rounded-full flex items-center justify-center">
+                    <Image
+                      src={videoIcon}
+                      alt="Video Icon"
+                      width={24}
+                      height={24}
+                    />
+                  </span>
                 </div>
-                <span className="w-8 h-8 bg-yellow-300 rounded-full flex items-center justify-center">
+                <div className="bg-blue-100 p-2 rounded-full mt-2 text-center text-blue-600">
+                  Consultation
+                </div>
+                <div className="flex items-center gap-2 mt-4">
                   <Image
-                    src={videoIcon}
-                    alt="Video Icon"
+                    src={avatarIcon}
+                    alt="Avatar Icon"
                     width={24}
                     height={24}
                   />
-                </span>
+                  <p className="text-lg font-semibold">Wayne Collins</p>
+                </div>
               </div>
-              <div className="bg-blue-100 p-2 rounded-full mt-2 text-center text-blue-600">
-                Consultation
-              </div>
-              <div className="flex items-center gap-2 mt-4">
-                <Image
-                  src={avatarIcon}
-                  alt="Avatar Icon"
-                  width={24}
-                  height={24}
-                />
-                <p className="text-lg font-semibold">Wayne Collins</p>
-              </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -255,13 +279,20 @@ export default function Home() {
       <section className="faq py-16">
         <div className="container mx-auto flex flex-col md:flex-row gap-6">
           <div className="md:w-1/2">
-            <Image
-              src={faqImg}
-              alt="FAQ Image"
-              layout="responsive"
-              width={700}
-              height={500}
-            />
+            <motion.div
+              className="relative"
+              initial={{ scale: 1 }}
+              whileInView={{ scale: 1.05 }}
+              transition={{ duration: 0.7 }}
+            >
+              <Image
+                src={faqImg}
+                alt="FAQ Image"
+                layout="responsive"
+                width={700}
+                height={500}
+              />
+            </motion.div>
           </div>
           <div className="md:w-1/2">
             <h2 className="text-3xl font-bold mb-8">Most Asked Questions</h2>

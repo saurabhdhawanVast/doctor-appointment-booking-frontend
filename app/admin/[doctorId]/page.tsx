@@ -37,7 +37,7 @@ export default function DoctorProfile() {
         Back to Doctor List
       </Link>
 
-      <div className="doctor-profile flex flex-col md:flex-row bg-slate-50 p-6 rounded-xxl shadow-2xl mt-10 bg-rose-50">
+      <div className="doctor-profile flex flex-col md:flex-row  p-6 rounded-xxl shadow-2xl mt-10 bg-rose-50">
         {/* Doctor Details Section */}
         <div className="md:w-2/3 md:pr-6">
           <h2 className="text-3xl font-bold mb-4">{doctor.name}</h2>
