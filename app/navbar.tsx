@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import useLoginStore from "@/store/useLoginStore";
 import { useRouter } from "next/navigation";
@@ -11,13 +11,36 @@ const Navbar = () => {
   const user = useLoginStore((state) => state.user);
   const logout = useLoginStore((state) => state.logout);
   const doctor = useLoginStore((state) => state.doctor);
+  const patient = useLoginStore((state) => state.patient);
   const fetchUser = useLoginStore((state) => state.fetchUser);
-  const router = useRouter();
-  const role = user?._doc?.role;
-  const doctorId = doctor?._id; // Ensure doctorId is available
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
+
+  const handleClickOutside = (event: Event) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
+      setDropdownOpen(false);
+    }
+  };
 
   useEffect(() => {
-    // Fetch user details if logged in
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const router = useRouter();
+  const role = user?._doc?.role;
+  const doctorId = doctor?._id;
+
+  useEffect(() => {
     if (isLoggedIn) {
       fetchUser();
     }
@@ -29,6 +52,14 @@ const Navbar = () => {
       router.push("/");
     } catch (error) {
       console.error("Logout failed:", error);
+    }
+  };
+
+  const handleProfile = async () => {
+    try {
+      router.push(`/profile/${user?._doc._id}`);
+    } catch (error) {
+      console.error("Update failed:", error);
     }
   };
 
@@ -77,7 +108,6 @@ const Navbar = () => {
               <Link href="/appointments">Appointments</Link>
             </li>
             <li>
-              {/* Updated to include dynamic path */}
               <Link href={`/doctor/mark-available/${doctorId}`}>
                 Manage Schedule
               </Link>
@@ -91,13 +121,17 @@ const Navbar = () => {
         return (
           <>
             <li>
-              <Link href="/my-appointments">My Appointments</Link>
+              <Link href={`/patient/appointments`}>View Appointments</Link>
             </li>
             <li>
-              <Link href="/find-doctor">Find a Doctor</Link>
+              <Link href="/medical-records">Manage Medical Records</Link>
             </li>
             <li>
-              <Link href="/profile">Profile</Link>
+              <Link href="/prescriptions">View Prescriptions</Link>
+            </li>
+
+            <li>
+              <Link href="/patient/find-doctor">Find Doctor</Link>
             </li>
           </>
         );
@@ -126,32 +160,62 @@ const Navbar = () => {
 
   return (
     <div>
-      <div className="navbar bg-slate-400 fixed top-0 left-0 right-0">
+      <div className="navbar bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 fixed top-0 left-0 right-0 z-50 text-white shadow-lg h-16">
         <div className="navbar-start">
-          <a className="btn btn-ghost text-xl">DABS</a>
+          <Link href="/" className="btn btn-ghost text-2xl font-bold">
+            DABS
+          </Link>
         </div>
 
         <div className="navbar-center hidden lg:flex">
-          <ul className="menu menu-horizontal px-1">{renderNavbarLinks()}</ul>
+          <ul className="menu menu-horizontal px-1 space-x-4">
+            {renderNavbarLinks()}
+          </ul>
         </div>
 
         <div className="navbar-end">
           {!isLoggedIn ? (
-            <Link href="/login" className="btn">
+            <Link
+              href="/login"
+              className="btn bg-teal-500 hover:bg-teal-600 text-white border-none"
+            >
               Login
             </Link>
           ) : (
-            <div className="flex items-center">
-              <Image
-                src={imageDemo}
-                alt="Avatar"
-                width={40}
-                height={40}
-                className="rounded-full"
-              />
-              <button onClick={handleLogout} className="btn ml-2">
-                Logout
-              </button>
+            <div className="relative" ref={dropdownRef}>
+              <div className="flex items-center w-10 h-6 circle">
+                <Image
+                  src={
+                    doctor && doctor.profilePic
+                      ? doctor.profilePic
+                      : patient && patient.profilePic
+                      ? patient.profilePic
+                      : imageDemo
+                  }
+                  alt="Avatar"
+                  width={100}
+                  height={100}
+                  className="rounded-full border-2 border-white"
+                  onClick={toggleDropdown}
+                />
+              </div>
+
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                  <button
+                    onClick={handleProfile}
+                    className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                  >
+                    Manage Profile
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

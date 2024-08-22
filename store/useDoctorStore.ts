@@ -8,12 +8,15 @@ export interface DoctorStoreState {
 }
 
 export interface Doctor {
+  _id: string;
+
   name: string;
   gender: string;
   email: string;
   profilePic: string;
   password: string;
   speciality: string;
+
   qualification: string;
   registrationNumber: string;
   yearOfRegistration: string;
@@ -35,6 +38,7 @@ export interface Doctor {
   eveningStartTime: string;
   eveningEndTime: string;
   slotDuration: number;
+  isVerified: boolean;
 }
 
 const https = axios.create({
@@ -44,6 +48,7 @@ const https = axios.create({
 const useDoctorStore = create<DoctorStoreState>((set) => ({
   doctors: [],
   doctor: {
+    _id: "",
     name: "",
     gender: "",
     email: "",
@@ -71,6 +76,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
     eveningStartTime: "",
     eveningEndTime: "",
     slotDuration: 0,
+    isVerified: false,
   },
 
   fetchDoctors: async () => {

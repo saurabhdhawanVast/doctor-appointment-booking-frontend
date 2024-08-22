@@ -14,7 +14,6 @@ export const FormDataSchemaDoctor = z
 
     profilePic: z
       .any()
-
       .refine(
         (files) =>
           !files || ACCEPTED_IMAGE_MIME_TYPES.includes(files?.[0]?.type),

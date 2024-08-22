@@ -29,6 +29,27 @@ export interface User {
   };
 }
 
+export interface Address {
+  address: string;
+  city: string;
+  state: string;
+  pinCode: number;
+}
+
+export interface Patient {
+  _id?: string;
+  name: string;
+  gender: string;
+  bloodGroup: string;
+  email: string;
+  profilePic: string;
+  password: string;
+  address: Address;
+  contactNumber: string;
+  city: string;
+  state: string;
+  pinCode: number;
+}
 export interface Doctor {
   _id: string;
   name: string;
@@ -72,7 +93,9 @@ interface LoginState {
   token: string | null;
   user: User | null;
   doctor: Doctor | null;
+  patient: Patient | null;
   login: (data: Input) => Promise<void>;
+  setPatient: (patient: Patient) => Promise<void>;
   logout: () => void;
   fetchUser: () => Promise<void>;
 }
@@ -86,6 +109,7 @@ const useLoginStore = create<LoginState>((set, get) => ({
   token: null,
   user: null,
   doctor: null,
+  patient: null,
 
   login: async (data: Input) => {
     try {
@@ -129,6 +153,10 @@ const useLoginStore = create<LoginState>((set, get) => ({
     }
   },
 
+  setPatient: async (patient) => {
+    set({ patient });
+  },
+
   fetchUser: async () => {
     const token = sessionStorage.getItem("token");
     console.log(`Token from sessionStorage: ${token}`);
@@ -164,6 +192,20 @@ const useLoginStore = create<LoginState>((set, get) => ({
           console.error("Failed to fetch doctor details with userId:", error);
         }
       }
+      if (response.data._doc.role === "patient") {
+        console.log(response.data._doc._id);
+        try {
+          const patientResponse = await axiosInstance.get(
+            `/patients/fetchPatientByUserId/${response.data._doc._id}`
+          );
+
+          console.log("Patient details response:", patientResponse.data);
+
+          set({ patient: patientResponse.data });
+        } catch (error) {
+          console.error("Failed to fetch doctor details with userId:", error);
+        }
+      }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error(
@@ -180,7 +222,13 @@ const useLoginStore = create<LoginState>((set, get) => ({
 
   logout: () => {
     sessionStorage.removeItem("token");
-    set({ isLoggedIn: false, token: null, user: null, doctor: null });
+    set({
+      isLoggedIn: false,
+      token: null,
+      user: null,
+      doctor: null,
+      patient: null,
+    });
   },
 }));
 
