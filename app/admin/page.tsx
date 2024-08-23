@@ -91,7 +91,7 @@ export default function DoctorList() {
                   </p>
                   <Link
                     href={`/admin/${doctor._id}`}
-                    className="btn btn-primary mt-4"
+                    className="btn bg-teal-500 mt-4"
                   >
                     View Profile
                   </Link>

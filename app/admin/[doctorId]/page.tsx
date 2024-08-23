@@ -76,7 +76,7 @@ export default function DoctorProfile() {
           {/* Verify Button */}
           <button
             onClick={handleVerify}
-            className="btn btn-primary mt-4"
+            className="btn btn-primary mt-4 "
             disabled={doctor.isVerified} // Disable if already verified
           >
             {doctor.isVerified ? "Verified" : "Verify Doctor"}
