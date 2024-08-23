@@ -3,9 +3,10 @@ import { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, toZonedTime } from "date-fns-tz";
-import useBookAppointmentStore from "@/store/useBookAppointmentStore";
+
 import useDoctorStore from "@/store/useDoctorStoree";
 import { useSearchParams } from "next/navigation";
+import useBookAppointmentStore from "@/store/useBookAppointmentStore";
 
 const timeZone = "Asia/Kolkata"; // Set your preferred time zone
 

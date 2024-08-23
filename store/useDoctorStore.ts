@@ -8,8 +8,8 @@ export interface DoctorStoreState {
 }
 
 export interface Doctor {
-  _id: string;
 
+  _id: string;
   name: string;
   gender: string;
   email: string;
@@ -29,6 +29,7 @@ export interface Doctor {
   state: string;
   pinCode: number;
   clinicName: string;
+
   coordinates: {
     latitude: number;
     longitude: number;
@@ -39,6 +40,7 @@ export interface Doctor {
   eveningEndTime: string;
   slotDuration: number;
   isVerified: boolean;
+
 }
 
 const https = axios.create({

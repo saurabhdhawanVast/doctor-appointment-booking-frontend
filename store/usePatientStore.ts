@@ -2,42 +2,42 @@
 import { create } from "zustand";
 import axios from "axios";
 import useLoginStore, { Patient } from "@/store/useLoginStore";
-import { Doctor } from "./useDoctorStore";
+
 
 // import { Doctor } from "./useDoctorStore";
 
 // Define Doctor type as used in the component
-// export interface Doctor {
-//     _id: string;
-//     name: string;
-//     gender: string;
-//     email: string;
-//     profilePic: string;
-//     password: string;
-//     speciality: string;
-//     qualification: string;
-//     registrationNumber: string;
-//     yearOfRegistration: string;
-//     stateMedicalCouncil: string;
-//     bio: string;
-//     document: string;
-//     clinicAddress: string;
-//     contactNumber: string;
-//     city: string;
-//     state: string;
-//     pinCode: number;
-//     clinicName: string;
-//     coordinates: {
-//         latitude: number;
-//         longitude: number;
-//     };
-//     morningStartTime: string;
-//     morningEndTime: string;
-//     eveningStartTime: string;
-//     eveningEndTime: string;
-//     slotDuration: number;
-//     isVerified: boolean;
-// }
+export interface Doctor {
+    _id: string;
+    name: string;
+    gender: string;
+    email: string;
+    profilePic: string;
+    password: string;
+    speciality: string;
+    qualification: string;
+    registrationNumber: string;
+    yearOfRegistration: string;
+    stateMedicalCouncil: string;
+    bio: string;
+    document: string;
+    clinicAddress: string;
+    contactNumber: string;
+    city: string;
+    state: string;
+    pinCode: number;
+    clinicName: string;
+    coordinates: {
+        latitude: number;
+        longitude: number;
+    };
+    morningStartTime: string;
+    morningEndTime: string;
+    eveningStartTime: string;
+    eveningEndTime: string;
+    slotDuration: number;
+    isVerified: boolean;
+}
 
 interface PatientState {
     patient: Patient | null;
