@@ -136,7 +136,7 @@ const useLoginStore = create<LoginState>((set, get) => ({
 
       // Update state
       set({ isLoggedIn: true, token: accessToken });
-      toast.success("Login successful");
+      // toast.success("Login successful");
 
       // Fetch user profile after login
       await get().fetchUser();
