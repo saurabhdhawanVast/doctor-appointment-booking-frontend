@@ -115,6 +115,11 @@ const Navbar = () => {
             <li>
               <Link href="/patients">My Patients</Link>
             </li>
+            <li>
+              <Link href={`/doctor/article-form/${doctorId}`}>
+                Create Articles
+              </Link>
+            </li>
           </>
         );
       case "patient":
@@ -132,6 +137,9 @@ const Navbar = () => {
 
             <li>
               <Link href="/patient/find-doctor">Find Doctor</Link>
+            </li>
+            <li>
+              <Link href="/article">View Article</Link>
             </li>
           </>
         );
