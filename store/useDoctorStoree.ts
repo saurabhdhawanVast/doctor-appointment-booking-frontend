@@ -4,7 +4,7 @@ import axios from "axios";
 export interface Slot {
   id: string;
   time: string; // Adjust based on your slot time format
-  status: "available" | "booked" | "cancelled"; // Add this line
+  status: "available" | "booked" | "cancelled";
 }
 
 export interface DateWithSlots {
@@ -49,6 +49,7 @@ export interface Doctor {
   slotDuration: number;
   isVerified: boolean;
 }
+
 interface DoctorStoreState {
   doctors: Doctor[];
   totalDoctors: number;
@@ -80,7 +81,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
   currentPage: 1,
   totalPages: 1,
   availableDates: [],
-  slotsByDate: {}, // Initialize as an empty object
+  slotsByDate: {} as Record<string, Slot[]>, // Initialize as an empty object
 
   fetchDoctors: async (
     status: "all" | "verified" | "unverified",
@@ -149,7 +150,6 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
           })),
         }));
 
-        // Create a slotsByDate object for efficient slot retrieval
         const slotsByDate = availableDates.reduce(
           (acc: Record<string, Slot[]>, dateWithSlots) => {
             acc[dateWithSlots.date.toISOString()] = dateWithSlots.slots;

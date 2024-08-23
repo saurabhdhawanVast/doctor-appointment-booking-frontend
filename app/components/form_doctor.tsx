@@ -22,7 +22,8 @@ const steps = [
     id: "Step 1",
     name: "Personal Information",
     fields: [
-      "name",
+      "firstName",
+      "lastName",
       "email",
       "profilePic",
       "gender",
@@ -90,6 +91,9 @@ export default function Form_Doctor() {
 
   //signup User and Doctor
   const signup = useRegisterDoctorStore((state) => state.signup);
+  const getUserByEmail = useRegisterDoctorStore(
+    (state) => state.getUserByEmail
+  );
 
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
@@ -107,6 +111,7 @@ export default function Form_Doctor() {
     navigator.geolocation.getCurrentPosition((position) => {
       setLatitude(position.coords.latitude);
       setLongitude(position.coords.longitude);
+      toast.success("Location set successfully");
     });
   };
 
@@ -123,59 +128,11 @@ export default function Form_Doctor() {
     resolver: zodResolver(FormDataSchemaDoctor),
   });
 
-  // const processForm: SubmitHandler<Inputs> = async (data) => {
-  //   console.log("Processing form...");
-  //   //getUrl
-  //   const profilePic = data.profilePic[0];
-  //   const document = data.document[0];
-
-  //   const uploadDataArray = [profilePic, document];
-
-  //   //profilePic
-  //   for (const uploadDataElement of uploadDataArray) {
-  //     // console.log(uploadDataElement);
-  //     const uploadData = new FormData();
-  //     uploadData.append("file", uploadDataElement);
-  //     uploadData.append("upload_preset", "doctors-app");
-  //     uploadData.append("cloud_name", "dicldxhya");
-  //     // console.log(uploadData);
-  //     await fetch("https://api.cloudinary.com/v1_1/dicldxhya/image/upload", {
-  //       method: "post",
-  //       body: uploadData,
-  //     })
-  //       .then((res) => res.json())
-  //       .then((data) => {
-  //         url.push(data.url);
-  //       })
-  //       .catch((err) => {
-  //         console.log(err);
-  //       });
-  //   }
-
-  //   //remove Confirm password field
-  //   const { confirmPassword, ...dataWithoutPassword } = data;
-
-  //   //add role and coordinates.
-  //   const formData = {
-  //     ...dataWithoutPassword,
-  //     role: "doctor",
-  //     coordinates: {
-  //       latitude: latitude,
-  //       longitude: longitude,
-  //     },
-  //     profilePic: url[0],
-  //     document: url[1],
-  //   };
-  //   toast.info("Please wait form being processed");
-  //   signup(formData);
-  //   reset();
-  //   router.push("/login");
-  // };
-
   //chat
   const processForm: SubmitHandler<Inputs> = async (data) => {
     try {
       setIsLoading(true);
+      toast.info("Please wait, form is being processed...");
       console.log("Processing form...");
       const profilePic = data.profilePic[0];
       const document = data.document[0];
@@ -186,15 +143,12 @@ export default function Form_Doctor() {
         const uploadData = new FormData();
         uploadData.append("file", uploadDataElement);
         uploadData.append("upload_preset", "doctors-app");
-        uploadData.append("cloud_name", `${process.env.CLOUDINARY_CLOUD_NAME}`);
+        uploadData.append("cloud_name", "dicldxhya");
 
-        await fetch(
-          `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload`,
-          {
-            method: "post",
-            body: uploadData,
-          }
-        )
+        await fetch(`https://api.cloudinary.com/v1_1/dicldxhya/image/upload`, {
+          method: "post",
+          body: uploadData,
+        })
           .then((res) => res.json())
           .then((data) => {
             url.push(data.url);
@@ -203,26 +157,31 @@ export default function Form_Doctor() {
             console.log(err);
           });
       }
+      console.log("after cloudinary");
 
-      const { confirmPassword, ...dataWithoutPassword } = data;
+      const { confirmPassword, firstName, lastName, ...dataWithoutPassword } =
+        data;
 
       const formData = {
+        name: `${firstName} ${lastName}`,
         ...dataWithoutPassword,
         role: "doctor",
         coordinates: {
           latitude: latitude,
           longitude: longitude,
         },
-        profilePic: url[0],
+        profilePic: url[0] || "/images/avatar.png",
         document: url[1],
       };
 
-      toast.info("Please wait, form is being processed...");
       await signup(formData); // Assuming signup is an async function
       reset();
-      toast.success("Signup successful!");
+
+      toast.success("Form submitted successfully.");
+
       router.push("/login");
     } catch (error) {
+      console.error("Error processing form:", error);
       toast.error("There was an error processing the form.");
     } finally {
       setIsLoading(false);
@@ -236,6 +195,15 @@ export default function Form_Doctor() {
     const output = await trigger(fields as FieldName[], { shouldFocus: true });
 
     if (currentStep === 0) {
+      // console.log("from next email", watch("email"));
+      const email = watch("email");
+      const user = await getUserByEmail(watch("email"));
+
+      if (user) {
+        toast.error("User already exists");
+        return;
+      }
+
       const password = watch("password");
       const confirmPassword = watch("confirmPassword");
 
@@ -248,6 +216,20 @@ export default function Form_Doctor() {
     if (currentStep === 2) {
       if (latitude === 0 && longitude === 0) {
         toast.error("Please enable your location");
+        return;
+      }
+    }
+
+    if (currentStep === 3) {
+      const morningStartTime = watch("morningStartTime");
+      const morningEndTime = watch("morningEndTime");
+      const eveningStartTime = watch("eveningStartTime");
+      const eveningEndTime = watch("eveningEndTime");
+      if (
+        morningStartTime > morningEndTime ||
+        eveningStartTime > eveningEndTime
+      ) {
+        toast.error("Start time must be Less than end time");
         return;
       }
     }
@@ -503,22 +485,45 @@ export default function Form_Doctor() {
                 <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                   <div className="sm:col-span-3">
                     <label
-                      htmlFor="name"
+                      htmlFor="firstName"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Name
+                      First Name
                     </label>
                     <div className="mt-2">
                       <input
                         type="text"
-                        id="name"
-                        {...register("name")}
+                        id="firstName"
+                        {...register("firstName")}
                         autoComplete="given-name"
                         className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                       />
-                      {errors.name?.message && (
+                      {errors.firstName?.message && (
                         <p className="mt-2 text-sm text-red-400">
-                          {errors.name.message}
+                          {errors.firstName.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="sm:col-span-3">
+                    <label
+                      htmlFor="lastName"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Last Name
+                    </label>
+                    <div className="mt-2">
+                      <input
+                        type="text"
+                        id="lastName"
+                        {...register("lastName")}
+                        autoComplete="given-name"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                      />
+                      {errors.lastName?.message && (
+                        <p className="mt-2 text-sm text-red-400">
+                          {errors.lastName.message}
                         </p>
                       )}
                     </div>
@@ -1075,7 +1080,7 @@ export default function Form_Doctor() {
                         </label>
                         <input
                           type="time"
-                          defaultValue={"06:00"}
+                          // defaultValue={"06:00"}
                           id="morningStartTime"
                           {...register("morningStartTime")}
                           autoComplete="morningStartTime"
@@ -1096,7 +1101,7 @@ export default function Form_Doctor() {
                         </label>
                         <input
                           type="time"
-                          defaultValue={"12:00"}
+                          // defaultValue={"12:00"}
                           id="morningEndTime"
                           {...register("morningEndTime")}
                           autoComplete="morningEndTime"
@@ -1126,7 +1131,7 @@ export default function Form_Doctor() {
                         </label>
                         <input
                           type="time"
-                          defaultValue={"16:00"}
+                          // defaultValue={"16:00"}
                           id="eveningStartTime"
                           {...register("eveningStartTime")}
                           autoComplete="eveningStartTime"
@@ -1147,7 +1152,7 @@ export default function Form_Doctor() {
                         </label>
                         <input
                           type="time"
-                          defaultValue={"21:00"}
+                          // defaultValue={"21:00"}
                           id="eveningEndTime"
                           {...register("eveningEndTime")}
                           autoComplete="eveningEndTime"

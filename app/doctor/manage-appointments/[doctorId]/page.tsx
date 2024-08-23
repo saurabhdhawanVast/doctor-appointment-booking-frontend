@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import useDoctorStore from "@/store/useDoctorStoree";
+import { Slot } from "@/store/useDoctorStoree"; // Adjust the path based on your directory structure
 
 interface ManageAppointmentsProps {
   params: {
