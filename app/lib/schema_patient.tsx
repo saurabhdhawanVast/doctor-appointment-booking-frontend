@@ -1,3 +1,4 @@
+import { profile } from "console";
 import { z } from "zod";
 
 const MAX_FILE_SIZE = 1024 * 1024 * 5;
@@ -5,7 +6,10 @@ const ACCEPTED_IMAGE_MIME_TYPES = ["image/jpeg", "image/jpg", "image/png"];
 
 export const FormDataSchemaPatient = z
   .object({
-    name: z.string().min(1, "Name is required"),
+    // name: z.string().min(1, "Name is required"),
+    firstName: z.string().min(1, "First name is required"),
+    lastName: z.string().min(1, "Last name is required"),
+
     //   lastName: z.string().min(1, "Last name is required"),
     email: z
       .string()
@@ -14,14 +18,17 @@ export const FormDataSchemaPatient = z
 
     profilePic: z
       .any()
-
+      .optional()
       .refine(
         (files) =>
-          !files || ACCEPTED_IMAGE_MIME_TYPES.includes(files?.[0]?.type),
+          !files ||
+          files.length === 0 ||
+          ACCEPTED_IMAGE_MIME_TYPES.includes(files[0].type),
         "Only .jpg, .jpeg, and .png formats are supported."
       )
       .refine(
-        (files) => !files || files?.[0]?.size <= MAX_FILE_SIZE,
+        (files) =>
+          !files || files.length === 0 || files[0].size <= MAX_FILE_SIZE,
         `Max image size is 5MB.`
       ),
 
@@ -32,10 +39,7 @@ export const FormDataSchemaPatient = z
       .string()
       .min(8, "Password must be at least 8 characters long")
       .max(20, "Password must be at most 20 characters long"),
-    confirmPassword: z
-      .string()
-      .min(8, "Password must be at least 8 characters long")
-      .max(20, "Password must be at most 20 characters long"),
+    confirmPassword: z.string(),
 
     address: z.string().min(1, "Street is required"),
 

@@ -195,7 +195,7 @@ const Navbar = () => {
                   alt="Avatar"
                   width={100}
                   height={100}
-                  className="rounded-full border-2 border-white"
+                  className="rounded-full border-2 border-white w-8 h-8"
                   onClick={toggleDropdown}
                 />
               </div>

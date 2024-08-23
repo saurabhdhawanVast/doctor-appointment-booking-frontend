@@ -6,8 +6,39 @@ import { useRouter } from "next/navigation";
 import { usePatientStore } from "@/store/usePatientStore";
 import Link from "next/link";
 import useLoginStore from "@/store/useLoginStore";
-import { Doctor } from "@/store/useDoctorStore";
+
 import { toast } from "react-toastify";
+export interface Doctor {
+  _id: string;
+  name: string;
+  gender: string;
+  email: string;
+  profilePic: string;
+  password: string;
+  speciality: string;
+  qualification: string;
+  registrationNumber: string;
+  yearOfRegistration: string;
+  stateMedicalCouncil: string;
+  bio: string;
+  document: string;
+  clinicAddress: string;
+  contactNumber: string;
+  city: string;
+  state: string;
+  pinCode: number;
+  clinicName: string;
+  coordinates: {
+    latitude: number;
+    longitude: number;
+  };
+  morningStartTime: string;
+  morningEndTime: string;
+  eveningStartTime: string;
+  eveningEndTime: string;
+  slotDuration: number;
+  isVerified: boolean;
+}
 
 interface SpecialtyOption {
   label: string;

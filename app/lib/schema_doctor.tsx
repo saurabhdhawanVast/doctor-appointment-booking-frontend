@@ -5,8 +5,9 @@ const ACCEPTED_IMAGE_MIME_TYPES = ["image/jpeg", "image/jpg", "image/png"];
 
 export const FormDataSchemaDoctor = z
   .object({
-    name: z.string().min(1, "Name is required"),
-    //   lastName: z.string().min(1, "Last name is required"),
+    // name: z.string().min(1, "Name is required"),
+    firstName: z.string().min(1, "First name is required"),
+    lastName: z.string().min(1, "Last name is required"),
     email: z
       .string()
       .min(1, "Email is required")
@@ -14,13 +15,17 @@ export const FormDataSchemaDoctor = z
 
     profilePic: z
       .any()
+      .optional()
       .refine(
         (files) =>
-          !files || ACCEPTED_IMAGE_MIME_TYPES.includes(files?.[0]?.type),
+          !files ||
+          files.length === 0 ||
+          ACCEPTED_IMAGE_MIME_TYPES.includes(files[0].type),
         "Only .jpg, .jpeg, and .png formats are supported."
       )
       .refine(
-        (files) => !files || files?.[0]?.size <= MAX_FILE_SIZE,
+        (files) =>
+          !files || files.length === 0 || files[0].size <= MAX_FILE_SIZE,
         `Max image size is 5MB.`
       ),
 
@@ -30,10 +35,7 @@ export const FormDataSchemaDoctor = z
       .string()
       .min(8, "Password must be at least 8 characters long")
       .max(20, "Password must be at most 20 characters long"),
-    confirmPassword: z
-      .string()
-      .min(8, "Password must be at least 8 characters long")
-      .max(20, "Password must be at most 20 characters long"),
+    confirmPassword: z.string(),
 
     speciality: z.string().min(1, "Speciality is required"),
     qualification: z.string().min(1, "Qualification is required"),

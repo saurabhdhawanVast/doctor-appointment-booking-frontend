@@ -8,6 +8,9 @@ import { FormDataSchemaPatient } from "../lib/schema_patient";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
+
+import Loading from "../loading";
 
 import useRegisterPatientStore from "@/store/useRegisterPatientStore";
 
@@ -18,7 +21,8 @@ const steps = [
     id: "Step 1",
     name: "Personal Information",
     fields: [
-      "name",
+      "firstName",
+      "lastName",
       "email",
       "profilePic",
       "gender",
@@ -47,12 +51,16 @@ interface City {
 }
 
 const Form_Patient = () => {
+  const router = useRouter();
   const [previousStep, setPreviousStep] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
   const delta = currentStep - previousStep;
 
   //store sign up
   const signup = useRegisterPatientStore((state) => state.signup);
+  const getUserByEmail = useRegisterPatientStore(
+    (state) => state.getUserByEmail
+  );
 
   //City state
   const [states, setStates] = useState<
@@ -61,6 +69,7 @@ const Form_Patient = () => {
   const [cities, setCities] = useState<string[]>([]);
   const [selectedState, setSelectedState] = useState<string>("");
 
+  const [isLoading, setIsLoading] = useState(false);
   //url profile pic
   const url: string[] = [];
 
@@ -77,45 +86,56 @@ const Form_Patient = () => {
 
   //Submit form
   const processForm: SubmitHandler<Inputs> = async (data) => {
-    //getUrl
-    const profilePicPatient = data.profilePic[0];
+    setIsLoading(true);
+    toast.info("Please wait, form is being processed...");
+    try {
+      //getUrl
+      const profilePicPatient = data.profilePic[0];
 
-    //profilePic
-    const uploadDataArray = [profilePicPatient];
-    for (const uploadDataElement of uploadDataArray) {
-      // console.log(uploadDataElement);
-      const uploadData = new FormData();
-      uploadData.append("file", uploadDataElement);
-      uploadData.append("upload_preset", "doctors-app");
-      uploadData.append("cloud_name", "dicldxhya");
-      // console.log(uploadData);
-      await fetch("https://api.cloudinary.com/v1_1/dicldxhya/image/upload", {
-        method: "post",
-        body: uploadData,
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          url.push(data.url);
+      //profilePic
+      const uploadDataArray = [profilePicPatient];
+      for (const uploadDataElement of uploadDataArray) {
+        // console.log(uploadDataElement);
+        const uploadData = new FormData();
+        uploadData.append("file", uploadDataElement);
+        uploadData.append("upload_preset", "doctors-app");
+        uploadData.append("cloud_name", "dicldxhya");
+        // console.log(uploadData);
+        await fetch(`https://api.cloudinary.com/v1_1/dicldxhya/image/upload`, {
+          method: "post",
+          body: uploadData,
         })
-        .catch((err) => {
-          console.log(err);
-        });
+          .then((res) => res.json())
+          .then((data) => {
+            url.push(data.url);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+      //remove Confirm password field
+      const { confirmPassword, firstName, lastName, ...dataWithoutPassword } =
+        data;
+
+      //add role and coordinates.
+      const formData = {
+        name: `${firstName} ${lastName}`,
+        ...dataWithoutPassword,
+        role: "patient",
+        profilePic: url[0] || "/images/avatar.png",
+      };
+
+      console.log("formData Before Sending", formData);
+
+      await signup(formData);
+      reset();
+      toast.success("Form submitted successfully.");
+      router.push("/login");
+    } catch (error) {
+      toast.error("There was an error processing the form.");
+    } finally {
+      setIsLoading(false);
     }
-    //remove Confirm password field
-    const { confirmPassword, ...dataWithoutPassword } = data;
-
-    //add role and coordinates.
-    const formData = {
-      ...dataWithoutPassword,
-      role: "patient",
-      profilePic: url[0],
-    };
-
-    console.log("formData Before Sending", formData);
-
-    signup(formData);
-
-    reset();
   };
 
   type FieldName = keyof Inputs;
@@ -125,6 +145,13 @@ const Form_Patient = () => {
     const output = await trigger(fields as FieldName[], { shouldFocus: true });
 
     if (currentStep === 0) {
+      const user = await getUserByEmail(watch("email"));
+
+      if (user) {
+        toast.error("User already exists");
+        return;
+      }
+
       const password = watch("password");
       const confirmPassword = watch("confirmPassword");
 
@@ -218,6 +245,14 @@ const Form_Patient = () => {
 
   return (
     <div className="flex h- items-center justify-center py-12 px-4 sm:px-2 lg:px-4">
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
+          <div className="loader">
+            <Loading />
+          </div>{" "}
+          {/* Customize your loader */}
+        </div>
+      )}
       <section className=" w-full max-w-12xl h-screen inset-0 flex flex-col justify-between p-12">
         {/* steps */}
 
@@ -278,22 +313,45 @@ const Form_Patient = () => {
                 <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                   <div className="sm:col-span-3">
                     <label
-                      htmlFor="name"
+                      htmlFor="firstName"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Name
+                      First Name
                     </label>
                     <div className="mt-2">
                       <input
                         type="text"
-                        id="name"
-                        {...register("name")}
+                        id="firstName"
+                        {...register("firstName")}
                         autoComplete="given-name"
                         className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                       />
-                      {errors.name?.message && (
+                      {errors.firstName?.message && (
                         <p className="mt-2 text-sm text-red-400">
-                          {errors.name.message}
+                          {errors.firstName.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="sm:col-span-3">
+                    <label
+                      htmlFor="lastName"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Last Name
+                    </label>
+                    <div className="mt-2">
+                      <input
+                        type="text"
+                        id="lastName"
+                        {...register("lastName")}
+                        autoComplete="given-name"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                      />
+                      {errors.lastName?.message && (
+                        <p className="mt-2 text-sm text-red-400">
+                          {errors.lastName.message}
                         </p>
                       )}
                     </div>
