@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import useDoctorStore from "@/store/useDoctorStore";
 import Link from "next/link";
-
+import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 // Importing assets
 import icon01 from "../public/images/icon01.png";
 import icon02 from "../public/images/icon02.png";
@@ -36,7 +36,19 @@ export default function Home() {
   // Framer Motion scroll animations
   const { scrollY } = useScroll();
   const yRange = useTransform(scrollY, [0, 500], [0, -100]);
-
+  const renderStars = (rating: number) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      if (i <= Math.floor(rating)) {
+        stars.push(<FaStar key={i} className="text-yellow-500" />);
+      } else if (i === Math.ceil(rating) && rating % 1 !== 0) {
+        stars.push(<FaStarHalfAlt key={i} className="text-yellow-500" />);
+      } else {
+        stars.push(<FaRegStar key={i} className="text-yellow-500" />);
+      }
+    }
+    return stars;
+  };
   return (
     <>
       {/* Header Section */}
@@ -157,14 +169,24 @@ export default function Home() {
                   whileInView={{ scale: 1.05 }}
                   transition={{ duration: 0.9 }}
                 >
-                  <h3 className="text-xl font-semibold">{doctor.name}</h3>
-                  <p className="mt-2">{doctor.speciality || ""}</p>
-                  <Link
-                    href={`/doctor/${doctor._id}`}
-                    className="btn btn-primary mt-4"
-                  >
-                    View Profile
-                  </Link>
+                  <div className="flex justify-between">
+                    <div>
+                      <h3 className="text-xl font-semibold">{doctor.name}</h3>
+                      <p className="mt-2">{doctor.speciality || ""}</p>
+                      <Link
+                        href={`/doctor/${doctor._id}`}
+                        className="btn btn-primary mt-4"
+                      >
+                        View Profile
+                      </Link>
+                    </div>
+                    <div className="flex mt-2">
+                      {renderStars(doctor.acgRating)}
+                      {/* <span className="ml-2 text-gray-600">
+                        {doctor.ratings.toFixed(1)} / 5
+                      </span> */}
+                    </div>
+                  </div>
                 </motion.div>
               ))
             ) : (

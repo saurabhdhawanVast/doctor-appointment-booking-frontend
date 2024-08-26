@@ -7,23 +7,33 @@ interface Article {
   title: string;
   content: string;
   category: string;
+  image:string;
   subCategory: string;
   createdAt: Date;
-  doctorId: string;
+  doctorId?: string;
+  doctor?: {
+    name: string;
+  };
 }
 
 interface ArticleState {
   articles: Article[];
-  fetchArticles: () => Promise<void>;
+  fetchArticles: (query?: Record<string, any>) => Promise<void>;
   createArticle: (article: Omit<Article, "_id" | "createdAt">) => Promise<void>;
 }
 
 export const useArticleStore = create<ArticleState>((set) => ({
   articles: [],
 
-  fetchArticles: async () => {
+  fetchArticles: async (query = {}) => {
     try {
-      const response = await axios.get("/api/articles");
+      const queryString = new URLSearchParams({
+        filter: JSON.stringify(query),
+      }).toString();
+      const response = await axios.get(
+        `http://localhost:3000/articles?${queryString}`
+      );
+      console.log(response.data);
       set({ articles: response.data });
     } catch (error) {
       console.error("Error fetching articles:", error);
@@ -32,7 +42,7 @@ export const useArticleStore = create<ArticleState>((set) => ({
 
   createArticle: async (article) => {
     try {
-      await axios.post("http://localhost:5000/articles", article);
+      await axios.post("http://localhost:3000/articles", article);
     } catch (error) {
       console.error("Error creating article:", error);
     }
