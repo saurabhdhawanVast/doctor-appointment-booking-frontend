@@ -105,9 +105,7 @@ const Navbar = () => {
         return (
           <>
             <li>
-              <Link href={`/doctor/appointments/${doctorId}`}>
-                Appointments
-              </Link>
+              <Link href={`doctor/appointments/${doctorId}`}>Appointments</Link>
             </li>
             <li>
               <Link href={`/doctor/mark-available/${doctorId}`}>
