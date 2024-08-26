@@ -5,6 +5,7 @@ import axios from "axios";
 export interface PatientDetails {
   name: string;
   contactNumber?: string;
+  patientId?: string; // Ensure patientId is included
 }
 
 export interface AppointmentSlot {
@@ -18,11 +19,35 @@ export interface DateWithSlots {
   appointmentsBooked: AppointmentSlot[];
 }
 
+export interface DoctorDetails {
+  name: string;
+  specialty?: string;
+  contactNumber?: string;
+}
+
+export interface Prescription {
+  appointmentData: string;
+  slotId: string;
+  patientId: string;
+  doctorId: string;
+  patientName: string;
+  doctorName: string;
+  medicines: {
+    name: string;
+    dosage: string[];
+    time: string;
+    days: number;
+  }[];
+}
+
 export interface AppointmentStore {
   appointments: DateWithSlots[];
   filteredAppointments: DateWithSlots[];
+  doctorDetails: DoctorDetails | null;
   fetchAppointments: (doctorId: string, initialDate?: Date) => Promise<void>;
+  fetchDoctorDetails: (doctorId: string) => Promise<void>;
   filterAppointmentsByDate: (selectedDate: Date) => void;
+  savePrescription: (prescription: Prescription) => Promise<void>;
 }
 
 const https = axios.create({
@@ -32,14 +57,13 @@ const https = axios.create({
 const useAppointmentStore = create<AppointmentStore>((set) => ({
   appointments: [],
   filteredAppointments: [],
+  doctorDetails: null,
   fetchAppointments: async (doctorId: string, initialDate?: Date) => {
     try {
-      console.log("Making API call to fetch appointments");
       const response = await https.get(
         `/appointments/getAppointmentsByDoctorId?doctorId=${doctorId}`
       );
-      console.log("API response:", response.data);
-
+      console.log(response);
       const appointments: DateWithSlots[] = response.data;
 
       let filteredAppointments: DateWithSlots[] = [];
@@ -53,9 +77,19 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
             appointmentDate.getDate() === initialDate.getDate()
           );
         });
+      } else {
+        // Filter for today's date
+        const today = new Date();
+        filteredAppointments = appointments.filter((item) => {
+          const appointmentDate = new Date(item.date);
+          return (
+            appointmentDate.getFullYear() === today.getFullYear() &&
+            appointmentDate.getMonth() === today.getMonth() &&
+            appointmentDate.getDate() === today.getDate()
+          );
+        });
       }
 
-      // If no appointments on the initial date (today), return an empty array
       set({
         appointments,
         filteredAppointments:
@@ -63,6 +97,16 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
       });
     } catch (error) {
       console.error("Failed to fetch appointments:", error);
+    }
+  },
+  fetchDoctorDetails: async (doctorId: string) => {
+    try {
+      const response = await https.get(`/doctors/getDoctorById/${doctorId}`);
+      const doctorDetails: DoctorDetails = response.data;
+
+      set({ doctorDetails });
+    } catch (error) {
+      console.error("Failed to fetch doctor details:", error);
     }
   },
   filterAppointmentsByDate: (selectedDate: Date) => {
@@ -76,12 +120,19 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
         );
       });
 
-      // If no appointments on the selected date, return an empty array
       return {
         filteredAppointments:
           filteredAppointments.length > 0 ? filteredAppointments : [],
       };
     });
+  },
+  savePrescription: async (prescription: Prescription) => {
+    try {
+      await https.post("/prescriptions/savePrescription", prescription);
+      console.log("Prescription saved successfully");
+    } catch (error) {
+      console.error("Failed to save prescription:", error);
+    }
   },
 }));
 
