@@ -2,6 +2,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useArticleStore } from "@/store/useArticleStore";
 import { debounce } from "@mui/material";
+import { useRouter } from "next/navigation";
 
 interface Article {
   _id: string;
@@ -21,8 +22,8 @@ const categories = [
     subCategories: [
       { name: "Hair Growth", imagePath: "/images/hairGrowth.jfif" },
       { name: "Hair Loss Prevention", imagePath: "/images/hairLoss.jfif" },
-      { name: "Hair Care Tips", imagePath: "/images/default.jpg" },
-      { name: "Scalp Treatments", imagePath: "/images/default.jpg" },
+      // { name: "Hair Care Tips", imagePath: "/images/default.jpg" },
+      { name: "Scalp Treatments", imagePath: "/images/scalp-treatment.jpg" },
       { name: "Hair Coloring", imagePath: "/images/hairColor.jfif" },
     ],
   },
@@ -32,78 +33,82 @@ const categories = [
       { name: "Acne Treatment", imagePath: "/images/acane.jfif" },
       { name: "Anti-Aging", imagePath: "/images/anti-aging.jfif" },
       { name: "Skin Hydration", imagePath: "/images/skin hydration.jfif" },
-      { name: "Sun Protection", imagePath: "/images/default.jpg" },
-      { name: "Skin Brightening", imagePath: "/images/default.jpg" },
+      { name: "Sun Protection", imagePath: "/images/sun protection.jfif" },
+      { name: "Skin Brightening", imagePath: "/images/skin-brightning.jpg" },
     ],
   },
   {
     name: "Healthy Diet",
     subCategories: [
-      { name: "Balanced Nutrition", imagePath: "/images/default.jpg" },
-      { name: "Weight Management", imagePath: "/images/default.jpg" },
-      { name: "Detox Diet", imagePath: "/images/default.jpg" },
-      { name: "Meal Planning", imagePath: "/images/default.jpg" },
-      { name: "Nutritional Supplements", imagePath: "/images/default.jpg" },
+      { name: "Balanced Nutrition", imagePath: "/images/balance-diet.jpg" },
+      { name: "Weight Management", imagePath: "/images/weight-manegement.jpg" },
+      { name: "Detox Diet", imagePath: "/images/detox-diet.jpg" },
+      { name: "Meal Planning", imagePath: "/images/meal-planning.jpg" },
+      {
+        name: "Nutritional Supplements",
+        imagePath: "/images/nutrient-suppliment.jpg",
+      },
     ],
   },
   {
     name: "Healthy Teeth",
     subCategories: [
-      { name: "Brushing Techniques", imagePath: "/images/default.jpg" },
-      { name: "Flossing Tips", imagePath: "/images/default.jpg" },
-      { name: "Oral Hygiene", imagePath: "/images/default.jpg" },
-      { name: "Teeth Whitening", imagePath: "/images/default.jpg" },
-      { name: "Dentist Visits", imagePath: "/images/default.jpg" },
+      { name: "Brushing Techniques", imagePath: "/images/brushing.jpg" },
+      { name: "Flossing Tips", imagePath: "/images/flossingtips.jpg" },
+      { name: "Oral Hygiene", imagePath: "/images/27503.jpg" },
+      { name: "Teeth Whitening", imagePath: "/images/whitning.jpg" },
+      // { name: "Dentist Visits", imagePath: "/images/default.jpg" },
     ],
   },
   {
     name: "General Health",
     subCategories: [
-      { name: "Immunity Boost", imagePath: "/images/default.jpg" },
-      { name: "Disease Prevention", imagePath: "/images/default.jpg" },
-      { name: "Detox", imagePath: "/images/default.jpg" },
-      { name: "Healthy Aging", imagePath: "/images/default.jpg" },
-      { name: "Stress Management", imagePath: "/images/default.jpg" },
+      { name: "Immunity Boost", imagePath: "/images/3985459.jpg" },
+      { name: "Injury care", imagePath: "/images/injurysaf.jpg" },
+      { name: "Healthy Digestion", imagePath: "/images/9344789.jpg" },
+      { name: "Periods Care", imagePath: "/images/periods.jpg" },
+      { name: "Sleep Better", imagePath: "/images/sleeping.jpg" },
     ],
   },
   {
     name: "Fitness & Exercise",
     subCategories: [
-      { name: "Cardio Workouts", imagePath: "/images/default.jpg" },
-      { name: "Strength Training", imagePath: "/images/default.jpg" },
-      { name: "Flexibility Exercises", imagePath: "/images/default.jpg" },
-      { name: "Workout Routines", imagePath: "/images/default.jpg" },
-      { name: "Recovery Techniques", imagePath: "/images/default.jpg" },
+      { name: "Cardio Workouts", imagePath: "/images/cardio-workout.jpg" },
+      { name: "Strength Training", imagePath: "/images/strength-training.jpg" },
+      { name: "Meditation", imagePath: "/images/meditation.jpg" },
+      { name: "Everyday Fitness", imagePath: "/images/everyday-fitness.jpg" },
+      { name: "Yoga", imagePath: "/images/yoga.jpg" },
     ],
   },
   {
     name: "Pain Management",
     subCategories: [
-      { name: "Chronic Pain Relief", imagePath: "/images/default.jpg" },
-      { name: "Acute Pain Management", imagePath: "/images/default.jpg" },
-      { name: "Alternative Therapies", imagePath: "/images/default.jpgg" },
-      { name: "Pain Medication", imagePath: "/images/default.jpg" },
-      { name: "Physical Therapy", imagePath: "/images/default.jpg" },
+      { name: "Back Pain", imagePath: "/images/back-pain.jpg" },
+      { name: "Neck Pain", imagePath: "/images/neck-pain.jpg" },
+      { name: "Headache", imagePath: "/images/headache.jfif" },
+      { name: "Knee Pain", imagePath: "/images/kneePain.jfif" },
+      { name: "Physical Therapy", imagePath: "/images/physicalTherapy.jfif" },
     ],
   },
   {
     name: "Mental Well-being",
     subCategories: [
-      { name: "Stress Reduction", imagePath: "/images/default.jpg" },
-      { name: "Depression Management", imagePath: "/images/default.jpg" },
-      { name: "Mindfulness Practices", imagePath: "/images/default.jpg" },
-      { name: "Counseling", imagePath: "/images/default.jpg" },
-      { name: "Emotional Support", imagePath: "/images/default.jpg" },
+      { name: "Stress Reduction", imagePath: "/images/stressReduction.jfif" },
+      { name: "Depression Management", imagePath: "/images/depression.jfif" },
+      { name: "Addiction", imagePath: "/images/addiction.jfif" },
+      { name: "Counseling", imagePath: "/images/councelling.jfif" },
+      { name: "Emotional Support", imagePath: "/images/emotionalSupport.jfif" },
+      { name: "Anger Manegment", imagePath: "/images/angerManagement.jfif" },
     ],
   },
   {
     name: "Kids & Parenting",
     subCategories: [
-      { name: "Child Development", imagePath: "/images/default.jpg" },
-      { name: "Parenting Tips", imagePath: "/images/default.jpg" },
-      { name: "Family Health", imagePath: "/images/default.jpg" },
-      { name: "Early Education", imagePath: "/images/default.jp" },
-      { name: "Positive Discipline", imagePath: "/images/default.jpg" },
+      { name: "Child Development", imagePath: "/images/childDevelopment.jpg" },
+      { name: "Parenting", imagePath: "/images/parenting.jpg" },
+      { name: "Childhood Nutrition", imagePath: "/images/nutrient-suppliment.jpg" },
+      { name: "During/After Pregnancy", imagePath: "/images/pregnancy.jpg" },
+      { name: "Positive Discipline", imagePath: "/images/positiveattitude.jpg" },
     ],
   },
 ];
@@ -122,7 +127,7 @@ const ArticlesList = () => {
   const [loading, setLoading] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const router = useRouter();
   const allCategories = [
     "Skin & Hair Care",
     "Healthy Teeth",
@@ -162,6 +167,30 @@ const ArticlesList = () => {
     setExpandCategories(false);
   };
 
+  function truncateHtmlContent(html: string, maxLength: number): string {
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    let truncatedText = "";
+    let totalLength = 0;
+    const childNodesArray = Array.from(div.childNodes) as HTMLElement[];
+    for (let child of childNodesArray) {
+      const childText = child.textContent || child.innerText || "";
+      totalLength += childText.length;
+
+      if (totalLength > maxLength) {
+        const remainingLength = maxLength - (totalLength - childText.length);
+        truncatedText += childText.slice(0, remainingLength) + "...";
+        break;
+      } else {
+        truncatedText += child.outerHTML || child.nodeValue;
+      }
+    }
+
+    return truncatedText;
+  }
+  const handleArticleClick = async (id: string) => {
+    router.push(`/article/${id}`);
+  };
   const resetFilter = async () => {
     setSelectedCategory(null);
     await fetchArticles();
@@ -322,12 +351,15 @@ const ArticlesList = () => {
                     {category.subCategories.map((subCategory) => (
                       <div
                         key={subCategory.name}
-                        className="cursor-pointer w-1/12 h-20 p-2 text-center items-center"
+                        className="flex flex-col w-24 cursor-pointer p-2 text-center items-center"
                         onClick={() =>
                           handleFilterSubCategory(subCategory.name)
                         }
                       >
-                        <img src={subCategory.imagePath} />
+                        <img
+                          className="w-24 h-20"
+                          src={subCategory.imagePath}
+                        />
                         {subCategory.name}
                       </div>
                     ))}
@@ -339,7 +371,8 @@ const ArticlesList = () => {
                 {articles.map((article) => (
                   <div
                     key={article._id}
-                    className="bg-white rounded-lg overflow-hidden shadow-lg hover:bg-blue-100 transition duration-300"
+                    onClick={() => handleArticleClick(article._id)}
+                    className="bg-white cursor-pointer rounded-lg overflow-hidden shadow-lg hover:bg-blue-100 transition duration-300"
                   >
                     {/* Image Section */}
                     <div className="relative w-full h-60 overflow-hidden rounded-t-lg">
@@ -369,7 +402,9 @@ const ArticlesList = () => {
                       </div>
                       <p
                         className="text-gray-700"
-                        dangerouslySetInnerHTML={{ __html: article.content }}
+                        dangerouslySetInnerHTML={{
+                          __html: truncateHtmlContent(article.content, 100),
+                        }}
                       ></p>
                     </div>
                   </div>

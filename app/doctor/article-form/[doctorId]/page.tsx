@@ -4,8 +4,8 @@ import dynamic from "next/dynamic";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { useArticleStore } from "@/store/useArticleStore";
-
-const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
+import "react-quill/dist/quill.snow.css";
+import ReactQuill from "react-quill";
 
 const CreateArticleForm: React.FC = () => {
   const [title, setTitle] = useState("");
@@ -141,6 +141,7 @@ const CreateArticleForm: React.FC = () => {
         .then((res) => res.json())
         .then((data) => {
           setImage(data.url);
+          console.log(data);
         })
         .catch((err) => {
           console.log(err);
@@ -207,30 +208,34 @@ const CreateArticleForm: React.FC = () => {
             <label className="block text-gray-700 text-sm font-semibold mb-2">
               Content:
             </label>
-            <JoditEditor
+            <ReactQuill
               ref={editor}
               value={content}
-              config={{
-                readonly: false,
-                removeButtons: ["speechRecognition"],
-                buttons: [
-                  "bold",
-                  "italic",
-                  "underline",
-                  "strikethrough",
-                  "ul",
-                  "ol",
-                  "outdent",
-                  "indent",
-                  "align",
-                  "link",
-                  "hr",
-                  "undo",
-                  "redo",
+              onChange={(newContent: any) => setContent(newContent)}
+              className="border rounded-lg"
+              modules={{
+                toolbar: [
+                  ["bold", "italic", "underline", "strike"], // toggled buttons
+                  ["blockquote", "code-block"],
+
+                  [{ header: 1 }, { header: 2 }], // custom button values
+                  [{ list: "ordered" }, { list: "bullet" }],
+                  [{ script: "sub" }, { script: "super" }], // superscript/subscript
+                  [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
+                  [{ direction: "rtl" }], // text direction
+
+                  [{ size: ["small", false, "large", "huge"] }], // custom dropdown
+                  [{ header: [1, 2, 3, 4, 5, 6, false] }],
+
+                  [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+                  [{ font: [] }],
+                  [{ align: [] }],
+
+                  ["link", "image", "video"],
+
+                  ["clean"], // remove formatting button
                 ],
               }}
-              onChange={(newContent) => setContent(newContent)}
-              className="border rounded-lg"
             />
           </div>
           <div className="mb-6">
@@ -277,26 +282,24 @@ const CreateArticleForm: React.FC = () => {
               type="file"
               accept="image/*"
               onChange={handleImageChange}
+              required
               className="shadow-sm border rounded-lg w-full py-3 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {imagePreview && (
-              <div className="mt-4">
-                <img
-                  src={imagePreview as string}
-                  alt="Preview"
-                  className="w-full h-auto rounded-lg border border-gray-300"
-                />
-              </div>
+              <img
+                src={imagePreview as string}
+                alt="Preview"
+                className="mt-4 rounded-lg"
+                style={{ maxWidth: "100%", height: "auto" }}
+              />
             )}
           </div>
-          <div className="flex items-center justify-center">
-            <button
-              type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
-            >
-              Submit
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="bg-blue-500 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            Create Article
+          </button>
         </form>
       </div>
     </div>

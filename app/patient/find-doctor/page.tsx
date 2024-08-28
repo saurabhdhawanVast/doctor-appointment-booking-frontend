@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { usePatientStore } from "@/store/usePatientStore";
 import Link from "next/link";
 import useLoginStore from "@/store/useLoginStore";
-
+import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
 export interface Doctor {
   _id: string;
@@ -38,6 +38,7 @@ export interface Doctor {
   eveningEndTime: string;
   slotDuration: number;
   isVerified: boolean;
+  avgRating: number;
 }
 
 interface SpecialtyOption {
@@ -97,7 +98,19 @@ const SearchDoctorsPage = () => {
     cUrl: "https://api.countrystatecity.in/v1/countries",
     ckey: "NHhvOEcyWk50N2Vna3VFTE00bFp3MjFKR0ZEOUhkZlg4RTk1MlJlaA==",
   };
-
+  const renderStars = (rating: number) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      if (i <= Math.floor(rating)) {
+        stars.push(<FaStar key={i} className="text-yellow-500" />);
+      } else if (i === Math.ceil(rating) && rating % 1 !== 0) {
+        stars.push(<FaStarHalfAlt key={i} className="text-yellow-500" />);
+      } else {
+        stars.push(<FaRegStar key={i} className="text-yellow-500" />);
+      }
+    }
+    return stars;
+  };
   useEffect(() => {
     const fetchStates = async () => {
       try {
@@ -423,19 +436,24 @@ const SearchDoctorsPage = () => {
                   )}
                 </div>
                 <div className="flex-1 flex flex-row items-center justify-between">
-                  <div>
-                    <h3 className="text-xl font-semibold">{doctor.name}</h3>
+                  <div className="flex">
+                    <div>
+                      <h3 className="text-xl font-semibold">{doctor.name}</h3>
 
-                    <p className="text-sm text-gray-600">
-                      {doctor.speciality || ""}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {doctor.yearOfRegistration && (
-                        <span>
-                          Year of Registration: {doctor.yearOfRegistration}
-                        </span>
-                      )}
-                    </p>
+                      <p className="text-sm text-gray-600">
+                        {doctor.speciality || ""}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {doctor.yearOfRegistration && (
+                          <span>
+                            Year of Registration: {doctor.yearOfRegistration}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                    <div className="flex mt-2">
+                      {renderStars(doctor?.avgRating)}
+                    </div>
                   </div>
                   <div className="text-right">
                     <Link
