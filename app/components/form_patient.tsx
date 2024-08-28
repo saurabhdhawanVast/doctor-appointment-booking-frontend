@@ -87,6 +87,7 @@ const Form_Patient = () => {
   //Submit form
   const processForm: SubmitHandler<Inputs> = async (data) => {
     setIsLoading(true);
+    console.log("ProcessFrom", data);
     toast.info("Please wait, form is being processed...");
     try {
       //getUrl

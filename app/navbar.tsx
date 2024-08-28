@@ -105,9 +105,7 @@ const Navbar = () => {
         return (
           <>
             <li>
-              <Link href={`/doctor/appointments/${doctorId}`}>
-                Appointments
-              </Link>
+              <Link href={`doctor/appointments/${doctorId}`}>Appointments</Link>
             </li>
             <li>
               <Link href={`/doctor/mark-available/${doctorId}`}>
@@ -116,6 +114,11 @@ const Navbar = () => {
             </li>
             <li>
               <Link href="/patients">My Patients</Link>
+            </li>
+            <li>
+              <Link href={`/doctor/article-form/${doctorId}`}>
+                Create Articles
+              </Link>
             </li>
           </>
         );
@@ -134,6 +137,9 @@ const Navbar = () => {
 
             <li>
               <Link href="/patient/find-doctor">Find Doctor</Link>
+            </li>
+            <li>
+              <Link href="/article">View Article</Link>
             </li>
           </>
         );
@@ -184,7 +190,10 @@ const Navbar = () => {
               Login
             </Link>
           ) : (
-            <div className="relative" ref={dropdownRef}>
+            <div
+              className="relative flex flex-col items-center"
+              ref={dropdownRef}
+            >
               <div className="flex items-center w-10 h-6 circle">
                 <Image
                   src={
@@ -201,7 +210,13 @@ const Navbar = () => {
                   onClick={toggleDropdown}
                 />
               </div>
-
+              <div className="text-sem">
+                {doctor && doctor.name
+                  ? doctor.name
+                  : patient && patient.name
+                  ? patient.name
+                  : ""}
+              </div>
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
                   <button

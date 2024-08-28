@@ -8,7 +8,6 @@ export interface DoctorStoreState {
 }
 
 export interface Doctor {
-
   _id: string;
   name: string;
   gender: string;
@@ -16,7 +15,7 @@ export interface Doctor {
   profilePic: string;
   password: string;
   speciality: string;
-
+  avgRating: number;
   qualification: string;
   registrationNumber: string;
   yearOfRegistration: string;
@@ -40,7 +39,6 @@ export interface Doctor {
   eveningEndTime: string;
   slotDuration: number;
   isVerified: boolean;
-
 }
 
 const https = axios.create({
@@ -79,6 +77,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
     eveningEndTime: "",
     slotDuration: 0,
     isVerified: false,
+    avgRating: 0,
   },
 
   fetchDoctors: async () => {
