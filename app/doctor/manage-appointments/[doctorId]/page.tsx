@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import useDoctorStore from "@/store/useDoctorStoree";
-import { Slot } from "@/store/useDoctorStoree"; // Adjust the path based on your directory structure
 
 interface ManageAppointmentsProps {
   params: {
@@ -140,7 +139,7 @@ const ManageAppointments = ({ params }: ManageAppointmentsProps) => {
                 </button>
                 <button
                   onClick={() => openCancelAllSlotsModal(date)}
-                  className="btn rounded-3xl btn-error rounded transition-colors"
+                  className="btn rounded-3xl btn-error  transition-colors"
                 >
                   Cancel All Slots
                 </button>

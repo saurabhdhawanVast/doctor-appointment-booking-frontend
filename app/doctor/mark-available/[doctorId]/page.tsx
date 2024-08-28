@@ -219,7 +219,7 @@ const Availability = ({ params }: { params: { doctorId: string } }) => {
         </button> */}
         <Link
           href={`/doctor/manage-appointments/${doctorId}`}
-          className="btn btn ml-6"
+          className="btn  ml-6"
         >
           Manage Previous Appointments
         </Link>

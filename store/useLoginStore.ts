@@ -130,7 +130,9 @@ const useLoginStore = create<LoginState>((set, get) => ({
         throw new Error("Access token not found in the response");
       }
 
-      sessionStorage.setItem("token", accessToken);
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("token", accessToken);
+      }
       set({ isLoggedIn: true, token: accessToken });
 
       // Fetch user profile after login
@@ -150,11 +152,13 @@ const useLoginStore = create<LoginState>((set, get) => ({
 
   setPatient: async (patient) => {
     set({ patient });
-    sessionStorage.setItem("patient", JSON.stringify(patient));
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("patient", JSON.stringify(patient));
+    }
   },
 
   fetchUser: async () => {
-    const token = sessionStorage.getItem("token");
+    const token = typeof window !== "undefined" ? sessionStorage.getItem("token") : null;
     if (!token) return;
 
     try {
@@ -165,7 +169,9 @@ const useLoginStore = create<LoginState>((set, get) => ({
       });
 
       set({ user: response.data });
-      sessionStorage.setItem("user", JSON.stringify(response.data));
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("user", JSON.stringify(response.data));
+      }
 
       if (response.data._doc.role === "doctor") {
         const doctorResponse = await axiosInstance.get(
@@ -173,7 +179,9 @@ const useLoginStore = create<LoginState>((set, get) => ({
         );
 
         set({ doctor: doctorResponse.data });
-        sessionStorage.setItem("doctor", JSON.stringify(doctorResponse.data));
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("doctor", JSON.stringify(doctorResponse.data));
+        }
       }
 
       if (response.data._doc.role === "patient") {
@@ -182,7 +190,9 @@ const useLoginStore = create<LoginState>((set, get) => ({
         );
 
         set({ patient: patientResponse.data });
-        sessionStorage.setItem("patient", JSON.stringify(patientResponse.data));
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("patient", JSON.stringify(patientResponse.data));
+        }
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -194,15 +204,19 @@ const useLoginStore = create<LoginState>((set, get) => ({
         console.error("Failed to fetch user:", error);
       }
       set({ token: null, user: null, doctor: null, patient: null });
-      sessionStorage.removeItem("token");
+      if (typeof window !== "undefined") {
+        sessionStorage.removeItem("token");
+      }
     }
   },
 
   logout: () => {
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("user");
-    sessionStorage.removeItem("doctor");
-    sessionStorage.removeItem("patient");
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("user");
+      sessionStorage.removeItem("doctor");
+      sessionStorage.removeItem("patient");
+    }
     set({
       isLoggedIn: false,
       token: null,
@@ -213,22 +227,27 @@ const useLoginStore = create<LoginState>((set, get) => ({
   },
 
   initializeState: () => {
-    const token = sessionStorage.getItem("token");
-    const user = sessionStorage.getItem("user");
-    const doctor = sessionStorage.getItem("doctor");
-    const patient = sessionStorage.getItem("patient");
+    if (typeof window !== "undefined") {
+      const token = sessionStorage.getItem("token");
+      const user = sessionStorage.getItem("user");
+      const doctor = sessionStorage.getItem("doctor");
+      const patient = sessionStorage.getItem("patient");
 
-    set({
-      isLoggedIn: !!token,
-      token,
-      user: user ? JSON.parse(user) : null,
-      doctor: doctor ? JSON.parse(doctor) : null,
-      patient: patient ? JSON.parse(patient) : null,
-    });
+      set({
+        isLoggedIn: !!token,
+        token,
+        user: user ? JSON.parse(user) : null,
+        doctor: doctor ? JSON.parse(doctor) : null,
+        patient: patient ? JSON.parse(patient) : null,
+      });
+    }
   },
 }));
 
 // Initialize state on store creation
-useLoginStore.getState().initializeState();
+if (typeof window !== "undefined") {
+  useLoginStore.getState().initializeState();
+}
+
 
 export default useLoginStore;
