@@ -14,10 +14,15 @@ const Navbar = () => {
   const patient = useLoginStore((state) => state.patient);
   const fetchUser = useLoginStore((state) => state.fetchUser);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
+  };
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
   };
 
   const handleClickOutside = (event: Event) => {
@@ -39,12 +44,13 @@ const Navbar = () => {
   const router = useRouter();
   const role = user?._doc?.role;
   const doctorId = doctor?._id;
+  const patientId = patient?._id;
 
   useEffect(() => {
     if (isLoggedIn) {
       fetchUser();
     }
-  }, [isLoggedIn, fetchUser]);
+  }, [isLoggedIn, fetchUser, role]);
 
   const handleLogout = async () => {
     try {
@@ -105,7 +111,9 @@ const Navbar = () => {
         return (
           <>
             <li>
-              <Link href={`doctor/appointments/${doctorId}`}>Appointments</Link>
+              <Link href={`/doctor/appointments/${doctorId}`}>
+                Appointments
+              </Link>
             </li>
             <li>
               <Link href={`/doctor/mark-available/${doctorId}`}>
@@ -132,9 +140,10 @@ const Navbar = () => {
               <Link href="/medical-records">Manage Medical Records</Link>
             </li>
             <li>
-              <Link href="/prescriptions">View Prescriptions</Link>
+              <Link href={`/patient/prescriptions?patientId=${patientId}`}>
+                View Prescriptions
+              </Link>
             </li>
-
             <li>
               <Link href="/patient/find-doctor">Find Doctor</Link>
             </li>
@@ -181,7 +190,7 @@ const Navbar = () => {
           </ul>
         </div>
 
-        <div className="navbar-end">
+        <div className="navbar-end hidden lg:flex">
           {!isLoggedIn ? (
             <Link
               href="/login"
@@ -236,7 +245,73 @@ const Navbar = () => {
             </div>
           )}
         </div>
+
+        {/* Hamburger Menu Button */}
+        <div className="navbar-end lg:hidden">
+          <button onClick={toggleMobileMenu} className="text-white text-2xl">
+            {/* Hamburger Menu Icon */}
+            <div className="relative w-8 h-8">
+              <span className="block w-6 h-0.5 bg-white mb-1"></span>
+              <span className="block w-6 h-0.5 bg-white mb-1"></span>
+              <span className="block w-6 h-0.5 bg-white"></span>
+            </div>
+          </button>
+        </div>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-0 z-40 m-16"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <div
+            className={`fixed top-0 right-0 w-64 h-full bg-white p-4 mt-16 z-50 transform ${
+              mobileMenuOpen ? "translate-x-0" : "translate-x-full"
+            } transition-transform duration-300 ease-in-out`}
+          >
+            <button
+              onClick={toggleMobileMenu}
+              className="absolute top-4 right-4 text-2xl"
+            >
+              &times;
+            </button>
+            <ul className="space-y-4 mt-8">
+              {renderNavbarLinks()}
+              {!isLoggedIn && (
+                <li>
+                  <Link
+                    href="/login"
+                    className="w-full text-gray-700 hover:bg-gray-100 px-4 py-2 text-left"
+                  >
+                    Login
+                  </Link>
+                </li>
+              )}
+              {isLoggedIn && (
+                <>
+                  <li>
+                    <button
+                      onClick={handleProfile}
+                      className="w-full text-gray-700 hover:bg-gray-100 px-4 py-2 text-left"
+                    >
+                      Manage Profile
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-gray-700 hover:bg-gray-100 px-4 py-2 text-left"
+                    >
+                      Logout
+                    </button>
+                  </li>
+                </>
+              )}
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

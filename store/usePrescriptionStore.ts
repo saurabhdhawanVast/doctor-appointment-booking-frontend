@@ -1,5 +1,3 @@
-//
-
 import axios from "axios";
 import create from "zustand";
 import { devtools } from "zustand/middleware";
@@ -18,31 +16,42 @@ interface Prescription {
   patientName: string;
   note: string;
   medicines: Medicine[];
-  appointmentDate: string; // Add appointmentDate field
-  slotId: string; // Add slotId field
+  appointmentDate: string;
+  slotId: string;
 }
+
 const https = axios.create({
-  baseURL: "http://localhost:3000", // Adjust if necessary
+  baseURL: "http://localhost:3000", // Adjust to your backend URL
 });
 
 interface PrescriptionState {
   prescriptions: Prescription[];
+  fetchPrescriptions: (patientId: string) => Promise<void>;
   savePrescription: (prescription: Prescription) => Promise<void>;
 }
 
 export const usePrescriptionStore = create<PrescriptionState>()(
   devtools((set) => ({
     prescriptions: [],
-    savePrescription: async (prescription) => {
-      console.log(`saving a prescription ${JSON.stringify(prescription)}`);
+    fetchPrescriptions: async (patientId) => {
       try {
-        // Assuming you have an API endpoint to save the prescription
+        console.log(`Fetching prescriptions for patientId ${patientId}`);
+        const response = await https.get(`/prescriptions/byPatient`, {
+          params: { patientId },
+        });
+        set({ prescriptions: response.data });
+        console.log("Fetched prescriptions successfully:", response.data);
+      } catch (error) {
+        console.error("Failed to fetch prescriptions:", error);
+      }
+    },
+    savePrescription: async (prescription) => {
+      console.log(`Saving prescription: ${JSON.stringify(prescription)}`);
+      try {
         const response = await https.post("/prescriptions/save", prescription);
-
         set((state) => ({
-          prescriptions: [...state.prescriptions, prescription],
+          prescriptions: [...state.prescriptions, response.data],
         }));
-
         console.log("Prescription saved successfully:", response.data);
       } catch (error) {
         console.error("Failed to save prescription:", error);

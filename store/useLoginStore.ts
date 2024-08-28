@@ -50,6 +50,7 @@ export interface Patient {
   state: string;
   pinCode: number;
 }
+
 export interface Doctor {
   _id: string;
   name: string;
@@ -98,6 +99,7 @@ interface LoginState {
   setPatient: (patient: Patient) => Promise<void>;
   logout: () => void;
   fetchUser: () => Promise<void>;
+  initializeState: () => void; // Added method to interface
 }
 
 const axiosInstance = axios.create({
@@ -123,20 +125,13 @@ const useLoginStore = create<LoginState>((set, get) => ({
         }
       );
 
-      console.log("Full response object:", response);
-
       const accessToken = response.data["access_token"];
       if (!accessToken) {
         throw new Error("Access token not found in the response");
       }
 
-      console.log("Access token:", accessToken);
-
       sessionStorage.setItem("token", accessToken);
-
-      // Update state
       set({ isLoggedIn: true, token: accessToken });
-      // toast.success("Login successful");
 
       // Fetch user profile after login
       await get().fetchUser();
@@ -155,12 +150,11 @@ const useLoginStore = create<LoginState>((set, get) => ({
 
   setPatient: async (patient) => {
     set({ patient });
+    sessionStorage.setItem("patient", JSON.stringify(patient));
   },
 
   fetchUser: async () => {
     const token = sessionStorage.getItem("token");
-    console.log(`Token from sessionStorage: ${token}`);
-
     if (!token) return;
 
     try {
@@ -170,41 +164,25 @@ const useLoginStore = create<LoginState>((set, get) => ({
         },
       });
 
-      console.log("User profile response:", response.data);
-
       set({ user: response.data });
+      sessionStorage.setItem("user", JSON.stringify(response.data));
 
-      // Fetch doctor details if the user is a doctor
       if (response.data._doc.role === "doctor") {
-        console.log(response.data._doc._id);
-        try {
-          //   const doctorResponse = await axios.get(
-          //     `http://localhost:3000/doctors/fetchDoctorByUserId/${response.data._doc._id}`
-          //   );
-          const doctorResponse = await axiosInstance.get(
-            `/doctors/fetchDoctorByUserId/${response.data._doc._id}`
-          );
+        const doctorResponse = await axiosInstance.get(
+          `/doctors/fetchDoctorByUserId/${response.data._doc._id}`
+        );
 
-          console.log("Doctor details response:", doctorResponse.data);
-
-          set({ doctor: doctorResponse.data });
-        } catch (error) {
-          console.error("Failed to fetch doctor details with userId:", error);
-        }
+        set({ doctor: doctorResponse.data });
+        sessionStorage.setItem("doctor", JSON.stringify(doctorResponse.data));
       }
+
       if (response.data._doc.role === "patient") {
-        console.log(response.data._doc._id);
-        try {
-          const patientResponse = await axiosInstance.get(
-            `/patients/fetchPatientByUserId/${response.data._doc._id}`
-          );
+        const patientResponse = await axiosInstance.get(
+          `/patients/fetchPatientByUserId/${response.data._doc._id}`
+        );
 
-          console.log("Patient details response:", patientResponse.data);
-
-          set({ patient: patientResponse.data });
-        } catch (error) {
-          console.error("Failed to fetch doctor details with userId:", error);
-        }
+        set({ patient: patientResponse.data });
+        sessionStorage.setItem("patient", JSON.stringify(patientResponse.data));
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -215,13 +193,16 @@ const useLoginStore = create<LoginState>((set, get) => ({
       } else {
         console.error("Failed to fetch user:", error);
       }
-      set({ token: null, user: null, doctor: null });
+      set({ token: null, user: null, doctor: null, patient: null });
       sessionStorage.removeItem("token");
     }
   },
 
   logout: () => {
     sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
+    sessionStorage.removeItem("doctor");
+    sessionStorage.removeItem("patient");
     set({
       isLoggedIn: false,
       token: null,
@@ -230,6 +211,24 @@ const useLoginStore = create<LoginState>((set, get) => ({
       patient: null,
     });
   },
+
+  initializeState: () => {
+    const token = sessionStorage.getItem("token");
+    const user = sessionStorage.getItem("user");
+    const doctor = sessionStorage.getItem("doctor");
+    const patient = sessionStorage.getItem("patient");
+
+    set({
+      isLoggedIn: !!token,
+      token,
+      user: user ? JSON.parse(user) : null,
+      doctor: doctor ? JSON.parse(doctor) : null,
+      patient: patient ? JSON.parse(patient) : null,
+    });
+  },
 }));
+
+// Initialize state on store creation
+useLoginStore.getState().initializeState();
 
 export default useLoginStore;
