@@ -92,6 +92,7 @@ export default function DoctorProfile() {
               className="w-full h-auto rounded-lg shadow-md cursor-pointer"
               onClick={() => setIsModalOpen(true)} // Open modal on click
             />
+
             <button
               onClick={() => setIsModalOpen(true)}
               className="btn btn-secondary mt-4"

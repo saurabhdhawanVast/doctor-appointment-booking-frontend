@@ -56,7 +56,7 @@ const LoginForm = () => {
       transition={{ duration: 0.6 }}
     >
       <div className="relative rounded-3xl bg-gradient-to-r from-teal-400 via-teal-500 to-teal-700 flex flex-wrap  justify-center items-center ml-8 mr-8 overflow-hidden">
-        <div className="absolute top-0 transform translate-x-[220px] translate-y-[0px] w-[300px] h-[400px]  z-50  hidden md:block transition-transform duration-300 ">
+        <div className="absolute top-0 transform translate-x-[220px] translate-y-[0px] w-[300px] h-[400px]  z-20  hidden md:block transition-transform duration-300 ">
           <Image
             src="/images/portrait-3d-male-doctor.png"
             alt="3D Male Doctor"
