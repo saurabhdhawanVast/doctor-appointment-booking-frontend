@@ -181,7 +181,7 @@ export default function Home() {
                       </Link>
                     </div>
                     <div className="flex mt-2">
-                      {renderStars(doctor.acgRating)}
+                      {renderStars(doctor.avgRating)}
                       {/* <span className="ml-2 text-gray-600">
                         {doctor.ratings.toFixed(1)} / 5
                       </span> */}

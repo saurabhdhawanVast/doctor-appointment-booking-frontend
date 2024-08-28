@@ -1,5 +1,76 @@
-import create from "zustand";
+import { create } from "zustand";
 import axios from "axios";
+
+interface Appointment {
+  _id: string;
+  doctor: Doctor;
+  patient: Patient;
+  appointmentDate: Date;
+  slot: Slot;
+  status: string;
+}
+
+interface Slot {
+  _id: string;
+  time: string;
+  available: string;
+}
+
+interface Doctor {
+  _id: string;
+  user: string;
+  speciality: string;
+  qualification: string;
+  contactNumber: string;
+  registrationNumber: string;
+  yearOfRegistration: string;
+  stateMedicalCouncil: string;
+  name: string;
+  bio: string;
+  document: string;
+  isVerified: boolean;
+  isEmailVerified: boolean;
+  gender: string;
+  profilePic: string;
+  clinicDetails: ClinicDetails;
+  location: Location;
+}
+
+interface ClinicDetails {
+  clinicName: string;
+  clinicAddress: string;
+  city: string;
+  state: string;
+  morningStartTime: string;
+  morningEndTime: string;
+  eveningStartTime: string;
+  eveningEndTime: string;
+  slotDuration: number;
+}
+
+interface Location {
+  type: string;
+  coordinates: [number, number];
+}
+
+interface Patient {
+  _id: string;
+  user: string;
+  contactNumber: string;
+  address: Address;
+  bloodGroup: string;
+  gender: string;
+  profilePic: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Address {
+  address: string;
+  city: string;
+  pinCode: number;
+  state: string;
+}
 
 // Define types within the same file
 export interface PatientDetails {
@@ -42,12 +113,14 @@ export interface Prescription {
 
 export interface AppointmentStore {
   appointments: DateWithSlots[];
+  upcomingAppointments: Appointment[]; // Add upcoming appointments to the store for displaying on the dashboard
   filteredAppointments: DateWithSlots[];
   doctorDetails: DoctorDetails | null;
   fetchAppointments: (doctorId: string, initialDate?: Date) => Promise<void>;
   fetchDoctorDetails: (doctorId: string) => Promise<void>;
   filterAppointmentsByDate: (selectedDate: Date) => void;
   savePrescription: (prescription: Prescription) => Promise<void>;
+  getAppointments: (query?: Record<string, any>) => Promise<void>;
 }
 
 const https = axios.create({
@@ -56,8 +129,23 @@ const https = axios.create({
 
 const useAppointmentStore = create<AppointmentStore>((set) => ({
   appointments: [],
+  upcomingAppointments: [],
   filteredAppointments: [],
   doctorDetails: null,
+  getAppointments: async (query = {}) => {
+    try {
+      const queryString = new URLSearchParams({
+        filter: JSON.stringify(query),
+      }).toString();
+      const response = await axios.get(
+        `http://localhost:3000/appointments?${queryString}`
+      );
+      console.log(response.data);
+      set({ upcomingAppointments: response.data });
+    } catch (error) {
+      console.error("Error fetching articles:", error);
+    }
+  },
   fetchAppointments: async (doctorId: string, initialDate?: Date) => {
     try {
       const response = await https.get(

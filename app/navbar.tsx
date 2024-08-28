@@ -5,8 +5,6 @@ import useLoginStore from "@/store/useLoginStore";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import imageDemo from "../public/images/avatar-icon.png";
-import { Ellipsis } from "react-css-spinners"; // Import the Ellipsis spinner
-import Loader from "./components/Loader";
 
 const Navbar = () => {
   const isLoggedIn = useLoginStore((state) => state.isLoggedIn);
@@ -17,7 +15,6 @@ const Navbar = () => {
   const fetchUser = useLoginStore((state) => state.fetchUser);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [loading, setLoading] = useState(true); // Loading state
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const toggleDropdown = () => {
@@ -55,7 +52,6 @@ const Navbar = () => {
           await fetchUser();
         }
       } finally {
-        setLoading(false); // Set loading to false once data is fetched
       }
     };
     loadData();
@@ -133,13 +129,18 @@ const Navbar = () => {
             <li>
               <Link href="/patients">My Patients</Link>
             </li>
+            <li>
+              <Link href={`/doctor/article-form/${doctorId}`}>
+                Create Article
+              </Link>
+            </li>
           </>
         );
       case "patient":
         return (
           <>
             <li>
-              <Link href={`/patient/appointments`}>View Appointments</Link>
+              <Link href={`/patient/myAppointments`}>View Appointments</Link>
             </li>
             <li>
               <Link href="/medical-records">Manage Medical Records</Link>
@@ -149,6 +150,9 @@ const Navbar = () => {
             </li>
             <li>
               <Link href="/patient/find-doctor">Find Doctor</Link>
+            </li>
+            <li>
+              <Link href="/article">View Articles</Link>
             </li>
           </>
         );
@@ -177,85 +181,78 @@ const Navbar = () => {
 
   return (
     <div>
-      {loading ? ( // Show loader when loading is true
-        <div className="bg-gradient-to-r flex justify-center items-center from-teal-400 via-teal-500 to-teal-600 fixed top-0 left-0 right-0 z-50 text-white shadow-lg h-16">
-          <Ellipsis color="#ffffff" />
-          {/* <Loader /> */}
+      <div className="navbar bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 fixed top-0 left-0 right-0 z-50 text-white shadow-lg h-16">
+        <div className="navbar-start">
+          <Link href="/" className="btn btn-ghost text-2xl font-bold">
+            DABS
+          </Link>
         </div>
-      ) : (
-        <div className="navbar bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 fixed top-0 left-0 right-0 z-50 text-white shadow-lg h-16">
-          <div className="navbar-start">
-            <Link href="/" className="btn btn-ghost text-2xl font-bold">
-              DABS
+
+        <div className="navbar-center hidden lg:flex">
+          <ul className="menu menu-horizontal px-1 space-x-4">
+            {renderNavbarLinks()}
+          </ul>
+        </div>
+
+        <div className="navbar-end hidden lg:flex">
+          {!isLoggedIn ? (
+            <Link
+              href="/login"
+              className="btn bg-teal-500 hover:bg-teal-600 text-white border-none"
+            >
+              Login
             </Link>
-          </div>
+          ) : (
+            <div className="relative" ref={dropdownRef}>
+              <div className="flex items-center w-10 h-6 circle">
+                <Image
+                  src={
+                    doctor && doctor.profilePic
+                      ? doctor.profilePic
+                      : patient && patient.profilePic
+                      ? patient.profilePic
+                      : imageDemo
+                  }
+                  alt="Avatar"
+                  width={100}
+                  height={100}
+                  className="rounded-full border-2 border-white w-8 h-8"
+                  onClick={toggleDropdown}
+                />
+              </div>
 
-          <div className="navbar-center hidden lg:flex">
-            <ul className="menu menu-horizontal px-1 space-x-4">
-              {renderNavbarLinks()}
-            </ul>
-          </div>
-
-          <div className="navbar-end hidden lg:flex">
-            {!isLoggedIn ? (
-              <Link
-                href="/login"
-                className="btn bg-teal-500 hover:bg-teal-600 text-white border-none"
-              >
-                Login
-              </Link>
-            ) : (
-              <div className="relative" ref={dropdownRef}>
-                <div className="flex items-center w-10 h-6 circle">
-                  <Image
-                    src={
-                      doctor && doctor.profilePic
-                        ? doctor.profilePic
-                        : patient && patient.profilePic
-                        ? patient.profilePic
-                        : imageDemo
-                    }
-                    alt="Avatar"
-                    width={100}
-                    height={100}
-                    className="rounded-full border-2 border-white w-8 h-8"
-                    onClick={toggleDropdown}
-                  />
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                  <button
+                    onClick={handleProfile}
+                    className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                  >
+                    Manage Profile
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                  >
+                    Logout
+                  </button>
                 </div>
-
-                {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                    <button
-                      onClick={handleProfile}
-                      className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
-                    >
-                      Manage Profile
-                    </button>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Hamburger Menu Button */}
-          <div className="navbar-end lg:hidden ">
-            <button onClick={toggleMobileMenu} className="text-white text-2xl ">
-              {/* Hamburger Menu Icon */}
-              <div className="relative w-8 h-8">
-                <span className="block w-6 h-0.5 bg-white mb-1"></span>
-                <span className="block w-6 h-0.5 bg-white mb-1"></span>
-                <span className="block w-6 h-0.5 bg-white"></span>
-              </div>
-            </button>
-          </div>
+              )}
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Hamburger Menu Button */}
+        <div className="navbar-end lg:hidden ">
+          <button onClick={toggleMobileMenu} className="text-white text-2xl ">
+            {/* Hamburger Menu Icon */}
+            <div className="relative w-8 h-8">
+              <span className="block w-6 h-0.5 bg-white mb-1"></span>
+              <span className="block w-6 h-0.5 bg-white mb-1"></span>
+              <span className="block w-6 h-0.5 bg-white"></span>
+            </div>
+          </button>
+        </div>
+      </div>
 
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (

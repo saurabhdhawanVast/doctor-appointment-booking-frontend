@@ -7,7 +7,7 @@ interface Article {
   title: string;
   content: string;
   category: string;
-  image:string;
+  image: string;
   subCategory: string;
   createdAt: Date;
   doctorId?: string;
@@ -18,13 +18,15 @@ interface Article {
 
 interface ArticleState {
   articles: Article[];
+  article: Article | null;
   fetchArticles: (query?: Record<string, any>) => Promise<void>;
+  getArticle: (id?: string) => Promise<void>;
   createArticle: (article: Omit<Article, "_id" | "createdAt">) => Promise<void>;
 }
 
 export const useArticleStore = create<ArticleState>((set) => ({
   articles: [],
-
+  article: null,
   fetchArticles: async (query = {}) => {
     try {
       const queryString = new URLSearchParams({
@@ -33,8 +35,17 @@ export const useArticleStore = create<ArticleState>((set) => ({
       const response = await axios.get(
         `http://localhost:3000/articles?${queryString}`
       );
-      console.log(response.data);
       set({ articles: response.data });
+    } catch (error) {
+      console.error("Error fetching articles:", error);
+    }
+  },
+
+  getArticle: async (id) => {
+    try {
+      const response = await axios.get(`http://localhost:3000/articles/${id}`);
+      console.log(response.data);
+      set({ article: response.data });
     } catch (error) {
       console.error("Error fetching articles:", error);
     }
