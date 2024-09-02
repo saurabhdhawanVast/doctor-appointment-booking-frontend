@@ -146,7 +146,7 @@ const Navbar = () => {
               <Link href="/medical-records">Manage Medical Records</Link>
             </li>
             <li>
-              <Link href="/prescriptions">View Prescriptions</Link>
+              <Link href="patient/prescriptions">View Prescriptions</Link>
             </li>
             <li>
               <Link href="/patient/find-doctor">Find Doctor</Link>
