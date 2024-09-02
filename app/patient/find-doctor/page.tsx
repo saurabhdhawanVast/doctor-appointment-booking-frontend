@@ -125,6 +125,7 @@ const SearchDoctorsPage = () => {
             id: state.id,
           }))
         );
+        console.log(states);
       } catch (error) {
         console.error("Failed to fetch states:", error);
       }
@@ -167,9 +168,37 @@ const SearchDoctorsPage = () => {
     }
   }, [selectedState]);
 
-  // useEffect(() => {
-  //   setDoctors(storeDoctors || []);
-  // }, [doctors, storeDoctors, states, cities]);
+  useEffect(() => {
+    const fetchAndSetData = async () => {
+      if (isLoggedIn && patient) {
+        // Setting default state and city if patient data is available
+        const patientState = patient?.address?.state;
+        const patientCity = patient?.address?.city;
+
+        if (patientState) {
+          const selectedStateObj = states.find(
+            (state) => state.name === patientState
+          );
+          if (selectedStateObj) {
+            setSelectedState(selectedStateObj.iso2);
+            setValue("state", selectedStateObj.name); // Set default state
+          }
+        }
+
+        if (patientCity) {
+          setValue("city", patientCity); // Set default city
+        }
+
+        // Fetch doctors based on patient's state and city
+        const fetchedDoctors = await searchDoctors(patientState, patientCity);
+        setDoctors(fetchedDoctors!);
+        // You can then use fetchedDoctors as needed, e.g., setting them in state
+      }
+    };
+
+    fetchAndSetData();
+  }, [isLoggedIn, patient, states, setValue]);
+
   useEffect(() => {
     if (isLoggedIn) {
       fetchUser();
@@ -233,7 +262,7 @@ const SearchDoctorsPage = () => {
       <hr className="border-gray-300 mb-2" />
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex ">
-          <div className="sm:col-span-2 w-1/3 mr-3">
+          {/* <div className="sm:col-span-2 w-1/3 mr-3">
             <label
               htmlFor="state"
               className="block text-sm font-medium leading-6 text-gray-900"
@@ -254,7 +283,7 @@ const SearchDoctorsPage = () => {
                     }}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                   >
-                    <option value="">Select a state</option>
+                    <option value="">{"Select a state"}</option>
                     {states.map((state) => (
                       <option key={state.name} value={state.iso2}>
                         {state.name}
@@ -264,7 +293,50 @@ const SearchDoctorsPage = () => {
                 )}
               />
             </div>
+          </div> */}
+
+          <div className="sm:col-span-2 w-1/3 mr-3">
+            <label
+              htmlFor="state"
+              className="block text-sm font-medium leading-6 text-gray-900"
+            >
+              State
+            </label>
+            <div className="mt-2">
+              <Controller
+                name="state"
+                control={control}
+                render={({ field }) => (
+                  <select
+                    {...field}
+                    value={
+                      selectedState
+                        ? states.find((state) => state.iso2 === selectedState)
+                            ?.name
+                        : ""
+                    }
+                    onChange={(e) => {
+                      const selectedStateObj = states.find(
+                        (state) => state.name === e.target.value
+                      );
+                      setSelectedState(selectedStateObj?.iso2 || "");
+                      field.onChange(e); // Call field.onChange with the event
+                    }}
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                  >
+                    <option value="">Select a state</option>
+                    {states.map((state) => (
+                      <option key={state.name} value={state.name}>
+                        {state.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              />
+            </div>
           </div>
+
+          {/* -------------------------------------------------------------Updated Code--------------------------- */}
 
           <div className="sm:col-span-2 w-1/3 mr-3">
             <label

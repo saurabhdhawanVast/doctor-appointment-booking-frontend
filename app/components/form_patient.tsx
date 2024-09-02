@@ -598,14 +598,28 @@ const Form_Patient = () => {
                   <div className="mt-2">
                     <select
                       id="state"
-                      {...register("state")}
-                      value={selectedState}
-                      onChange={(e) => setSelectedState(e.target.value)}
+                      {...register("state", {
+                        onChange: (e) => {
+                          setSelectedState(e.target.value);
+                        },
+                      })}
+                      value={
+                        selectedState
+                          ? states.find((state) => state.iso2 === selectedState)
+                              ?.name
+                          : ""
+                      }
+                      onChange={(e) => {
+                        const selectedStateObj = states.find(
+                          (state) => state.name === e.target.value
+                        );
+                        setSelectedState(selectedStateObj?.iso2 || "");
+                      }}
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                     >
                       <option value="">Select a state</option>
                       {states.map((state) => (
-                        <option key={state.name} value={state.iso2}>
+                        <option key={state.name} value={state.name}>
                           {state.name}
                         </option>
                       ))}
@@ -617,7 +631,6 @@ const Form_Patient = () => {
                     )}
                   </div>
                 </div>
-
                 {/* City */}
                 <div className="sm:col-span-2 sm:col-start-1">
                   <label

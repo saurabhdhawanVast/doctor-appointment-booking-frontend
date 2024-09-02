@@ -91,6 +91,7 @@ export interface Doctor {
 
 interface LoginState {
   isLoggedIn: boolean;
+
   token: string | null;
   user: User | null;
   doctor: Doctor | null;
@@ -108,6 +109,7 @@ const axiosInstance = axios.create({
 
 const useLoginStore = create<LoginState>((set, get) => ({
   isLoggedIn: false,
+
   token: null,
   user: null,
   doctor: null,
@@ -134,6 +136,7 @@ const useLoginStore = create<LoginState>((set, get) => ({
         sessionStorage.setItem("token", accessToken);
       }
       set({ isLoggedIn: true, token: accessToken });
+
 
       // Fetch user profile after login
       await get().fetchUser();

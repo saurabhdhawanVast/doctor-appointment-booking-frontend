@@ -213,9 +213,9 @@ const Doctor = () => {
     );
 
     return (
-      <motion.div key={appointment.date} className="p-2 mb-4">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">{formattedDate}</h2>
+      <motion.div key={appointment.date} className="p-2 mb-2 ">
+        <div className="flex mb-2 ">
+          <h2 className="font-semibold ">{formattedDate}</h2>
         </div>
         {renderSlots(appointment.appointmentsBooked)}
       </motion.div>
@@ -324,8 +324,8 @@ const Doctor = () => {
           <Loading />
         </div>
       ) : (
-        <main className="flex-1 p-8 mt-16 overflow-y-auto">
-          <div className="flex items-center justify-between mb-4">
+        <main className="flex-1 p-4 mt-16 overflow-y-auto">
+          <div className="flex items-center justify-between bg-gray-200 p-2 rounded-lg">
             <h1 className="text-2xl font-bold">Appointments</h1>
             <button
               className="md:hidden text-2xl"
@@ -435,7 +435,7 @@ const Doctor = () => {
             </>
           ) : (
             !loading && (
-              <p className="text-gray-500">
+              <p className="text-gray-500 p-2">
                 No appointments for the selected date.
               </p>
             )
