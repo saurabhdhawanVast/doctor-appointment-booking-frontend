@@ -204,7 +204,7 @@ const CreateArticleForm: React.FC = () => {
               className="shadow-sm border rounded-lg w-full py-3 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div className="mb-6">
+          <div className="mb-6 ">
             <label className="block text-gray-700 text-sm font-semibold mb-2">
               Content:
             </label>
