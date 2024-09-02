@@ -126,6 +126,8 @@ const AppointmentsPage = () => {
               <button
                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300"
                 onClick={() => {
+                  console.log("RselectedDate: ", selectedDate?.toISOString());
+                  console.log("RappointmentDate: ", appointmentDate);
                   if (selectedDate) {
                     handleAddPrescription(
                       slot.patient,
