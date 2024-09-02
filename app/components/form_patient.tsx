@@ -587,65 +587,78 @@
 
                   {/* State */}
 
-                  {/* State */}
-                  <div className="sm:col-span-2">
-                    <label
-                      htmlFor="state"
-                      className="block text-sm font-medium leading-6 text-gray-900"
+                {/* State */}
+                <div className="sm:col-span-2">
+                  <label
+                    htmlFor="state"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
+                    State
+                  </label>
+                  <div className="mt-2">
+                    <select
+                      id="state"
+                      {...register("state", {
+                        onChange: (e) => {
+                          setSelectedState(e.target.value);
+                        },
+                      })}
+                      value={
+                        selectedState
+                          ? states.find((state) => state.iso2 === selectedState)
+                              ?.name
+                          : ""
+                      }
+                      onChange={(e) => {
+                        const selectedStateObj = states.find(
+                          (state) => state.name === e.target.value
+                        );
+                        setSelectedState(selectedStateObj?.iso2 || "");
+                      }}
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                     >
-                      State
-                    </label>
-                    <div className="mt-2">
-                      <select
-                        id="state"
-                        {...register("state")}
-                        value={selectedState}
-                        onChange={(e) => setSelectedState(e.target.value)}
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                      >
-                        <option value="">Select a state</option>
-                        {states.map((state) => (
-                          <option key={state.name} value={state.iso2}>
-                            {state.name}
-                          </option>
-                        ))}
-                      </select>
-                      {errors.state?.message && (
-                        <p className="mt-2 text-sm text-red-400">
-                          {errors.state.message}
-                        </p>
-                      )}
-                    </div>
+                      <option value="">Select a state</option>
+                      {states.map((state) => (
+                        <option key={state.name} value={state.name}>
+                          {state.name}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.state?.message && (
+                      <p className="mt-2 text-sm text-red-400">
+                        {errors.state.message}
+                      </p>
+                    )}
                   </div>
-
-                  {/* City */}
-                  <div className="sm:col-span-2 sm:col-start-1">
-                    <label
-                      htmlFor="city"
-                      className="block text-sm font-medium leading-6 text-gray-900"
+                </div>
+                {/* City */}
+                <div className="sm:col-span-2 sm:col-start-1">
+                  <label
+                    htmlFor="city"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
+                    City
+                  </label>
+                  <div className="mt-2">
+                    <select
+                      id="city"
+                      {...register("city")}
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                     >
-                      City
-                    </label>
-                    <div className="mt-2">
-                      <select
-                        id="city"
-                        {...register("city")}
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                      >
-                        <option value="">Select a city</option>
-                        {cities.map((city) => (
-                          <option key={city} value={city}>
-                            {city}
-                          </option>
-                        ))}
-                      </select>
-                      {errors.city?.message && (
-                        <p className="mt-2 text-sm text-red-400">
-                          {errors.city.message}
-                        </p>
-                      )}
-                    </div>
+                      <option value="">Select a city</option>
+                      {cities.map((city) => (
+                        <option key={city} value={city}>
+                          {city}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.city?.message && (
+                      <p className="mt-2 text-sm text-red-400">
+                        {errors.city.message}
+                      </p>
+                    )}
                   </div>
+                </div>
 
                   {/* Zip */}
 

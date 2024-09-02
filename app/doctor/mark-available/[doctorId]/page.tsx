@@ -1,255 +1,383 @@
-"use client"; // Mark this file as a Client Component
-
-import { useState, useEffect } from "react";
+"use client";
+import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
+import useManageScheduleStore from "@/store/useManageScheduleStore";
 import "react-datepicker/dist/react-datepicker.css";
-import { motion, AnimatePresence } from "framer-motion";
-import useDoctorStore from "@/store/useDoctorStoree";
-import { format, toZonedTime } from "date-fns-tz";
-import router from "next/router";
-import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
+import { format } from "date-fns-tz";
+import { toast } from "react-toastify";
 
-const Availability = ({ params }: { params: { doctorId: string } }) => {
+const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
+  params,
+}) => {
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
-  const [timePerSlot, setTimePerSlot] = useState<number>(30);
-  const [movingDate, setMovingDate] = useState<Date | null>(null);
-  const [showPopup, setShowPopup] = useState<boolean>(false);
-
-  const { doctorId } = params; // Extract doctorId from params
+  const [slots, setSlots] = useState<any[]>([]);
+  const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
+  const [slotToCancel, setSlotToCancel] = useState<string | null>(null);
+  const [showCancelAllConfirmation, setShowCancelAllConfirmation] =
+    useState<boolean>(false);
+  const [showMarkAvailable, setShowMarkAvailable] = useState<boolean>(false);
+  const [timePerSlot, setTimePerSlot] = useState<number>(15);
   const today = new Date(); // Get the current date
   const timeZone = "Asia/Kolkata"; // IST timezone
-
-  const { availableDates, fetchAvailableDates } = useDoctorStore((state) => ({
+  const {
+    availableDates,
+    fetchAvailableDates,
+    toggleAvailableDate,
+    cancelSlot,
+    cancelAllSlots,
+    addAvailability,
+    loading,
+    error,
+  } = useManageScheduleStore((state) => ({
     availableDates: state.availableDates,
     fetchAvailableDates: state.fetchAvailableDates,
+    toggleAvailableDate: state.toggleAvailableDate,
+    cancelSlot: state.cancelSlot,
+    cancelAllSlots: state.cancelAllSlots,
+    addAvailability: state.addAvailability,
+    loading: state.loading,
+    error: state.error,
   }));
 
   useEffect(() => {
-    // Fetch available dates when component mounts or doctorId changes
-    if (doctorId) {
-      fetchAvailableDates(doctorId);
+    if (params.doctorId) {
+      fetchAvailableDates(params.doctorId);
     }
-  }, [doctorId, fetchAvailableDates]);
+  }, [params.doctorId, fetchAvailableDates]);
 
   useEffect(() => {
-    // Reset movingDate when animation is done
-    if (movingDate) {
-      setTimeout(() => setMovingDate(null), 300); // Match duration of animation
+    if (selectedDates.length > 0) {
+      const latestDate = selectedDates[selectedDates.length - 1];
+      const formattedDate = formatDateInTimeZone(latestDate, timeZone);
+      const dateObj = availableDates.find(
+        (avail) =>
+          formatDateInTimeZone(new Date(avail.date), timeZone) === formattedDate
+      );
+      const allSlots = dateObj?.slots || [];
+      setSlots(allSlots);
+    } else {
+      setSlots([]);
     }
-  }, [movingDate]);
+  }, [selectedDates, availableDates]);
+
+  const formatDateInTimeZone = (date: Date, timeZone: string) => {
+    return format(date, "yyyy-MM-dd", { timeZone });
+  };
 
   const handleDateChange = (date: Date | null) => {
     if (date) {
-      // Create a new Date object to avoid mutating the original
-      const selectedDate = new Date(date);
-      selectedDate.setHours(0, 0, 0, 0); // Normalize to midnight
-      console.log(`Selected Date Normalized: ${selectedDate}`);
+      const formattedDate = formatDateInTimeZone(date, timeZone);
+      const isDateAvailable = availableDates.some(
+        (avail) =>
+          formatDateInTimeZone(new Date(avail.date), timeZone) === formattedDate
+      );
 
-      setSelectedDates((prevDates) => {
-        const isSelected = prevDates.some(
-          (d) => d.toDateString() === selectedDate.toDateString()
-        );
-        console.log(`Dates Selected: ${selectedDates}`);
-
-        if (isSelected) {
-          return prevDates.filter(
-            (d) => d.toDateString() !== selectedDate.toDateString()
+      if (isDateAvailable) {
+        // Clear previously selected dates if selecting an available date
+        setSelectedDates([date]);
+        setShowMarkAvailable(false);
+      } else {
+        setSelectedDates((prevDates) => {
+          const alreadySelected = prevDates.some(
+            (d) => formatDateInTimeZone(d, timeZone) === formattedDate
           );
-        } else {
-          setMovingDate(selectedDate);
-          console.log([...prevDates, selectedDate]);
-          return [...prevDates, selectedDate];
-        }
-      });
+
+          // Check if any previously selected date is an available date
+          const updatedDates = prevDates.filter(
+            (d) =>
+              formatDateInTimeZone(d, timeZone) !== formattedDate &&
+              !availableDates.some(
+                (avail) =>
+                  formatDateInTimeZone(new Date(avail.date), timeZone) ===
+                  formatDateInTimeZone(d, timeZone)
+              )
+          );
+
+          if (!alreadySelected) {
+            return [...updatedDates, date];
+          }
+          return updatedDates;
+        });
+        setShowMarkAvailable(true);
+      }
+    }
+  };
+
+  const handleCancelSlot = (slotId: string) => {
+    setSlotToCancel(slotId);
+    setShowConfirmation(true);
+  };
+
+  const confirmCancelSlot = async () => {
+    if (slotToCancel && selectedDates.length > 0) {
+      try {
+        // Perform the API call to cancel the slot
+        await cancelSlot(params.doctorId, selectedDates[0], slotToCancel);
+
+        // If successful, update the local state to reflect the canceled slot
+        setSlots((prevSlots) =>
+          prevSlots.map((slot) =>
+            slot.id === slotToCancel ? { ...slot, status: "canceled" } : slot
+          )
+        );
+      } catch (error) {
+        console.error("Failed to cancel slot:", error);
+      } finally {
+        // Close the confirmation dialog
+        setShowConfirmation(false);
+        setSlotToCancel(null);
+      }
+    }
+  };
+
+  const handleCancelAllSlots = () => {
+    if (selectedDates.length > 0) {
+      setShowCancelAllConfirmation(true);
+    }
+  };
+
+  const confirmCancelAllSlots = async () => {
+    try {
+      if (selectedDates.length > 0) {
+        await cancelAllSlots(params.doctorId, selectedDates[0]);
+        setSlots([]);
+      }
+    } catch (error) {
+      console.error("Failed to cancel all slots:", error);
+    } finally {
+      setShowCancelAllConfirmation(false);
+    }
+  };
+
+  const handleMarkAvailable = async () => {
+    if (selectedDates.length > 0) {
+      try {
+        const formattedDates = selectedDates.map((date) =>
+          formatDateInTimeZone(date, timeZone)
+        );
+
+        await addAvailability(params.doctorId, formattedDates, timePerSlot);
+        setSelectedDates([]); // Clear selection after marking
+        toast.success("Dates marked as available successfully");
+        setShowMarkAvailable(false); // Hide the mark available section
+      } catch (error) {
+        console.error("Failed to mark dates as available:", error);
+      }
+    } else {
+      toast.error("No dates selected.");
     }
   };
 
   const handleTimeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setTimePerSlot(Number(e.target.value)); // Convert to number
+    setTimePerSlot(Number(e.target.value));
   };
 
-  const handleSubmit = async () => {
-    if (!doctorId) {
-      console.error("Doctor ID is not available");
-      return;
-    }
-
-    // Convert dates to ISO strings
-    console.log(selectedDates);
-    const formattedDates = selectedDates.map((date) => {
-      // Convert the date to the specified time zone
-      const zonedDate = toZonedTime(date, timeZone);
-      // Format the date as 'YYYY-MM-DD' string
-      return format(zonedDate, "yyyy-MM-dd", { timeZone });
-    });
-
-    console.log("Selected Dates:", selectedDates);
-    console.log("Dates being sent to backend:", formattedDates);
-
-    console.log("Dates being sent to backend:", formattedDates);
-
-    const availabilityData = {
-      doctorId: doctorId,
-      dates: formattedDates,
-      timePerSlot,
-    };
-
-    try {
-      const response = await fetch(
-        `http://localhost:3000/doctors/addAvailability`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(availabilityData),
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Success:", data);
-        setShowPopup(true); // Show the popup upon success
-      } else {
-        const error = await response.text(); // Use text() to handle non-JSON responses
-        console.error("Error:", error);
-      }
-    } catch (error) {
-      console.error("Fetch error:", error);
-    }
-  };
-
-  const isDateAvailable = (date: Date) => {
-    return availableDates.some(
-      ({ date: availableDate }) =>
-        availableDate.toDateString() === date.toDateString()
+  const handleDeselectDate = (date: Date) => {
+    setSelectedDates((prevDates) =>
+      prevDates.filter(
+        (d) =>
+          formatDateInTimeZone(d, timeZone) !==
+          formatDateInTimeZone(date, timeZone)
+      )
     );
   };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
+  const isDateAvailable = (date: Date) => {
+    const formattedDate = formatDateInTimeZone(date, timeZone);
+    return availableDates.some(
+      (avail) =>
+        formatDateInTimeZone(new Date(avail.date), timeZone) === formattedDate
+    );
+  };
+
+  const renderSelectedDates = () => (
+    <div className="bg-gray-100 p-4 rounded-lg shadow-lg">
+      <h3 className="text-lg font-medium mb-2">Selected Dates</h3>
+      <ul>
+        {selectedDates.map((date, index) => (
+          <li
+            key={index}
+            className="flex justify-between items-center p-2 border-b last:border-b-0"
+          >
+            <span>{formatDateInTimeZone(date, timeZone)}</span>
+            <button
+              className="text-red-500"
+              onClick={() => handleDeselectDate(date)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18l12-12M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+
+  const renderSlotManagement = () => (
+    <div className="w-full p-4">
+      {selectedDates.length === 0 ? (
+        <p>No dates selected.</p>
+      ) : (
+        <>
+          <h2 className="text-xl font-semibold mb-4">
+            Manage Slots for Date{" "}
+            {formatDateInTimeZone(selectedDates[0], timeZone)}
+          </h2>
+          <button
+            className="bg-red-500 text-white px-4 py-2 mb-4 rounded"
+            onClick={handleCancelAllSlots}
+          >
+            Cancel All Slots
+          </button>
+          <div>
+            {slots.map((slot) => (
+              <div
+                key={slot.id}
+                className="border p-4 my-2 flex justify-between items-center hover:bg-gray-100 transition duration-200"
+              >
+                <div>
+                  <p className="font-medium">Time: {slot.time}</p>
+                  <p>Status: {slot.status}</p>
+                </div>
+                {slot.status === "available" && (
+                  <button
+                    className="bg-red-500 text-white px-4 py-2 rounded"
+                    onClick={() => handleCancelSlot(slot.id)}
+                  >
+                    Cancel Slot
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+
   return (
-    <div className="flex flex-col md:flex-row justify-between mt-20 gap-4">
-      <div className="flex-1 p-4 border border-gray-300 rounded-lg shadow-lg">
-        <h2 className="text-xl font-semibold mb-4">Set Your Availability</h2>
+    <div className="flex flex-col lg:flex-row mt-16">
+      <div className="w-full lg:w-1/4 border-r p-4">
+        <h2 className="text-xl font-semibold mb-4">Calendar</h2>
         <DatePicker
-          selected={null}
+          selected={null} // Keep this null as we handle multiple dates
           onChange={handleDateChange}
           inline
-          shouldCloseOnSelect={false}
           minDate={today} // Disable past dates
-          filterDate={(date) => !isDateAvailable(date)} // Disable dates already available
-          renderDayContents={(day, date) => {
-            const isSelected = selectedDates.some(
-              (d) => d.toDateString() === date.toDateString()
-            );
-            const isAvailable = isDateAvailable(date);
-            const isPastDate = date < today;
-            return (
-              <span
-                className={`inline-block w-8 h-8 rounded-full text-center ${
-                  isPastDate
-                    ? "bg-gray-200 text-gray-400 cursor-not-allowed" // Style for past dates
-                    : isAvailable
-                    ? "bg-green-500 text-white cursor-not-allowed" // Style for available dates
-                    : isSelected
-                    ? "bg-blue-500 text-white"
-                    : "bg-white text-gray-600"
-                }`}
-              >
-                {day}
-              </span>
-            );
-          }}
+          highlightDates={selectedDates}
+          dayClassName={(date) =>
+            isDateAvailable(date) ? "bg-green-400 text-white" : "bg-white"
+          }
         />
       </div>
-      <div className="flex-1 p-4 border border-gray-300 rounded-lg shadow-lg relative">
-        <h3 className="text-lg font-medium mb-2">Selected Dates</h3>
-        <ul className="list-disc pl-5 mb-4">
-          <AnimatePresence>
-            {selectedDates.map((date) => (
-              <motion.li
-                key={`${date.toDateString()}-${date.getTime()}`} // Unique key with timestamp
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-                className="mb-1"
-              >
-                {date.toDateString()}
-              </motion.li>
-            ))}
-            {movingDate && (
-              <motion.div
-                key={`${movingDate.toDateString()}-${movingDate.getTime()}`} // Unique key with timestamp
-                className="absolute top-0 left-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center"
-                initial={{ opacity: 1, x: 0 }}
-                animate={{ opacity: 0, x: 300 }} // Adjust x value based on the right section position
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                {movingDate.toDateString().slice(0, 3)}{" "}
-                {/* Show only the first 3 characters */}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </ul>
-        <div className="mb-4">
-          <label className="mr-2">
-            Time per Slot:
-            <select
-              value={timePerSlot}
-              onChange={handleTimeChange}
-              className="ml-2 border border-gray-300 rounded px-2 py-1"
+      <div className="w-full lg:w-3/4 p-4">
+        {showMarkAvailable ? (
+          <div className="flex-1 p-4 border border-gray-300 rounded-lg shadow-lg">
+            <h3 className="text-lg font-medium mb-2">
+              Mark Dates as Available
+            </h3>
+            {renderSelectedDates()}
+            <button
+              onClick={handleMarkAvailable}
+              className="bg-blue-500 text-white px-4 py-2 mt-4 rounded"
             >
-              <option value={15}>15 minutes</option>
-              <option value={20}>20 minutes</option>
-              <option value={30}>30 minutes</option>
-            </select>
-          </label>
-        </div>
-        <button
-          onClick={handleSubmit}
-          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 hover:shadow-lg transition-colors"
-        >
-          Mark Availability
-        </button>
-        {/* <button
-          onClick={() => router.push(`/manage-appointments/${doctorId}`)} // Navigate to the new page
-          className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 hover:shadow-lg transition-colors m-4"
-        >
-          Manage Previous Appointments
-        </button> */}
-        <Link
-          href={`/doctor/manage-appointments/${doctorId}`}
-          className="btn  ml-6"
-        >
-          Manage Previous Appointments
-        </Link>
-      </div>
-
-      {/* Popup Box */}
-      <AnimatePresence>
-        {showPopup && (
-          <motion.div
-            className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 text-center">
-              <h3 className="text-lg font-semibold mb-4">Success!</h3>
-              <p>Your availability has been marked successfully.</p>
-              <button
-                onClick={() => setShowPopup(false)}
-                className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors"
-              >
-                Close
-              </button>
-            </div>
-          </motion.div>
+              Mark as Available
+            </button>
+          </div>
+        ) : (
+          renderSlotManagement()
         )}
-      </AnimatePresence>
+        {showConfirmation && (
+          <AnimatePresence>
+            <motion.div
+              className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <motion.div
+                className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md"
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0.8 }}
+              >
+                <h3 className="text-lg font-semibold mb-4">
+                  Confirm Cancellation
+                </h3>
+                <p>Are you sure you want to cancel this slot?</p>
+                <div className="flex justify-end mt-4">
+                  <button
+                    className="bg-blue-500 text-white px-4 py-2 mr-2 rounded"
+                    onClick={() => setShowConfirmation(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-red-500 text-white px-4 py-2 rounded"
+                    onClick={confirmCancelSlot}
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          </AnimatePresence>
+        )}
+        {showCancelAllConfirmation && (
+          <AnimatePresence>
+            <motion.div
+              className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <motion.div
+                className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md"
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0.8 }}
+              >
+                <h3 className="text-lg font-semibold mb-4">
+                  Confirm Cancel All
+                </h3>
+                <p>Are you sure you want to cancel all slots for this date?</p>
+                <div className="flex justify-end mt-4">
+                  <button
+                    className="bg-blue-500 text-white px-4 py-2 mr-2 rounded"
+                    onClick={() => setShowCancelAllConfirmation(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-red-500 text-white px-4 py-2 rounded"
+                    onClick={confirmCancelAllSlots}
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          </AnimatePresence>
+        )}
+      </div>
     </div>
   );
 };
 
-export default Availability;
+export default DoctorSchedulePage;

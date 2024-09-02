@@ -1,5 +1,5 @@
 import axios from "axios";
-import create from "zustand";
+import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
 interface Medicine {
@@ -10,6 +10,7 @@ interface Medicine {
 }
 
 interface Prescription {
+  _id?: string;
   patientId: string;
   doctorId: string;
   doctorName: string;
@@ -28,6 +29,8 @@ interface PrescriptionState {
   prescriptions: Prescription[];
   fetchPrescriptions: (patientId: string) => Promise<void>;
   savePrescription: (prescription: Prescription) => Promise<void>;
+  fetchPrescriptionsByDoctor: (doctorId: string) => Promise<void>;
+
 }
 
 export const usePrescriptionStore = create<PrescriptionState>()(
@@ -47,6 +50,7 @@ export const usePrescriptionStore = create<PrescriptionState>()(
     },
     savePrescription: async (prescription) => {
       console.log(`Saving prescription: ${JSON.stringify(prescription)}`);
+      console.log("Store Date", prescription.appointmentDate);
       try {
         const response = await https.post("/prescriptions/save", prescription);
         set((state) => ({
@@ -57,5 +61,24 @@ export const usePrescriptionStore = create<PrescriptionState>()(
         console.error("Failed to save prescription:", error);
       }
     },
+
+    fetchPrescriptionsByDoctor: async (doctorId) => {
+      try {
+        console.log(`Fetching prescriptions for doctorId ${doctorId}`);
+        const response = await https.get(`/prescriptions/findPrescriptionByDoctorId/${doctorId}`, {
+          params: { doctorId },
+        });
+        set({ prescriptions: response.data });
+        console.log("Fetched prescriptions successfully:", response.data);
+      } catch (error) {
+        console.error("Failed to fetch prescriptions:", error);
+      }
+    },
+
+
   }))
+
+  //fetch prescriptions by doctorId
+
+
 );
