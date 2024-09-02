@@ -8,6 +8,16 @@ import useLoginStore from "@/store/useLoginStore";
 import Loading from "../loading";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { date, set } from "zod";
+import { toDate } from "date-fns-tz";
+interface Patient {
+  name: string;
+  profilePic?: string;
+  contactNumber?: string;
+  email?: string;
+  _id?: string;
+  patientId?: string; // Ensure patientId is included
+}
 
 const Doctor = () => {
   const fetchUser = useLoginStore((state) => state.fetchUser);
@@ -25,6 +35,7 @@ const Doctor = () => {
   const doctorDetails = useAppointmentStore((state) => state.doctorDetails);
 
   const [appointmentsFetched, setAppointmentsFetched] = useState(false);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<"today" | "tomorrow" | "custom">(
@@ -66,6 +77,28 @@ const Doctor = () => {
     }
   }, [isLoggedIn, fetchUser]);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentPatient, setCurrentPatient] = useState<Patient | null>(null);
+  // const [appointmentDate, setAppointmentDate] = useState<string>(
+  //   new Date().toISOString()
+  // );
+  const [appointmentDate, setAppointmentDate] = useState<string>("");
+  const [slotId, setSlotId] = useState<string>("");
+
+  const handleAddPrescription = (
+    patient: Patient,
+    appointmentDate: string,
+    slotId: string
+  ) => {
+    setCurrentPatient({
+      ...patient,
+      _id: patient.patientId, // Ensure patientId is properly mapped
+    });
+    setAppointmentDate(appointmentDate);
+    setSlotId(slotId);
+    setIsModalOpen(true);
+  };
+
   // Filter appointments based on the selected filter
   const getFilteredAppointments = () => {
     const now = new Date();
@@ -75,6 +108,7 @@ const Doctor = () => {
     if (filter === "today") {
       return appointments.filter((appointment) => {
         const appointmentDate = new Date(appointment.date);
+
         return appointmentDate.toDateString() === now.toDateString();
       });
     } else if (filter === "tomorrow") {
@@ -107,11 +141,13 @@ const Doctor = () => {
     return slots.map((slot: any) => (
       <motion.div
         key={slot.slotId}
-        className="bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out mb-4 relative"
-        whileHover={{ scale: 1.02 }}
+        className="bg-slate-100 p-2 flex 
+        flex-wrap border items-center justify-between border-gray-200 
+        rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out mb-4 relative"
+        whileHover={{ scale: 1.01 }}
         style={{ height: "auto" }} // Adjust the height here if needed
       >
-        <div className="flex items-center p-2 pt-4 space-x-4">
+        <div className="flex items-center space-x-4">
           <div className="w-14 h-14 flex-shrink-0">
             <img
               src={slot.patient?.profilePic || "/default-profile.png"}
@@ -119,20 +155,48 @@ const Doctor = () => {
               className="w-full h-full object-cover rounded-full border border-gray-300"
             />
           </div>
-          <div className="flex-1 flex items-center justify-between">
-            <div className="flex-1 space-y-1">
-              <div className="text-lg font-medium">
-                {slot.patient?.name || "No appointment"}
-              </div>
-              {slot.patient && (
-                <div className="text-sm text-gray-500">
-                  <div>{slot.patient?.contactNumber || "No contact info"}</div>
-                  <div>{slot.patient?.email || "No email info"}</div>
-                </div>
-              )}
+          <div className="flex-1 space-y-1 ">
+            <div className="text-lg font-medium">
+              {slot.patient?.name || "No appointment"}
             </div>
-            <div className="text-lg text-gray-600 ml-4 mr-4">{slot.time}</div>
+            {slot.patient && (
+              <div className="text-sm text-gray-500">
+                <div>{slot.patient?.contactNumber || "No contact info"}</div>
+                <div>{slot.patient?.email || "No email info"}</div>
+              </div>
+            )}
           </div>
+        </div>
+
+        {/* ------------------------Time Button------------------- */}
+        <div className="p-2 rounded-lg flex flex-wrap items-center gap-2 flex-end">
+          <div className="text-lg text-gray-600 ml-4 mr-4">{slot.time}</div>
+          <div className="divider divider-horizontal"></div>
+
+          {slot.patient && (
+            <div>
+              <button
+                className="px-4 py-2 bg-teal-600 text-white rounded  transition duration-300"
+                onClick={() => {
+                  console.log("selectedDate: ", selectedDate?.toISOString());
+                  console.log("appointmentDate: ", appointmentDate);
+                  if (selectedDate) {
+                    handleAddPrescription(
+                      slot.patient,
+                      selectedDate.toISOString(),
+
+                      slot.slotId
+                    );
+                  } else {
+                    // Handle case where selectedDate is null
+                    console.error("Selected date is not set");
+                  }
+                }}
+              >
+                Prescribe
+              </button>
+            </div>
+          )}
         </div>
       </motion.div>
     ));
@@ -192,7 +256,7 @@ const Doctor = () => {
     <div className="flex h-screen">
       {/* Sidebar for Filters */}
       <aside
-        className={`fixed z-30 mt-16 top-0 left-0 h-screen w-64 bg-gray-100 p-4 border-r border-gray-200 transform ${
+        className={`fixed z-30 p-6 mt-16 top-0 left-0 h-screen w-72 bg-gray-100  border-r border-gray-200 transform ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } md:relative md:translate-x-0 transition-transform duration-300`}
       >
@@ -208,8 +272,10 @@ const Doctor = () => {
             filter === "today" ? "bg-teal-500 text-white" : "bg-gray-200"
           }`}
           onClick={() => {
+            const today = new Date(); // Get today's date
             setFilter("today");
-            setSelectedDate(null); // Reset selected date
+            setSelectedDate(today);
+            // Reset selected date
           }}
         >
           Today's Appointments
@@ -219,15 +285,17 @@ const Doctor = () => {
             filter === "tomorrow" ? "bg-teal-500 text-white" : "bg-gray-200"
           }`}
           onClick={() => {
+            const tomorrow = new Date(); // Get today's date
+            tomorrow.setDate(tomorrow.getDate() + 1); // Add 1 day to get tomorrow's date
             setFilter("tomorrow");
-            setSelectedDate(null); // Reset selected date
+            setSelectedDate(tomorrow); // Set tomorrow's date
           }}
         >
           Tomorrow's Appointments
         </button>
         <div className="mt-4">
           <button
-            className="w-full px-4 py-2 rounded bg-teal-500 text-white"
+            className="w-full px-4 py-2 mb-4 rounded bg-teal-500 text-white"
             onClick={() => setIsCalendarOpen(!isCalendarOpen)}
           >
             Select Date
@@ -240,8 +308,9 @@ const Doctor = () => {
                 setFilter("custom");
                 setIsCalendarOpen(false); // Close the calendar after selecting a date
               }}
-              dateFormat="yyyy-MM-dd"
-              className="w-full mt-2 p-2 border border-gray-300 rounded"
+              highlightDates={appointments.map(
+                (appointment) => new Date(appointment.date)
+              )}
               inline
             />
           )}
@@ -262,25 +331,66 @@ const Doctor = () => {
               className="md:hidden text-2xl"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
-              &#9660; {/* Dropdown icon */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="size-6"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M11.47 13.28a.75.75 0 0 0 1.06 0l7.5-7.5a.75.75 0 0 0-1.06-1.06L12 11.69 5.03 4.72a.75.75 0 0 0-1.06 1.06l7.5 7.5Z"
+                  clipRule="evenodd"
+                />
+                <path
+                  fillRule="evenodd"
+                  d="M11.47 19.28a.75.75 0 0 0 1.06 0l7.5-7.5a.75.75 0 1 0-1.06-1.06L12 17.69l-6.97-6.97a.75.75 0 0 0-1.06 1.06l7.5 7.5Z"
+                  clipRule="evenodd"
+                />
+              </svg>
             </button>
             {isDropdownOpen && (
-              <div className="absolute top-16 right-4 bg-white border border-gray-200 shadow-md rounded z-30">
+              <div className="absolute  top-16 right-4 bg-white border border-gray-200 shadow-md rounded z-30">
+                <div className="flex ">
+                  <button
+                    className="block px-4 py-2 w-full mt-5 text-left hover:bg-gray-100"
+                    onClick={() => {
+                      const today = new Date(); // Get today's date
+                      setFilter("today");
+                      setSelectedDate(today); // Reset selected date
+                      setIsDropdownOpen(false);
+                    }}
+                  >
+                    Today's Appointments
+                  </button>
+                  <button
+                    className="block p-2 mb-2 "
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="size-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
                 <button
                   className="block px-4 py-2 w-full text-left hover:bg-gray-100"
                   onClick={() => {
-                    setFilter("today");
-                    setSelectedDate(null); // Reset selected date
-                    setIsDropdownOpen(false);
-                  }}
-                >
-                  Today's Appointments
-                </button>
-                <button
-                  className="block px-4 py-2 w-full text-left hover:bg-gray-100"
-                  onClick={() => {
+                    const tomorrow = new Date(); // Get today's date
+                    tomorrow.setDate(tomorrow.getDate() + 1); // Add 1 day to get tomorrow's date
                     setFilter("tomorrow");
-                    setSelectedDate(null); // Reset selected date
+                    setSelectedDate(tomorrow); // Reset selected date
                     setIsDropdownOpen(false);
                   }}
                 >
@@ -290,7 +400,6 @@ const Doctor = () => {
                   className="block px-4 py-2 w-full text-left hover:bg-gray-100"
                   onClick={() => {
                     setIsCalendarOpen(!isCalendarOpen);
-                    setIsDropdownOpen(false);
                   }}
                 >
                   Select Date
@@ -301,10 +410,12 @@ const Doctor = () => {
                     onChange={(date) => {
                       setSelectedDate(date);
                       setFilter("custom");
-                      setIsCalendarOpen(false); // Close the calendar after selecting a date
+                      setIsCalendarOpen(false);
+                      setIsDropdownOpen(false); // Close the calendar after selecting a date
                     }}
-                    dateFormat="yyyy-MM-dd"
-                    className="w-full mt-2 p-2 border border-gray-300 rounded"
+                    highlightDates={appointments.map(
+                      (appointment) => new Date(appointment.date)
+                    )}
                     inline
                   />
                 )}
@@ -331,6 +442,17 @@ const Doctor = () => {
           )}
         </main>
       )}
+
+      <PrescriptionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        doctorName={doctorDetails?.name || "Doctor"}
+        patientName={currentPatient?.name || ""}
+        patientId={currentPatient?._id ?? ""} // Ensure patientId is being passed correctly
+        doctorId={doctorId as string}
+        appointmentDate={appointmentDate} // Pass appointmentDate
+        slotId={slotId} // Pass slotId
+      />
     </div>
   );
 };

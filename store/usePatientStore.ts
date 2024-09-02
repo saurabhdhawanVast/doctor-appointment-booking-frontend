@@ -66,6 +66,7 @@ export const usePatientStore = create<PatientState>((set) => ({
     try {
       let patientId = patient._id;
       delete patient._id;
+      console.log("patient", patient);
       let result = await axios.patch(
         `http://localhost:3000/patients/${patientId}`,
         patient

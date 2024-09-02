@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
+import useLoginStore from "./useLoginStore";
 
 export interface Slot {
   id: string;
@@ -33,6 +34,11 @@ export interface Doctor {
     clinicAddress?: string;
     city?: string;
     state?: string;
+    morningStartTime?: string; // updated by me
+    morningEndTime?: string; // updated by me
+    eveningStartTime?: string; // updated by me
+    eveningEndTime?: string; // updated by me
+    slotDuration?: number; // updated by me
   };
   city: string;
   state: string;
@@ -58,6 +64,8 @@ interface DoctorStoreState {
   totalPages: number;
   availableDates: DateWithSlots[];
   slotsByDate: Record<string, Slot[]>; // Maintain slots by date
+  //update by me
+  updateProfile: (doctor: Partial<Doctor>) => void;
   fetchDoctors: (
     status: "all" | "verified" | "unverified",
     page: number,
@@ -116,7 +124,21 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
       console.error(`Error fetching doctor profile: ${error}`);
     }
   },
-
+  //update ...
+  updateProfile: async (doctor) => {
+    try {
+      let doctorId = doctor._id;
+      delete doctor._id;
+      let result = await axios.patch(
+        `http://localhost:3000/doctors/${doctorId}`,
+        doctor
+      );
+      set({ doctor: result.data });
+      useLoginStore.getState().setDoctor(result.data);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+  },
   verifyDoctor: async (id: string) => {
     try {
       await axiosInstance.post(`/doctors/${id}/verify`);

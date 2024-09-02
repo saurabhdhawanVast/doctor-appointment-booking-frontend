@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import React from "react";
 import SuccessToast from "./successToast";
+import { toast } from "react-toastify";
 
 interface PrescriptionModalProps {
   isOpen: boolean;
@@ -96,13 +97,10 @@ const PrescriptionModal = ({
         appointmentDate,
         slotId,
       });
-      setSuccessMessage("Prescription saved successfully!");
-      setTimeout(() => {
-        setSuccessMessage(null);
-        onClose();
-      }, 3000);
+      toast.success("Prescription saved successfully");
+      onClose();
     } catch (err) {
-      setError("Failed to save the prescription. Please try again.");
+      toast.error("Error saving prescription");
     }
   };
 
@@ -111,12 +109,12 @@ const PrescriptionModal = ({
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <motion.div
-        className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl h-[70vh] overflow-auto relative"
+        className="bg-white p-4 rounded-lg shadow-lg w-full max-w-4xl h-[70vh] overflow-auto relative"
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.8, opacity: 0 }}
       >
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-2">
           <h2 className="text-xl font-bold">
             {isConfirming ? "Confirm Prescription" : "Add Prescription"}
           </h2>
@@ -130,40 +128,60 @@ const PrescriptionModal = ({
 
         {isConfirming ? (
           <div>
-            <h3 className="text-lg font-semibold">Doctor: {doctorName}</h3>
-            <h3 className="text-lg font-semibold">Patient: {patientName}</h3>
+            <div className="flex space-x-4  mb-2">
+              <div className=" bg-gray-200 p-4 rounded-lg w-full">
+                <h3 className="text-lg font-semibold">{doctorName}</h3>
+                <p className="text-sm text-gray-600">Doctor</p>
+              </div>
 
-            <div className="mt-6 grid grid-cols-4 gap-4">
-              <div className="font-bold">Medicine Name</div>
-              <div className="font-bold">Dosage</div>
-              <div className="font-bold">Time</div>
-              <div className="font-bold">Days</div>
+              <div className=" mr-4 bg-gray-200 p-4 rounded-lg w-full">
+                <h3 className="text-lg font-semibold">{patientName}</h3>
+                <p className="text-sm text-gray-600">Patient</p>
+              </div>
+            </div>
 
+            <div className="flex flex-row flex-wrap mb-2 ">
               {medicines.map((medicine, index) => (
-                <React.Fragment key={index}>
-                  <div className="border p-2 rounded-lg bg-gray-50">
+                <div
+                  key={index}
+                  className="flex flex-row w-full space-x-2  bg-gray-200 rounded-lg"
+                >
+                  <div className="p-2 rounded-lg w-1/4 ">
+                    <div className="font-bold">Medicine Name</div>
                     {medicine.name}
                   </div>
-                  <div className="border p-2 rounded-lg bg-gray-50">
+                  <div className=" p-2 rounded-lg w-1/4">
+                    <div className="font-bold">Dosage</div>
                     {medicine.dosage.join(", ")}
                   </div>
-                  <div className="border p-2 rounded-lg bg-gray-50">
+                  <div className="p-2 rounded-lg w-1/4">
+                    <div className="font-bold">Time</div>
                     {medicine.time}
                   </div>
-                  <div className="border p-2 rounded-lg bg-gray-50">
+                  <div className=" p-2 rounded-lg w-1/4">
+                    <div className="font-bold">Days</div>
                     {medicine.days}
                   </div>
-                </React.Fragment>
+                </div>
               ))}
-
+            </div>
+            <div>
               {note && (
-                <div className="mt-6">
-                  <h4 className="text-md font-semibold">Notes:</h4>
-                  <p className="text-sm">{note}</p>
+                <div className=" w-full  space-x-2 p-2 mb-2 bg-gray-200 rounded-lg ">
+                  <div>
+                    <h4 className="text-md font-semibold">Notes:</h4>
+                    <textarea
+                      name="note"
+                      id="note"
+                      value={note}
+                      className="w-full border border-gray-300 rounded p-2 focus:border-teal-500 focus:ring-teal-500"
+                      readOnly
+                    ></textarea>
+                  </div>
                 </div>
               )}
 
-              <div className="flex justify-end mt-6 space-x-4">
+              <div className="flex justify-end space-x-4">
                 <button
                   className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition duration-300"
                   onClick={handleEdit}
@@ -171,7 +189,7 @@ const PrescriptionModal = ({
                   Edit
                 </button>
                 <button
-                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300"
+                  className="px-4 py-2 bg-teal-600 text-white rounded transition duration-300"
                   onClick={handleConfirm}
                 >
                   Confirm
@@ -181,21 +199,24 @@ const PrescriptionModal = ({
           </div>
         ) : (
           <div>
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold">{doctorName}</h3>
-              <p className="text-sm text-gray-600">Doctor</p>
-            </div>
+            <div className="flex space-x-4 ">
+              <div className="mb-4  bg-gray-200 p-4 rounded-lg w-full">
+                <h3 className="text-lg font-semibold">{doctorName}</h3>
+                <p className="text-sm text-gray-600">Doctor</p>
+              </div>
 
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold">{patientName}</h3>
-              <p className="text-sm text-gray-600">Patient</p>
+              <div className="mb-4 mr-4 bg-gray-200 p-4 rounded-lg w-full">
+                <h3 className="text-lg font-semibold">{patientName}</h3>
+                <p className="text-sm text-gray-600">Patient</p>
+              </div>
             </div>
 
             <div>
               {medicines.map((medicine, index) => (
                 <div
                   key={index}
-                  className="grid grid-cols-4 gap-4 mb-4 relative"
+                  // className="flex  gap-4 mb-4 relative bg-gray-200 p-4 rounded-lg"
+                  className="flex flex-col p-2 mb-4 md:flex-row space-y-4 md:space-y-0 md:space-x-4 relative  bg-gray-200 rounded-lg w-full "
                 >
                   <button
                     type="button"
@@ -204,8 +225,9 @@ const PrescriptionModal = ({
                   >
                     &#x2715;
                   </button>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
+
+                  <div className=" w-1/4">
+                    <label className="block text-sm font-medium text-gray-700 ">
                       Medicine Name
                     </label>
                     <input
@@ -218,7 +240,7 @@ const PrescriptionModal = ({
                     />
                   </div>
 
-                  <div>
+                  <div className="w-1/4">
                     <label className="block text-sm font-medium text-gray-700">
                       Dosage
                     </label>
@@ -247,7 +269,7 @@ const PrescriptionModal = ({
                     </div>
                   </div>
 
-                  <div>
+                  <div className=" w-1/4">
                     <label className="block text-sm font-medium text-gray-700">
                       Time
                     </label>
@@ -274,7 +296,7 @@ const PrescriptionModal = ({
                     </div>
                   </div>
 
-                  <div>
+                  <div className=" w-1/4">
                     <label className="block text-sm font-medium text-gray-700">
                       Days
                     </label>
@@ -354,12 +376,6 @@ const PrescriptionModal = ({
         )}
       </motion.div>
       {/* Render the Toast if there's a success message */}
-      {successMessage && (
-        <SuccessToast
-          message={successMessage}
-          onClose={() => setSuccessMessage(null)}
-        />
-      )}
     </div>
   );
 };

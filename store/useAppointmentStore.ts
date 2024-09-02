@@ -137,13 +137,27 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
       const queryString = new URLSearchParams({
         filter: JSON.stringify(query),
       }).toString();
-      const response = await axios.get(
-        `http://localhost:3000/appointments?${queryString}`
-      );
+      const response = await https.get(`/appointments?${queryString}`);
+      for (let appointment of response.data) {
+        let slots = appointment?.doctor?.availability?.find(
+          (availability: any) =>
+            availability.date ===
+            new Date(appointment.appointmentDate).toISOString().split("T")[0]
+        );
+        if (slots) {
+          console.log(slots);
+          let selectedSlot = slots.slots.find(
+            (slot: any) => slot._id === appointment.slot
+          );
+          if (selectedSlot) {
+            appointment.slot = selectedSlot;
+          }
+        }
+      }
       console.log(response.data);
       set({ upcomingAppointments: response.data });
     } catch (error) {
-      console.error("Error fetching articles:", error);
+      console.error("Error fetching appiontments:", error);
     }
   },
   fetchAppointments: async (doctorId: string, initialDate?: Date) => {
