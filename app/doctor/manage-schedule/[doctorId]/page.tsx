@@ -115,16 +115,16 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
         // Perform the API call to cancel the slot
         await cancelSlot(params.doctorId, selectedDates[0], slotToCancel);
 
-        // If successful, update the local state to reflect the canceled slot
-        setSlots((prevSlots) =>
-          prevSlots.map((slot) =>
-            slot.id === slotToCancel ? { ...slot, status: "canceled" } : slot
-          )
-        );
+        // Fetch the updated list of available dates
+        await fetchAvailableDates(params.doctorId);
+
+        // Optionally show a success message
+        toast.success("Slot canceled successfully");
       } catch (error) {
         console.error("Failed to cancel slot:", error);
+        toast.error("Failed to cancel slot.");
       } finally {
-        // Close the confirmation dialog
+        // Close the confirmation dialog and reset the slotToCancel state
         setShowConfirmation(false);
         setSlotToCancel(null);
       }
@@ -141,10 +141,20 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
     try {
       if (selectedDates.length > 0) {
         await cancelAllSlots(params.doctorId, selectedDates[0]);
+
+        // Clear slots and selected dates
         setSlots([]);
+        setSelectedDates([]);
+
+        // Fetch the updated list of available dates
+        await fetchAvailableDates(params.doctorId);
+
+        // Show a success message if you like
+        toast.success("All slots canceled successfully");
       }
     } catch (error) {
       console.error("Failed to cancel all slots:", error);
+      toast.error("Failed to cancel all slots.");
     } finally {
       setShowCancelAllConfirmation(false);
     }
@@ -226,19 +236,38 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
           </li>
         ))}
       </ul>
+      <div className="mb-4">
+        <label className="mr-2">
+          Time per Slot:
+          <select
+            value={timePerSlot}
+            onChange={handleTimeChange}
+            className="ml-2 border border-gray-300 rounded px-2 py-1"
+          >
+            <option value={15}>15 minutes</option>
+            <option value={20}>20 minutes</option>
+            <option value={30}>30 minutes</option>
+          </select>
+        </label>
+      </div>
     </div>
   );
 
   const renderSlotManagement = () => (
     <div className="w-full p-4">
       {selectedDates.length === 0 ? (
-        <p>No dates selected.</p>
+        <p>Select date to mark available or to manage schedule.</p>
       ) : (
         <>
-          <h2 className="text-xl font-semibold mb-4">
-            Manage Slots for Date{" "}
-            {formatDateInTimeZone(selectedDates[0], timeZone)}
-          </h2>
+          <h3 className="text-xl font-normal mb-4">
+            Manage Slots for{" "}
+            {/* {formatDateInTimeZone(selectedDates[0], timeZone)} */}
+            {selectedDates[0].toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "long", // 'short' for abbreviated month names
+              year: "numeric",
+            })}
+          </h3>
           <button
             className="bg-red-500 text-white px-4 py-2 mb-4 rounded"
             onClick={handleCancelAllSlots}

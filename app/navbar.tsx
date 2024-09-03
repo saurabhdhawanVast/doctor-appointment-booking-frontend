@@ -5,6 +5,7 @@ import useLoginStore from "@/store/useLoginStore";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import imageDemo from "../public/images/avatar-icon.png";
+import Logo from "../public/images/logooo.png"; // Adjust the path
 import { Ellipsis } from "react-css-spinners"; // Import the Ellipsis spinner
 
 const Navbar = () => {
@@ -139,7 +140,7 @@ const Navbar = () => {
             </li>
 
             <li>
-              <Link href={`/doctor/mark-available/${doctorId}`}>
+              <Link href={`/doctor/manage-schedule/${doctorId}`}>
                 Manage Schedule
               </Link>
             </li>
@@ -211,7 +212,12 @@ const Navbar = () => {
       ) : (
         <div className="navbar bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 fixed top-0 left-0 right-0 z-50 text-white shadow-lg h-16">
           <div className="navbar-start">
-            <Link href="/" className="btn btn-ghost text-2xl font-bold">
+            <Link
+              href="/"
+              className="btn  text-2xl font-bold bg-teal-500 h-fit hover:bg-teal-500 border-none"
+            >
+              <img src={Logo.src} alt="Logo" className="h-14 w-14" />{" "}
+              {/* Adjust size as needed */}
               DABS
             </Link>
           </div>
