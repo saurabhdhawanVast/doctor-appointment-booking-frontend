@@ -86,6 +86,17 @@ export default function Form_Doctor() {
   const [currentStep, setCurrentStep] = useState(0);
   const delta = currentStep - previousStep;
 
+  //doctor state
+  const stateMedicalCouncilsList = useRegisterDoctorStore(
+    (state) => state.stateMedicalCouncilsList
+  );
+  const doctorSpecialties = useRegisterDoctorStore(
+    (state) => state.doctorSpecialties
+  );
+  const doctorQualifications = useRegisterDoctorStore(
+    (state) => state.doctorQualifications
+  );
+
   //loading state
   const [isLoading, setIsLoading] = useState(false);
 
@@ -166,6 +177,7 @@ export default function Form_Doctor() {
         name: `${firstName} ${lastName}`,
         ...dataWithoutPassword,
         role: "doctor",
+        slotDuration: 15,
         coordinates: {
           latitude: latitude,
           longitude: longitude,
@@ -225,9 +237,14 @@ export default function Form_Doctor() {
       const morningEndTime = watch("morningEndTime");
       const eveningStartTime = watch("eveningStartTime");
       const eveningEndTime = watch("eveningEndTime");
+      if (!morningStartTime && !eveningStartTime) {
+        toast.error("Please Select atleast one time slot");
+        return;
+      }
+
       if (
-        morningStartTime > morningEndTime ||
-        eveningStartTime > eveningEndTime
+        (morningStartTime || "") > (morningEndTime || "") ||
+        (eveningStartTime || "") > (eveningEndTime || "")
       ) {
         toast.error("Start time must be Less than end time");
         return;
@@ -324,79 +341,6 @@ export default function Form_Doctor() {
     }
   }, [selectedState]);
 
-  //Council
-  const stateMedicalCouncilsList = [
-    "Andhra Pradesh Medical Council",
-    "Arunachal Pradesh Medical Council",
-    "Assam Medical Council",
-    "Bihar Medical Council",
-    "Chattisgarh Medical Council",
-    "Delhi Medical Council",
-    "Goa Medical Council",
-    "Gujarat Medical Council",
-    "Haryana State Dental & Medical Council",
-    "Himachal Pradesh Medical Council",
-    "Jammu & Kashmir Medical Council",
-    "Jharkhand Medical Council",
-    "Karnataka Medical Council",
-    "Kerala Medical Council",
-    "Madhya Pradesh Medical Council",
-    "Maharashtra Medical Council",
-    "Manipur Medical Council",
-    "Meghalya Medical Council",
-    "Mizoram Medical Council",
-    "Nagaland Medical Council",
-    "Orissa Medical Council",
-    "Punjab Medical Council",
-    "Rajasthan Medical Council",
-    "Sikkim Medical Council",
-    "Tamil Nadu Medical Council",
-    "Telangana Medical Council",
-    "Tripura Medical Council",
-    "Uttarnchal Medical Council",
-    "Uttar Pradesh Medical Council",
-    "West Bengal Medical Council",
-  ];
-
-  // Specialties
-  const doctorSpecialties = [
-    "Cardiologist", // Heart specialist
-    "Dermatologist", // Skin specialist
-    "Endocrinologist", // Hormones and metabolism specialist
-    "Gastroenterologist", // Digestive system specialist
-    "Neurologist", // Nervous system specialist
-    "Oncologist", // Cancer specialist
-    "Ophthalmologist", // Eye specialist
-    "Orthopedic Surgeon", // Bone and joint specialist
-    "Pediatrician", // Child specialist
-    "Psychiatrist", // Mental health specialist
-    "Pulmonologist", // Lung specialist
-    "Rheumatologist", // Joint and autoimmune disease specialist
-    "Surgeon", // General surgeon
-    "Urologist", // Urinary tract specialist
-    "Dentist", // Oral health specialist
-  ];
-
-  const doctorQualifications = [
-    "MBBS", // Bachelor of Medicine, Bachelor of Surgery
-    "MD", // Doctor of Medicine
-    "MS", // Master of Surgery
-    "DM", // Doctorate of Medicine (super-specialization)
-    "MCh", // Master of Chirurgie (super-specialization in surgery)
-    "DNB", // Diplomate of National Board
-    "BDS", // Bachelor of Dental Surgery
-    "MDS", // Master of Dental Surgery
-    "BHMS", // Bachelor of Homeopathic Medicine and Surgery
-    "MD(Hom)", // Doctor of Medicine in Homeopathy
-    "BAMS", // Bachelor of Ayurvedic Medicine and Surgery
-    "MD(Ayurveda)", // Doctor of Medicine in Ayurveda
-    "DGO", // Diploma in Obstetrics and Gynaecology
-    "DCH", // Diploma in Child Health
-    "DNB Pediatrics", // Diplomate of National Board in Pediatrics
-    "FRCS", // Fellow of the Royal College of Surgeons (can be recognized for Indian practice if from a recognized institution)
-    "FAMS", // Fellow of the Academy of Medical Sciences (can be recognized for Indian practice if from a recognized institution)
-  ];
-
   return (
     <div className="flex  items-center justify-center py-12 px-4 sm:px-2 lg:px-4">
       {isLoading && (
@@ -418,18 +362,18 @@ export default function Form_Doctor() {
             {steps.map((step, index) => (
               <li key={step.name} className="md:flex-1">
                 {currentStep > index ? (
-                  <div className="group flex w-full flex-col border-l-4 border-sky-600 py-2 pl-4 transition-colors md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
-                    <span className="text-sm font-medium text-sky-600 transition-colors ">
+                  <div className="group flex w-full flex-col border-l-4 border-teal-600 py-2 pl-4 transition-colors md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
+                    <span className="text-sm font-medium text-teal-600 transition-colors ">
                       {step.id}
                     </span>
                     <span className="text-sm font-medium">{step.name}</span>
                   </div>
                 ) : currentStep === index ? (
                   <div
-                    className="flex w-full flex-col border-l-4 border-sky-600 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4"
+                    className="flex w-full flex-col border-l-4 border-teal-600 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4"
                     aria-current="step"
                   >
-                    <span className="text-sm font-medium text-sky-600">
+                    <span className="text-sm font-medium text-teal-600">
                       {step.id}
                     </span>
                     <span className="text-sm font-medium">{step.name}</span>
@@ -464,7 +408,7 @@ export default function Form_Doctor() {
                   Provide your registration details.
                 </p>
 
-                <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                <div className="mt-5 grid grid-cols-3 gap-x-6 gap-y-8 sm:grid-cols-9">
                   <div className="sm:col-span-3">
                     <label
                       htmlFor="firstName"
@@ -478,7 +422,7 @@ export default function Form_Doctor() {
                         id="firstName"
                         {...register("firstName")}
                         autoComplete="given-name"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
                       />
                       {errors.firstName?.message && (
                         <p className="mt-2 text-sm text-red-400">
@@ -501,7 +445,7 @@ export default function Form_Doctor() {
                         id="lastName"
                         {...register("lastName")}
                         autoComplete="given-name"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
                       />
                       {errors.lastName?.message && (
                         <p className="mt-2 text-sm text-red-400">
@@ -510,8 +454,9 @@ export default function Form_Doctor() {
                       )}
                     </div>
                   </div>
+                  <div></div>
 
-                  <div className="sm:col-span-4">
+                  <div className="sm:col-span-3">
                     <label
                       htmlFor="email"
                       className="block text-sm font-medium leading-6 text-gray-900"
@@ -524,7 +469,7 @@ export default function Form_Doctor() {
                         type="email"
                         {...register("email")}
                         autoComplete="email"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
                       />
                       {errors.email?.message && (
                         <p className="mt-2 text-sm text-red-400">
@@ -534,33 +479,9 @@ export default function Form_Doctor() {
                     </div>
                   </div>
 
-                  {/* Profile*/}
-                  <div className="sm:col-span-4">
-                    <label
-                      htmlFor="profilePic"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                    >
-                      Upload Profile Picture (.jpg, .jpeg, and .png)
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        id="profilePic"
-                        type="file"
-                        {...register("profilePic")}
-                        accept=".jpg,.jpeg,.png"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                      ></input>
-                      {errors.profilePic?.message && (
-                        <p className="mt-2 text-sm text-red-400">
-                          {errors.profilePic.message as React.ReactNode}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
                   {/* Gender */}
 
-                  <div className="sm:col-span-2">
+                  <div className="sm:col-span-3">
                     <label
                       htmlFor="gender"
                       className="block text-sm font-medium leading-6 text-gray-900"
@@ -574,7 +495,7 @@ export default function Form_Doctor() {
                           required: "Gender is required",
                         })}
                         autoComplete="gender"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6"
                       >
                         <option value="">Select Gender</option>
                         <option value="male">Male</option>
@@ -588,6 +509,31 @@ export default function Form_Doctor() {
                       )}
                     </div>
                   </div>
+
+                  {/* Profile*/}
+                  <div className="sm:col-span-3">
+                    <label
+                      htmlFor="profilePic"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Upload Profile Picture (.jpg, .jpeg, and .png)
+                    </label>
+                    <div className="mt-2">
+                      <input
+                        id="profilePic"
+                        type="file"
+                        {...register("profilePic")}
+                        accept=".jpg,.jpeg,.png"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                      ></input>
+                      {errors.profilePic?.message && (
+                        <p className="mt-2 text-sm text-red-400">
+                          {errors.profilePic.message as React.ReactNode}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
                   {/* Password */}
 
                   <div className="sm:col-span-3">
@@ -603,7 +549,7 @@ export default function Form_Doctor() {
                         id="password"
                         {...register("password")}
                         autoComplete="family-name"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
                       />
                       {errors.password?.message && (
                         <p className="mt-2 text-sm text-red-400">
@@ -615,7 +561,7 @@ export default function Form_Doctor() {
 
                   {/*Confirm  Password */}
 
-                  <div className="sm:col-span-2">
+                  <div className="sm:col-span-3">
                     <label
                       htmlFor="confirmPassword"
                       className="block text-sm font-medium leading-6 text-gray-900"
@@ -628,7 +574,7 @@ export default function Form_Doctor() {
                         id="confirmPassword"
                         {...register("confirmPassword")}
                         autoComplete="family-name"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
                       />
                       {errors.confirmPassword?.message && (
                         <p className="mt-2 text-sm text-red-400">
@@ -667,7 +613,7 @@ export default function Form_Doctor() {
                         id="speciality"
                         {...register("speciality")}
                         autoComplete="speciality"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6"
                       >
                         <option value="">Select Speciality</option>
                         {doctorSpecialties.map((speciality) => (
@@ -683,9 +629,7 @@ export default function Form_Doctor() {
                       )}
                     </div>
                   </div>
-
                   {/* Qualification */}
-
                   <div className="sm:col-span-2">
                     <label
                       htmlFor="qualification"
@@ -698,7 +642,7 @@ export default function Form_Doctor() {
                         id="qualification"
                         {...register("qualification")}
                         autoComplete="qualification"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6"
                       >
                         <option value="">Select Qualification</option>
                         {doctorQualifications.map((qualification) => (
@@ -714,9 +658,7 @@ export default function Form_Doctor() {
                       )}
                     </div>
                   </div>
-
                   {/* RegistrationNumber */}
-
                   <div className="sm:col-span-2">
                     <label
                       htmlFor="registrationNumber"
@@ -730,7 +672,7 @@ export default function Form_Doctor() {
                         type="text"
                         {...register("registrationNumber")}
                         autoComplete="registrationNumber"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
                       />
 
                       {errors.registrationNumber?.message && (
@@ -740,9 +682,7 @@ export default function Form_Doctor() {
                       )}
                     </div>
                   </div>
-
                   {/* Year of Registration */}
-
                   <div className="sm:col-span-2">
                     <label
                       htmlFor="yearOfRegistration"
@@ -755,7 +695,7 @@ export default function Form_Doctor() {
                         id="yearOfRegistration"
                         {...register("yearOfRegistration")}
                         autoComplete="yearOfRegistration"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6"
                       >
                         <option value="">Select Year of Registration</option>
                         {years.map((year) => (
@@ -771,13 +711,11 @@ export default function Form_Doctor() {
                       )}
                     </div>
                   </div>
-
                   {/* StateMedicalCouncil */}
-
                   <div className="sm:col-span-2">
                     <label
                       htmlFor="stateMedicalCouncil"
-                      className="block text-sm font-medium leading-6 text-gray-900"
+                      className="block text-sm font-medium leading-6 text-gray-900 "
                     >
                       State Medical Council
                     </label>
@@ -786,7 +724,7 @@ export default function Form_Doctor() {
                         id="stateMedicalCouncil"
                         {...register("stateMedicalCouncil")}
                         autoComplete="stateMedicalCouncil"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6"
                       >
                         <option value="">State Medical Council</option>
                         {stateMedicalCouncilsList.map((stateCouncil) => (
@@ -802,11 +740,10 @@ export default function Form_Doctor() {
                       )}
                     </div>
                   </div>
-
-                  <div className="sm:col-span-3">
+                  <div className="sm:col-span-2">
                     <label
                       htmlFor="document"
-                      className="block text-sm font-medium leading-6 text-gray-900"
+                      className="block text-sm font-medium leading-6 text-gray-900 w-fit "
                     >
                       Upload Document (.jpg, .jpeg, and .png)
                     </label>
@@ -816,7 +753,7 @@ export default function Form_Doctor() {
                         type="file"
                         {...register("document")}
                         accept=".jpg,.jpeg,.png"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6"
                       ></input>
                       {errors.document?.message && (
                         <p className="mt-2 text-sm text-red-400">
@@ -825,13 +762,12 @@ export default function Form_Doctor() {
                       )}
                     </div>
                   </div>
-
                   {/* Bio */}
 
-                  <div className="sm:col-span-2">
+                  <div className=" sm:col-span-2">
                     <label
                       htmlFor="bio"
-                      className="block text-sm font-medium leading-6 text-gray-900"
+                      className="block text-sm font-medium leading-6 text-gray-600"
                     >
                       Bio
                     </label>
@@ -840,7 +776,7 @@ export default function Form_Doctor() {
                         id="bio"
                         {...register("bio")}
                         autoComplete="bio"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6"
                       />
                       {errors.bio?.message && (
                         <p className="mt-2 text-sm text-red-400">
@@ -866,32 +802,31 @@ export default function Form_Doctor() {
                   Add your Clinic Address
                 </p>
                 {/* Address */}
-
-                <div className="sm:col-span-4">
-                  <label
-                    htmlFor="clinicName"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Clinic Name
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      id="clinicName"
-                      type="text"
-                      {...register("clinicName")}
-                      autoComplete="clinicName"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                    />
-                    {errors.clinicName?.message && (
-                      <p className="mt-2 text-sm text-red-400">
-                        {errors.clinicName.message}
-                      </p>
-                    )}
+                <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                  <div className="sm:col-span-2">
+                    <label
+                      htmlFor="clinicName"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Clinic Name
+                    </label>
+                    <div className="mt-2">
+                      <input
+                        id="clinicName"
+                        type="text"
+                        {...register("clinicName")}
+                        autoComplete="clinicName"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
+                      />
+                      {errors.clinicName?.message && (
+                        <p className="mt-2 text-sm text-red-400">
+                          {errors.clinicName.message}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                  <div className="col-span-full">
+                  <div className="col-span-2">
                     <label
                       htmlFor="clinicAddress"
                       className="block text-sm font-medium leading-6 text-gray-900"
@@ -904,7 +839,7 @@ export default function Form_Doctor() {
                         id="clinicAddress"
                         {...register("clinicAddress")}
                         autoComplete="clinicAddress"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
                       />
                       {errors.clinicAddress?.message && (
                         <p className="mt-2 text-sm text-red-400">
@@ -913,170 +848,152 @@ export default function Form_Doctor() {
                       )}
                     </div>
                   </div>
-                </div>
 
-                {/* contactNumber */}
+                  {/* contactNumber */}
 
-                <div className="sm:col-span-2">
-                  <label
-                    htmlFor="contactNumber"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Clinic Contact Number
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      type="number"
-                      id="contactNumber"
-                      {...register("contactNumber")}
-                      autoComplete="contactNumber"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                    />
-                    {errors.contactNumber?.message && (
-                      <p className="mt-2 text-sm text-red-400">
-                        {errors.contactNumber.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* State */}
-
-                {/* State */}
-                {/* <div className="sm:col-span-2">
-                  <label
-                    htmlFor="state"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    State
-                  </label>
-                  <div className="mt-2">
-                    <select
-                      id="state"
-                      {...register("state")}
-                      value={selectedState}
-                      onChange={(e) => setSelectedState(e.target.value)}
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                  <div className="sm:col-span-2">
+                    <label
+                      htmlFor="contactNumber"
+                      className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      <option value="">Select a state</option>
-                      {states.map((state) => (
-                        <option key={state.name} value={state.iso2}>
-                          {state.name}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.state?.message && (
-                      <p className="mt-2 text-sm text-red-400">
-                        {errors.state.message}
-                      </p>
-                    )}
+                      Clinic Contact Number
+                    </label>
+                    <div className="mt-2">
+                      <input
+                        type="number"
+                        id="contactNumber"
+                        {...register("contactNumber")}
+                        autoComplete="contactNumber"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
+                      />
+                      {errors.contactNumber?.message && (
+                        <p className="mt-2 text-sm text-red-400">
+                          {errors.contactNumber.message}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div> */}
-                <div className="sm:col-span-2">
-                  <label
-                    htmlFor="state"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    State
-                  </label>
-                  <div className="mt-2">
-                    <select
-                      id="state"
-                      {...register("state", {
-                        onChange: (e) => {
-                          setSelectedState(e.target.value);
-                        },
-                      })}
-                      value={
-                        selectedState
-                          ? states.find((state) => state.iso2 === selectedState)
-                              ?.name
-                          : ""
-                      }
-                      onChange={(e) => {
-                        const selectedStateObj = states.find(
-                          (state) => state.name === e.target.value
-                        );
-                        setSelectedState(selectedStateObj?.iso2 || "");
-                      }}
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+
+                  {/* State */}
+                  <div className="sm:col-span-2">
+                    <label
+                      htmlFor="state"
+                      className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      <option value="">Select a state</option>
-                      {states.map((state) => (
-                        <option key={state.name} value={state.name}>
-                          {state.name}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.state?.message && (
-                      <p className="mt-2 text-sm text-red-400">
-                        {errors.state.message}
-                      </p>
-                    )}
+                      State
+                    </label>
+                    <div className="mt-2">
+                      <select
+                        id="state"
+                        {...register("state", {
+                          onChange: (e) => {
+                            setSelectedState(e.target.value);
+                          },
+                        })}
+                        value={
+                          selectedState
+                            ? states.find(
+                                (state) => state.iso2 === selectedState
+                              )?.name
+                            : ""
+                        }
+                        onChange={(e) => {
+                          const selectedStateObj = states.find(
+                            (state) => state.name === e.target.value
+                          );
+                          setSelectedState(selectedStateObj?.iso2 || "");
+                        }}
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
+                      >
+                        <option value="">Select a state</option>
+                        {states.map((state) => (
+                          <option key={state.name} value={state.name}>
+                            {state.name}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.state?.message && (
+                        <p className="mt-2 text-sm text-red-400">
+                          {errors.state.message}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                {/* City */}
-                <div className="sm:col-span-2 sm:col-start-1">
-                  <label
-                    htmlFor="city"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    City
-                  </label>
-                  <div className="mt-2">
-                    <select
-                      id="city"
-                      {...register("city")}
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                  {/* City */}
+                  <div className="sm:col-span-2 ">
+                    <label
+                      htmlFor="city"
+                      className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      <option value="">Select a city</option>
-                      {cities.map((city) => (
-                        <option key={city} value={city}>
-                          {city}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.city?.message && (
-                      <p className="mt-2 text-sm text-red-400">
-                        {errors.city.message}
-                      </p>
-                    )}
+                      City
+                    </label>
+                    <div className="mt-2">
+                      <select
+                        id="city"
+                        {...register("city")}
+                        className="block  w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
+                      >
+                        <option value="">Select a city</option>
+                        {cities.map((city) => (
+                          <option key={city} value={city}>
+                            {city}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.city?.message && (
+                        <p className="mt-2 text-sm text-red-400">
+                          {errors.city.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Zip */}
+
+                  <div className="sm:col-span-2">
+                    <label
+                      htmlFor="pinCode"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Zip Code
+                    </label>
+                    <div className="mt-2">
+                      <input
+                        type="number"
+                        id="pinCode"
+                        {...register("pinCode", { valueAsNumber: true })}
+                        autoComplete="pinCode"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
+                      />
+                      {errors.pinCode?.message && (
+                        <p className="mt-2 text-sm text-red-400">
+                          {errors.pinCode.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="sm:col-span-2 ">
+                    <button
+                      type="button"
+                      onClick={setLocation}
+                      className="btn-ghost btn bg-teal-600 hover:bg-teal-600"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="24px"
+                        viewBox="0 -960 960 960"
+                        width="24px"
+                        fill="#000000"
+                        className="w-6 h-6"
+                      >
+                        <path d="M480-80q-106 0-173-33.5T240-200q0-24 14.5-44.5T295-280l63 59q-9 4-19.5 9T322-200q13 16 60 28t98 12q51 0 98.5-12t60.5-28q-7-8-18-13t-21-9l62-60q28 16 43 36.5t15 45.5q0 53-67 86.5T480-80Zm1-220q99-73 149-146.5T680-594q0-102-65-154t-135-52q-70 0-135 52t-65 154q0 67 49 139.5T481-300Zm-1 100Q339-304 269.5-402T200-594q0-71 25.5-124.5T291-808q40-36 90-54t99-18q49 0 99 18t90 54q40 36 65.5 89.5T760-594q0 94-69.5 192T480-200Zm0-320q33 0 56.5-23.5T560-600q0-33-23.5-56.5T480-680q-33 0-56.5 23.5T400-600q0 33 23.5 56.5T480-520Zm0-80Z" />
+                      </svg>
+                      Set Your Clinic Location
+                    </button>
                   </div>
                 </div>
-
-                {/* Zip */}
-
-                <div className="sm:col-span-2">
-                  <label
-                    htmlFor="pinCode"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Zip Code
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      type="number"
-                      id="pinCode"
-                      {...register("pinCode", { valueAsNumber: true })}
-                      autoComplete="pinCode"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                    />
-                    {errors.pinCode?.message && (
-                      <p className="mt-2 text-sm text-red-400">
-                        {errors.pinCode.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={setLocation}
-                  className="inline-flex mt-6 justify-center rounded-md border border-transparent bg-sky-600 px-4 py-2 text-sm font-medium text-white shadow-sm ring-1 ring-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
-                >
-                  Set Your Clinic Location
-                </button>
               </motion.div>
             )}
 
@@ -1109,7 +1026,7 @@ export default function Form_Doctor() {
                           id="morningStartTime"
                           {...register("morningStartTime")}
                           autoComplete="morningStartTime"
-                          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
                         />
                         {errors.morningStartTime?.message && (
                           <p className="mt-2 text-sm text-red-400">
@@ -1130,7 +1047,7 @@ export default function Form_Doctor() {
                           id="morningEndTime"
                           {...register("morningEndTime")}
                           autoComplete="morningEndTime"
-                          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
                         />
                         {errors.morningEndTime?.message && (
                           <p className="mt-2 text-sm text-red-400">
@@ -1160,7 +1077,7 @@ export default function Form_Doctor() {
                           id="eveningStartTime"
                           {...register("eveningStartTime")}
                           autoComplete="eveningStartTime"
-                          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
                         />
                         {errors.eveningStartTime?.message && (
                           <p className="mt-2 text-sm text-red-400">
@@ -1181,47 +1098,11 @@ export default function Form_Doctor() {
                           id="eveningEndTime"
                           {...register("eveningEndTime")}
                           autoComplete="eveningEndTime"
-                          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
                         />
                         {errors.eveningEndTime?.message && (
                           <p className="mt-2 text-sm text-red-400">
                             {errors.eveningEndTime.message}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* slot */}
-                  <div className="col-span-1 sm:col-span-2">
-                    <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                      Evening
-                    </h3>
-                    <div className="sm:col-span-1">
-                      <label
-                        htmlFor="slotDuration"
-                        className="block text-sm font-medium leading-6 text-gray-900"
-                      >
-                        Slot Duration
-                      </label>
-                      <div className="mt-2">
-                        <select
-                          id="slotDuration"
-                          {...register("slotDuration", {
-                            required: "Slot duration is required",
-                            valueAsNumber: true, // Ensures the value is treated as a number
-                          })}
-                          autoComplete="slotDuration"
-                          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                        >
-                          <option value="">Select Slot Duration</option>
-                          <option value={15}>15 minutes</option>
-                          <option value={20}>20 minutes</option>
-                          <option value={30}>30 minutes</option>
-                        </select>
-                        {errors.slotDuration?.message && (
-                          <p className="mt-2 text-sm text-red-400">
-                            {errors.slotDuration.message}
                           </p>
                         )}
                       </div>
@@ -1250,7 +1131,7 @@ export default function Form_Doctor() {
             <button
               type="button"
               onClick={prev}
-              className="inline-flex justify-center rounded-md border border-transparent bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-gray-300 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+              className="inline-flex justify-center rounded-md border border-transparent bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-gray-300 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2"
             >
               Back
             </button>
@@ -1258,7 +1139,7 @@ export default function Form_Doctor() {
           <button
             type="button"
             onClick={next}
-            className="inline-flex justify-center rounded-md border border-transparent bg-sky-600 px-4 py-2 text-sm font-medium text-white shadow-sm ring-1 ring-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
+            className="inline-flex justify-center rounded-md border border-transparent bg-teal-600 px-4 py-2 text-sm font-medium text-white shadow-sm ring-1 ring-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2"
           >
             {currentStep < steps.length - 1 ? "Next" : "Submit"}
           </button>
