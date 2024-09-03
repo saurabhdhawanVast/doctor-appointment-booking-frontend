@@ -72,6 +72,11 @@ export interface Doctor {
     clinicAddress?: string;
     city?: string;
     state?: string;
+    morningStartTime?: string; 
+    morningEndTime?: string; 
+    eveningStartTime?: string; 
+    eveningEndTime?: string; 
+    slotDuration?: number; 
   };
   city: string;
   state: string;
@@ -98,6 +103,8 @@ interface LoginState {
   patient: Patient | null;
   login: (data: Input) => Promise<void>;
   setPatient: (patient: Patient) => Promise<void>;
+  //update dr
+  setDoctor: (doctor: Doctor) => Promise<void>;
   logout: () => void;
   fetchUser: () => Promise<void>;
   initializeState: () => void; // Added method to interface
@@ -160,8 +167,17 @@ const useLoginStore = create<LoginState>((set, get) => ({
     }
   },
 
+  //update dr
+  setDoctor: async (doctor) => {
+    set({ doctor });
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("doctor", JSON.stringify(doctor));
+    }
+  },
+
   fetchUser: async () => {
-    const token = typeof window !== "undefined" ? sessionStorage.getItem("token") : null;
+    const token =
+      typeof window !== "undefined" ? sessionStorage.getItem("token") : null;
     if (!token) return;
 
     try {
@@ -194,7 +210,10 @@ const useLoginStore = create<LoginState>((set, get) => ({
 
         set({ patient: patientResponse.data });
         if (typeof window !== "undefined") {
-          sessionStorage.setItem("patient", JSON.stringify(patientResponse.data));
+          sessionStorage.setItem(
+            "patient",
+            JSON.stringify(patientResponse.data)
+          );
         }
       }
     } catch (error) {
@@ -235,7 +254,7 @@ const useLoginStore = create<LoginState>((set, get) => ({
       const user = sessionStorage.getItem("user");
       const doctor = sessionStorage.getItem("doctor");
       const patient = sessionStorage.getItem("patient");
-
+      console.log(patient);
       set({
         isLoggedIn: !!token,
         token,
@@ -251,6 +270,5 @@ const useLoginStore = create<LoginState>((set, get) => ({
 if (typeof window !== "undefined") {
   useLoginStore.getState().initializeState();
 }
-
 
 export default useLoginStore;

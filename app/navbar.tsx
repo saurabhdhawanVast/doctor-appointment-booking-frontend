@@ -79,7 +79,11 @@ const Navbar = () => {
 
   const handleProfile = async () => {
     try {
-      router.push(`/profile/${user?._doc._id}`);
+      if (patient) {
+        router.push(`/patient/profile/${user?._doc._id}`);
+      } else {
+        router.push(`/doctor/profile/${user?._doc._id}`);
+      }
     } catch (error) {
       console.error("Update failed:", error);
     }
@@ -157,7 +161,9 @@ const Navbar = () => {
               <Link href={`/patient/myAppointments`}>View Appointments</Link>
             </li>
             <li>
-              <Link href="/medical-records">Manage Medical Records</Link>
+              <Link href="/patient/medical-records">
+                Manage Medical Records
+              </Link>
             </li>
             <li>
               <Link href="patient/prescriptions">View Prescriptions</Link>
@@ -167,6 +173,9 @@ const Navbar = () => {
             </li>
             <li>
               <Link href="/article">View Articles</Link>
+            </li>
+            <li>
+              <Link href="/patient/reports">Reports</Link>
             </li>
           </>
         );

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
+import useLoginStore from "./useLoginStore";
 
 export interface Slot {
   id: string;
@@ -33,6 +34,11 @@ export interface Doctor {
     clinicAddress?: string;
     city?: string;
     state?: string;
+    morningStartTime?: string; 
+    morningEndTime?: string; 
+    eveningStartTime?: string; 
+    eveningEndTime?: string; 
+    slotDuration?: number; 
   };
   city: string;
   state: string;
@@ -62,6 +68,8 @@ interface DoctorStoreState {
   error: string | null;
 
   // Fetch functions
+  //update by me
+  updateProfile: (doctor: Partial<Doctor>) => void;
   fetchDoctors: (
     status: "all" | "verified" | "unverified",
     page: number,
@@ -183,9 +191,39 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
       set({ doctor: response.data, loading: false });
     } catch (error) {
       console.error(`Error fetching doctor profile: ${error}`);
-      set({ loading: false, error: "Failed to fetch doctor profile." });
     }
   },
+  //update ...
+  updateProfile: async (doctor) => {
+    try {
+      let doctorId = doctor._id;
+      delete doctor._id;
+      let result = await axios.patch(
+        `http://localhost:3000/doctors/${doctorId}`,
+        doctor
+      );
+      set({ doctor: result.data });
+      useLoginStore.getState().setDoctor(result.data);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+  },
+  // verifyDoctor: async (id: string) => {
+  //   try {
+  //     await axiosInstance.post(`/doctors/${id}/verify`);
+  //     set((state) => ({
+  //       doctors: state.doctors.map((doc) =>
+  //         doc._id === id ? { ...doc, isVerified: true } : doc
+  //       ),
+  //       doctor:
+  //         state.doctor && state.doctor._id === id
+  //           ? { ...state.doctor, isVerified: true }
+  //           : state.doctor,
+  //     }));
+  //   } catch (error) {
+  //     console.error(`Error verifying doctor: ${error}`);
+  //   }
+  // },
 
   fetchAvailableDates: async (id: string) => {
     set({ loading: true });
