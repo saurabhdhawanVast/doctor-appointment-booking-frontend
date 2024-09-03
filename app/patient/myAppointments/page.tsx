@@ -1,15 +1,24 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import useAppointmentStore from "@/store/useAppointmentStore";
 import useLoginStore from "@/store/useLoginStore";
 import Image from "next/image";
+import RatingModal from "@/app/components/ratingModel";
+import useRatingStore from "@/store/useRatingStore";
+import { toast } from "react-toastify";
 
 const MyAppointmentsList = () => {
   const upcomingAppointments = useAppointmentStore(
     (state) => state.upcomingAppointments
   );
   const getAppointments = useAppointmentStore((state) => state.getAppointments);
+  const createRating = useRatingStore((state) => state.createRating);
   const patient = useLoginStore((state) => state.patient);
+
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     const fetch = async () => {
@@ -22,6 +31,43 @@ const MyAppointmentsList = () => {
     };
     fetch();
   }, [patient]);
+  const openRatingModal = (appointmentId: string) => {
+    setSelectedAppointmentId(appointmentId);
+    setIsModalOpen(true);
+  };
+
+  const closeRatingModal = () => {
+    setIsModalOpen(false);
+    setSelectedAppointmentId(null);
+  };
+  const handleRatingSubmit = async (ratingData: {
+    rating: number;
+    comment: string;
+  }) => {
+    let appointment = upcomingAppointments.find(
+      (appointment) =>
+        appointment._id.toString() === selectedAppointmentId?.toString()
+    );
+    console.log(appointment);
+    if (
+      patient &&
+      patient._id &&
+      appointment &&
+      appointment.doctor &&
+      appointment.doctor._id
+    ) {
+      let payload = {
+        rating: ratingData.rating,
+        comment: ratingData.comment,
+        doctor: appointment.doctor._id,
+        patient: patient._id,
+      };
+      console.log(payload);
+      await createRating(payload);
+      toast.success("Thank you for providing your feedback!");
+    }
+  };
+
   return (
     <div className="mt-16 p-4">
       <h2 className="text-2xl font-semibold text-center mb-6">
@@ -72,7 +118,14 @@ const MyAppointmentsList = () => {
                 <p className="text-sm text-gray-500">
                   Appointment Date:{" "}
                   <span className="font-semibold">
-                    {new Date(appointment.appointmentDate).toLocaleDateString()}
+                    {new Date(appointment.appointmentDate).toLocaleDateString(
+                      "en-GB",
+                      {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      }
+                    )}
                   </span>
                 </p>
                 <p className="text-sm text-gray-500">
@@ -88,10 +141,23 @@ const MyAppointmentsList = () => {
                 >
                   Status: {appointment.status}
                 </p>
+                {appointment.status === "completed" && (
+                  <button
+                    className="mt-4 md:mt-0 md:ml-6 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    onClick={() => openRatingModal(appointment._id)}
+                  >
+                    Rate Appointment
+                  </button>
+                )}
               </div>
             </div>
           ))}
       </div>
+      <RatingModal
+        isOpen={isModalOpen}
+        onClose={closeRatingModal}
+        onSubmit={handleRatingSubmit}
+      />
     </div>
   );
 };

@@ -76,12 +76,12 @@ const ForgotPasswordForm = () => {
                 About
               </Link>
             </li>
-            {/* Add more links as needed */}
+           
           </ul>
         </div>
       </nav>
 
-      {/* Main content */}
+     
       <div className="flex items-center justify-center py-16">
         <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
           <h2 className="text-3xl font-extrabold text-center text-gray-800 mb-6">

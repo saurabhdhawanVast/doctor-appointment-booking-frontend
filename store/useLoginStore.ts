@@ -72,11 +72,11 @@ export interface Doctor {
     clinicAddress?: string;
     city?: string;
     state?: string;
-    morningStartTime?: string; // updated by me
-    morningEndTime?: string; // updated by me
-    eveningStartTime?: string; // updated by me
-    eveningEndTime?: string; // updated by me
-    slotDuration?: number; // updated by me
+    morningStartTime?: string; 
+    morningEndTime?: string; 
+    eveningStartTime?: string; 
+    eveningEndTime?: string; 
+    slotDuration?: number; 
   };
   city: string;
   state: string;
