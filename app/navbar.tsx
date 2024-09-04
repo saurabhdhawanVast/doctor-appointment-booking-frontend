@@ -50,6 +50,7 @@ const Navbar = () => {
   const router = useRouter();
   const role = user?._doc?.role;
   const doctorId = doctor?._id;
+  const patientId = patient?._id;
 
   useEffect(() => {
     const loadData = async () => {
@@ -166,7 +167,9 @@ const Navbar = () => {
               </Link>
             </li>
             <li>
-              <Link href="patient/prescriptions">View Prescriptions</Link>
+              <Link href={`/patient/prescriptions/${patientId}`}>
+                View Prescriptions
+              </Link>
             </li>
             <li>
               <Link href="/patient/find-doctor">Find Doctor</Link>
