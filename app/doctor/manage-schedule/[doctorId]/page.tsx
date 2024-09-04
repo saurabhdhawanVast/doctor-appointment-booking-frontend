@@ -247,7 +247,7 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
           <select
             value={timePerSlot}
             onChange={handleTimeChange}
-            className="ml-2 border border-gray-300 rounded px-2 py-1"
+            className="ml-2 border border-gray-300 rounded px-2 py-1 w-32"
           >
             <option value={15}>15 minutes</option>
             <option value={20}>20 minutes</option>
@@ -327,7 +327,7 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
           {/* Customize your loader */}
         </div>
       )}
-      <div className="w-full lg:w-1/4 border-r p-4">
+      <div className="w-full   lg:w-1/6 border-r p-4">
         <h2 className="text-xl font-semibold mb-4">Calendar</h2>
         <DatePicker
           selected={null} // Keep this null as we handle multiple dates
@@ -339,6 +339,17 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
             isDateAvailable(date) ? "bg-green-400 text-white" : "bg-white"
           }
         />
+
+        <div className="flex space-x-4 mt-4">
+          <div className="flex items-center space-x-2">
+            <div className="w-4 h-4 bg-green-400"></div>
+            <span className="text-gray-700">Available</span>
+          </div>
+          {/* <div className="flex items-center space-x-2">
+            <div className="w-4 h-4 bg-blue-500"></div>
+            <span className="text-gray-700">Selected</span>
+          </div> */}
+        </div>
       </div>
       <div className="w-full lg:w-3/4 p-4">
         {showMarkAvailable ? (
