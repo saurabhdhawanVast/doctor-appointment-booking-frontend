@@ -22,7 +22,7 @@ interface RatingsState {
 
 export const useRatingStore = create<RatingsState>((set) => ({
   createRating: async (Rating) => {
-    console.log(`creating rating${Rating}`);
+    console.log(`creating rating${JSON.stringify(Rating)}`);
     try {
       await axios.post("http://localhost:3000/ratings", Rating);
     } catch (error) {

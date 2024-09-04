@@ -93,7 +93,7 @@ const Navbar = () => {
   const renderNavbarLinks = () => {
     if (!isLoggedIn) {
       return (
-        <>
+        <div className="menu menu-horizontal  ">
           <li>
             <Link href="/">Home</Link>
           </li>
@@ -109,14 +109,14 @@ const Navbar = () => {
           <li>
             <Link href="/contact">Contact Us</Link>
           </li>
-        </>
+        </div>
       );
     }
 
     switch (role) {
       case "admin":
         return (
-          <>
+          <div className="menu menu-horizontal  ">
             <li>
               <Link href="/dashboard">Dashboard</Link>
             </li>
@@ -126,11 +126,11 @@ const Navbar = () => {
             <li>
               <Link href="/settings">Settings</Link>
             </li>
-          </>
+          </div>
         );
       case "doctor":
         return (
-          <>
+          <div className="menu menu-horizontal ">
             {/* <li>
               <Link href={`/doctor/appointments/${doctorId}`}>
                 Appointments
@@ -153,11 +153,11 @@ const Navbar = () => {
                 Create Article
               </Link>
             </li>
-          </>
+          </div>
         );
       case "patient":
         return (
-          <>
+          <div className="menu menu-horizontal">
             <li>
               <Link href={`/patient/myAppointments`}>View Appointments</Link>
             </li>
@@ -180,11 +180,11 @@ const Navbar = () => {
             <li>
               <Link href="/patient/reports">Reports</Link>
             </li>
-          </>
+          </div>
         );
       default:
         return (
-          <>
+          <div className="menu menu-horizontal ">
             <li>
               <Link href="/">Home</Link>
             </li>
@@ -200,7 +200,7 @@ const Navbar = () => {
             <li>
               <Link href="/contact">Contact Us</Link>
             </li>
-          </>
+          </div>
         );
     }
   };
@@ -213,14 +213,13 @@ const Navbar = () => {
           {/* <Loader /> */}
         </div>
       ) : (
-        <div className="navbar bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 fixed top-0 left-0 right-0 z-50 text-white shadow-lg h-16">
-          <div className="navbar-start">
+        <div className="navbar  bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 fixed top-0 left-0 right-0 z-50 text-white shadow-lg h-16">
+          <div className="navbar-start flex items-center">
             <Link
               href="/"
-              className="btn  text-2xl font-bold bg-teal-500 h-fit hover:bg-teal-500 border-none"
+              className="flex items-center text-2xl font-bold h-fit hover:bg-teal-500 border-none"
             >
-              <img src={Logo.src} alt="Logo" className="h-14 w-14" />{" "}
-              {/* Adjust size as needed */}
+              <img src={Logo.src} alt="Logo" className="h-14 w-14 mr-2" />
               DABS
             </Link>
           </div>
@@ -241,29 +240,56 @@ const Navbar = () => {
               </Link>
             ) : (
               <div className="relative" ref={dropdownRef}>
-                <div className="flex items-center w-10 h-6 circle">
-                  <Image
-                    src={
-                      doctor && doctor.profilePic
-                        ? doctor.profilePic
-                        : patient && patient.profilePic
-                        ? patient.profilePic
-                        : imageDemo
-                    }
-                    alt="Avatar"
-                    width={100}
-                    height={100}
-                    className="rounded-full border-2 border-white w-8 h-8"
-                    onClick={toggleDropdown}
-                  />
+                <div className="flex items-center space-x-2">
+                  <div className="text-sm">
+                    {doctor?.name.split(" ")[0] ??
+                      patient?.name.split(" ")[0] ??
+                      ""}
+                  </div>
+                  <div className="w-10 h-10">
+                    <Image
+                      src={
+                        doctor && doctor.profilePic
+                          ? doctor.profilePic
+                          : patient && patient.profilePic
+                          ? patient.profilePic
+                          : imageDemo
+                      }
+                      alt="Avatar"
+                      width={40}
+                      height={40}
+                      className="rounded-full border-2 border-white w-10 h-10"
+                      onClick={toggleDropdown}
+                    />
+                  </div>
+                </div>
+
+                {/* <div className="flex items-center w-10 h-6 circle">
+                  <div>
+                    {" "}
+                    <Image
+                      src={
+                        doctor && doctor.profilePic
+                          ? doctor.profilePic
+                          : patient && patient.profilePic
+                          ? patient.profilePic
+                          : imageDemo
+                      }
+                      alt="Avatar"
+                      width={100}
+                      height={100}
+                      className="rounded-full border-2 border-white w-8 h-8"
+                      onClick={toggleDropdown}
+                    />
+                  </div>
                 </div>
                 <div className="text-sem">
-                  {doctor && doctor.name
-                    ? doctor.name
-                    : patient && patient.name
-                    ? patient.name
+                  {doctor && doctor.name.split(" ")[0]
+                    ? doctor.name.split(" ")[0]
+                    : patient && patient.name.split(" ")[0]
+                    ? patient.name.split(" ")[0]
                     : ""}
-                </div>
+                </div> */}
 
                 {dropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">

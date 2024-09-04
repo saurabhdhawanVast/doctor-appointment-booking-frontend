@@ -65,7 +65,7 @@ const MyAppointmentsList = () => {
         doctor: appointment.doctor._id,
         patient: patient._id,
       };
-      console.log(payload);
+      console.log("payload", payload);
       await createRating(payload);
       toast.success("Thank you for providing your feedback!");
     }
