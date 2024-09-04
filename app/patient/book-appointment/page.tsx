@@ -7,15 +7,9 @@ import { format, toZonedTime } from "date-fns-tz";
 import useDoctorStore from "@/store/useDoctorStoree";
 import { useSearchParams } from "next/navigation";
 import useBookAppointmentStore from "@/store/useBookAppointmentStore";
+import { AnimatePresence, motion } from "framer-motion";
 
 const timeZone = "Asia/Kolkata"; // Set your preferred time zone
-
-// Utility function to normalize date to start of the day in UTC
-const normalizeDateToUTC = (date: Date): Date => {
-  return new Date(
-    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
-  );
-};
 
 const BookAppointmentPage = () => {
   const searchParams = useSearchParams();
@@ -77,12 +71,13 @@ const BookAppointmentPage = () => {
 
   useEffect(() => {
     if (selectedDate) {
-      const normalizedSelectedDate = normalizeDateToUTC(selectedDate);
+      const normalizedSelectedDate = fomattedDate(selectedDate);
       const dateString = format(
         toZonedTime(normalizedSelectedDate, timeZone),
         "yyyy-MM-dd",
         { timeZone }
       );
+      console.log(`Date Selected is ${dateString}`);
       const dateSlots = availableDates.find(
         ({ date }) =>
           format(toZonedTime(date, timeZone), "yyyy-MM-dd", { timeZone }) ===
@@ -94,8 +89,25 @@ const BookAppointmentPage = () => {
     }
   }, [selectedDate, availableDates]);
 
+  useEffect(() => {
+    if (bookingSuccess) {
+      const timer = setTimeout(() => {
+        setBookingSuccess(null); // Clear success message after 5 seconds
+      }, 3000);
+
+      // Cleanup function to clear the timer if the component unmounts or success message changes
+      return () => clearTimeout(timer);
+    }
+  }, [bookingSuccess, setBookingSuccess]);
+
   const handleDateChange = (date: Date | null) => {
-    setSelectedDate(date ? normalizeDateToUTC(date) : null);
+    setSelectedDate(date ? fomattedDate(date) : null);
+  };
+  const fomattedDate = (date: Date): any => {
+    const dateString = format(toZonedTime(date, timeZone), "yyyy-MM-dd", {
+      timeZone,
+    });
+    return dateString;
   };
 
   const isDateAvailable = (date: Date) => {
@@ -159,13 +171,27 @@ const BookAppointmentPage = () => {
     return <p className="text-center text-gray-500">No doctor found.</p>;
   }
 
+  const formatTime = (time: string): string => {
+    const [hourString, minute] = time.split(":");
+    let hour = parseInt(hourString, 10);
+    const isPM = hour >= 12;
+
+    if (hour > 12) {
+      hour -= 12;
+    } else if (hour === 0) {
+      hour = 12;
+    }
+
+    return `${hour}:${minute} ${isPM ? "PM" : "AM"}`;
+  };
+
   return (
-    <div className=" mx-auto p-8 bg-gray-50 rounded-lg shadow-lg mt-16 w-full  ">
+    <div className="mx-auto p-8 bg-gray-50 rounded-lg shadow-lg mt-16 w-full">
       <h1 className="text-3xl font-extrabold text-gray-800 mb-6">
         Book Appointment with Dr. {doctor.name}
       </h1>
 
-      <div className="flex items-center space-x-6 mb-6 ">
+      <div className="flex items-center space-x-6 mb-6">
         <img
           src={doctor.profilePic}
           alt={`Dr. ${doctor.name}`}
@@ -176,7 +202,7 @@ const BookAppointmentPage = () => {
             Doctor Profile
           </h2>
           <p>
-            <strong className="font-medium text-gray-600">Name:</strong> Dr.
+            <strong className="font-medium text-gray-600">Name:</strong> Dr.{" "}
             {doctor.name}
           </p>
           <p>
@@ -231,7 +257,7 @@ const BookAppointmentPage = () => {
                     >
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-lg font-medium text-gray-800">
-                          {slot.time}
+                          {formatTime(slot.time)}
                         </span>
                         <span
                           className={`font-semibold ${
@@ -242,64 +268,97 @@ const BookAppointmentPage = () => {
                               : "text-red-500"
                           }`}
                         >
-                          {slot.status.charAt(0).toUpperCase() +
-                            slot.status.slice(1)}
+                          {slot.status === "available"
+                            ? "Available"
+                            : slot.status === "booked"
+                            ? "Booked"
+                            : "Unavailable"}
                         </span>
                       </div>
-                      {slot.status === "available" && (
-                        <button
-                          onClick={() => handleBookSlot(slot.id)}
-                          className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
-                        >
-                          Book Slot
-                        </button>
-                      )}
+                      <button
+                        onClick={() => handleBookSlot(slot.id)}
+                        disabled={slot.status !== "available"}
+                        className={`py-2 px-4 rounded-md text-white font-semibold ${
+                          slot.status === "available"
+                            ? "bg-blue-500 hover:bg-blue-600"
+                            : "bg-gray-300 cursor-not-allowed"
+                        }`}
+                      >
+                        {slot.status === "available"
+                          ? "Book Now"
+                          : "Unavailable"}
+                      </button>
                     </li>
                   ))
                 ) : (
-                  <p className="text-gray-500">
-                    No available slots for this date.
+                  <p className="text-center text-gray-500">
+                    No available slots on this date.
                   </p>
                 )}
               </ul>
-              {bookingError && (
-                <p className="text-red-500 mt-4">{bookingError}</p>
-              )}
-              {bookingSuccess && (
-                <p className="text-green-500 mt-4">{bookingSuccess}</p>
-              )}
             </>
           )}
         </div>
       </div>
-
-      {/* Modal Confirmation Box */}
-      {showModal && (
-        <dialog
-          open
-          className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50"
-        >
-          <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full">
-            <h3 className="text-lg font-bold text-gray-800 mb-4">
-              Confirm Booking
-            </h3>
-            <p className="text-gray-700 mb-4">Do you want to book this slot?</p>
-            <div className="flex justify-end space-x-4">
-              <button
-                onClick={confirmBooking}
-                className="btn btn-primary bg-blue-600 text-white rounded-lg px-4 py-2 shadow-md hover:bg-blue-700 transition duration-300"
-              >
-                Confirm
-              </button>
-              <button
-                onClick={() => setShowModal(false)}
-                className="btn btn-secondary bg-gray-300 text-gray-800 rounded-lg px-4 py-2 shadow-md hover:bg-gray-400 transition duration-300"
-              >
-                Cancel
-              </button>
-            </div>
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white rounded-lg shadow-lg p-8 max-w-lg w-full relative"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+            >
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+                Confirm Booking
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Are you sure you want to book this slot?
+              </p>
+              <div className="flex justify-end space-x-4">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="py-2 px-4 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmBooking}
+                  className="py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                >
+                  Confirm
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {bookingSuccess && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="flex items-center bg-green-500 text-white text-sm font-bold px-4 py-3 rounded-md space-x-2">
+            <svg
+              className="fill-current w-5 h-5"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+            >
+              <path d="M10 0a10 10 0 1 0 10 10A10 10 0 0 0 10 0zm0 18.18A8.18 8.18 0 1 1 18.18 10 8.19 8.19 0 0 1 10 18.18zM8.93 14.07L4.88 10l1.41-1.41 2.65 2.65 5.36-5.36 1.41 1.41z" />
+            </svg>
+            <span>{bookingSuccess}</span>
           </div>
-        </dialog>
+        </div>
+      )}
+
+      {bookingError && (
+        <div className="flex items-center justify-center mt-6">
+          <div className="bg-red-500 text-white text-sm font-bold px-4 py-3 rounded-md">
+            {bookingError}
+          </div>
+        </div>
       )}
     </div>
   );

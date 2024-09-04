@@ -1,13 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useParams } from "next/navigation";
 import { usePrescriptionStore } from "@/store/usePrescriptionStore";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-
 // Define interfaces for Medicine and Prescription
 interface Medicine {
   name: string;
@@ -48,8 +47,9 @@ const modalStyle = {
 };
 
 const PrescriptionPage = () => {
-  const searchParams = useSearchParams();
-  const patientId = searchParams.get("patientId");
+  const params = useParams();
+  const patientId = params.patientId;
+  console.log(`patientId is :${patientId}`);
   const { prescriptions, fetchPrescriptions } = usePrescriptionStore(
     (state) => ({
       prescriptions: state.prescriptions,
@@ -62,12 +62,12 @@ const PrescriptionPage = () => {
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    if (patientId) {
+    if (typeof patientId === "string") {
       fetchPrescriptions(patientId)
         .then(() => console.log("Prescription fetching completed"))
         .catch((error) => console.error("Error in useEffect:", error));
     } else {
-      console.log("No patientId available");
+      console.log("Invalid patientId");
     }
   }, [patientId, fetchPrescriptions]);
 

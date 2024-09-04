@@ -1,58 +1,3 @@
-// "use client";
-// import useLoginStore from "@/store/useLoginStore";
-// import { usePrescriptionStore } from "@/store/usePrescriptionStore";
-// import React, { useEffect } from "react";
-
-// const PatientPrescriptions = ({
-//   params,
-// }: {
-//   params: { patientId: string };
-// }) => {
-//   const prescriptions = usePrescriptionStore((state) => state.prescriptions);
-//   const fetchPrescriptions = usePrescriptionStore(
-//     (state) => state.fetchPrescriptions
-//   );
-//   const doctor = useLoginStore((state) => state.doctor);
-//   const doctorId = doctor?._id;
-//   const { patientId } = params;
-
-//   useEffect(() => {
-//     if (doctorId && patientId) {
-//       fetchPrescriptions(patientId)
-//         .then(() => console.log("Prescriptions fetched successfully"))
-//         .catch((error) =>
-//           console.error("Error fetching prescriptions:", error)
-//         );
-//     }
-//   }, [doctorId, patientId, fetchPrescriptions]);
-
-//   return (
-//     <div className="mt-16 p-8">
-//       <h2 className="text-2xl font-bold mb-4">Patient Prescriptions</h2>
-//       <ul>
-//         {prescriptions.length > 0 ? (
-//           prescriptions.map((prescription) => (
-//             <li
-//               key={prescription._id}
-//               className="mb-2 p-4 bg-gray-100 rounded-lg"
-//             >
-//               <p>Patient Name: {prescription.patientName}</p>
-//               <p>Doctor Name: {prescription.doctorName}</p>
-
-//               <p>Date: {prescription.appointmentDate}</p>
-//               {/* Add more fields as needed */}
-//             </li>
-//           ))
-//         ) : (
-//           <p>No prescriptions found for this patient.</p>
-//         )}
-//       </ul>
-//     </div>
-//   );
-// };
-
-// export default PatientPrescriptions;
-
 "use client";
 import useLoginStore from "@/store/useLoginStore";
 import { usePrescriptionStore } from "@/store/usePrescriptionStore";
@@ -75,7 +20,14 @@ const PatientPrescriptions = ({
   ); // State for selected prescription for modal
   const [modalOpen, setModalOpen] = useState(false); // State for modal visibility
 
+  const [currentPage, setCurrentPage] = useState(1); // State for current page
+  const [itemsPerPage] = useState(10); // Number of items per page
+
   const prescriptions = usePrescriptionStore((state) => state.prescriptions);
+  const fetchPrescriptionsByPatientAndDoctor = usePrescriptionStore(
+    (state) => state.fetchPrescriptionsByPatientAndDoctor
+  );
+
   const fetchPrescriptions = usePrescriptionStore(
     (state) => state.fetchPrescriptions
   );
@@ -86,13 +38,13 @@ const PatientPrescriptions = ({
 
   useEffect(() => {
     if (doctorId && patientId) {
-      fetchPrescriptions(patientId)
+      fetchPrescriptionsByPatientAndDoctor(patientId, doctorId)
         .then(() => console.log("Prescriptions fetched successfully"))
         .catch((error) =>
           console.error("Error fetching prescriptions:", error)
         );
     }
-  }, [doctorId, patientId, fetchPrescriptions]);
+  }, [doctorId, patientId, fetchPrescriptionsByPatientAndDoctor]);
 
   useEffect(() => {
     // Filter prescriptions based on the selected date
@@ -125,6 +77,17 @@ const PatientPrescriptions = ({
     }
   }, [selectedDate, prescriptions]);
 
+  // Paginate the filtered prescriptions
+  const indexOfLast = currentPage * itemsPerPage;
+  const indexOfFirst = indexOfLast - itemsPerPage;
+  const currentPrescriptions = filteredPrescriptions.slice(
+    indexOfFirst,
+    indexOfLast
+  );
+
+  // Calculate the number of pages
+  const totalPages = Math.ceil(filteredPrescriptions.length / itemsPerPage);
+
   const handleOpenModal = (prescription: any) => {
     setSelectedPrescription(prescription);
     setModalOpen(true);
@@ -150,8 +113,8 @@ const PatientPrescriptions = ({
       </div>
 
       <ul>
-        {filteredPrescriptions.length > 0 ? (
-          filteredPrescriptions.map((prescription) => {
+        {currentPrescriptions.length > 0 ? (
+          currentPrescriptions.map((prescription) => {
             // Ensure appointmentDate is a valid date
             const appointmentDate = new Date(prescription.appointmentDate);
             if (isNaN(appointmentDate.getTime())) {
@@ -185,6 +148,29 @@ const PatientPrescriptions = ({
           <p>No prescriptions found for the selected date.</p>
         )}
       </ul>
+
+      {/* Pagination Controls */}
+      {filteredPrescriptions.length > itemsPerPage && (
+        <div className="mt-4 flex justify-center">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            className="px-4 py-2 bg-teal-600 text-white rounded transition duration-300 mr-2"
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+          <span className="px-4 py-2">{`Page ${currentPage} of ${totalPages}`}</span>
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            className="px-4 py-2 bg-teal-600 text-white rounded transition duration-300 ml-2"
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      )}
 
       {selectedPrescription && (
         <PrescriptionDetailsModal
