@@ -33,11 +33,11 @@ export default function DoctorProfile() {
 
   return (
     <div className="container mx-auto py-16 mt-4">
-      <Link href="/admin" className="text-blue-500 mb-4 inline-block">
+      <Link href="/admin" className="text-blue-500  inline-block">
         Back to Doctor List
       </Link>
 
-      <div className="doctor-profile flex flex-col md:flex-row  p-6 rounded-xxl shadow-2xl mt-10 bg-rose-50">
+      <div className="doctor-profile flex flex-col md:flex-row  p-6 rounded-xl shadow-2xl mt-10 bg-teal-50">
         {/* Doctor Details Section */}
         <div className="md:w-2/3 md:pr-6">
           <h2 className="text-3xl font-bold mb-4">{doctor.name}</h2>
@@ -95,8 +95,21 @@ export default function DoctorProfile() {
 
             <button
               onClick={() => setIsModalOpen(true)}
-              className="btn btn-secondary mt-4"
+              className="btn bg-teal-600  mt-4"
             >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="size-6"
+              >
+                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                <path
+                  fillRule="evenodd"
+                  d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z"
+                  clipRule="evenodd"
+                />
+              </svg>
               View Full Image
             </button>
           </div>
