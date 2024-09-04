@@ -71,12 +71,17 @@ export const FormDataSchemaDoctor = z
 
     clinicName: z.string().min(1, "Clinic name is required"),
 
-    morningStartTime: z.string().min(1, "Start time is required"),
-    morningEndTime: z.string().min(1, "End time is required"),
-    eveningStartTime: z.string().min(1, "Start time is required"),
-    eveningEndTime: z.string().min(1, "End time is required"),
+    // morningStartTime: z.string().min(1, "Start time is required"),
+    // morningEndTime: z.string().min(1, "End time is required"),
+    // eveningStartTime: z.string().min(1, "Start time is required"),
+    // eveningEndTime: z.string().min(1, "End time is required"),
 
-    slotDuration: z.number().min(1, "Slot is required"),
+    morningStartTime: z.string().optional(),
+    morningEndTime: z.string().optional(),
+    eveningStartTime: z.string().optional(),
+    eveningEndTime: z.string().optional(),
+
+    // slotDuration: z.number().min(1, "Slot is required"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",

@@ -6,6 +6,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { AnimatePresence, motion } from "framer-motion";
 import { format } from "date-fns-tz";
 import { toast } from "react-toastify";
+import Loading from "../../../loading";
 
 const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
   params,
@@ -18,6 +19,7 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
     useState<boolean>(false);
   const [showMarkAvailable, setShowMarkAvailable] = useState<boolean>(false);
   const [timePerSlot, setTimePerSlot] = useState<number>(15);
+  const [isLoading, setIsLoading] = useState(false);
   const today = new Date(); // Get the current date
   const timeZone = "Asia/Kolkata"; // IST timezone
   const {
@@ -113,20 +115,23 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
     if (slotToCancel && selectedDates.length > 0) {
       try {
         // Perform the API call to cancel the slot
-        await cancelSlot(params.doctorId, selectedDates[0], slotToCancel);
+        setIsLoading(true);
+        console.log(isLoading);
+        await cancelSlot(params.doctorId, selectedDates[0], slotToCancel!);
 
-        // If successful, update the local state to reflect the canceled slot
-        setSlots((prevSlots) =>
-          prevSlots.map((slot) =>
-            slot.id === slotToCancel ? { ...slot, status: "canceled" } : slot
-          )
-        );
+        // Fetch the updated list of available dates
+        await fetchAvailableDates(params.doctorId);
+
+        // Optionally s`how a success message
+        toast.success("Slot canceled successfully");
       } catch (error) {
         console.error("Failed to cancel slot:", error);
+        toast.error("Failed to cancel slot.");
       } finally {
-        // Close the confirmation dialog
+        // Close the confirmation dialog and reset the slotToCancel state
         setShowConfirmation(false);
         setSlotToCancel(null);
+        setIsLoading(false);
       }
     }
   };
@@ -141,10 +146,20 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
     try {
       if (selectedDates.length > 0) {
         await cancelAllSlots(params.doctorId, selectedDates[0]);
+
+        // Clear slots and selected dates
         setSlots([]);
+        setSelectedDates([]);
+
+        // Fetch the updated list of available dates
+        await fetchAvailableDates(params.doctorId);
+
+        // Show a success message if you like
+        toast.success("All slots canceled successfully");
       }
     } catch (error) {
       console.error("Failed to cancel all slots:", error);
+      toast.error("Failed to cancel all slots.");
     } finally {
       setShowCancelAllConfirmation(false);
     }
@@ -226,19 +241,50 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
           </li>
         ))}
       </ul>
+      <div className="mb-4">
+        <label className="mr-2">
+          Time per Slot:
+          <select
+            value={timePerSlot}
+            onChange={handleTimeChange}
+            className="ml-2 border border-gray-300 rounded px-2 py-1"
+          >
+            <option value={15}>15 minutes</option>
+            <option value={20}>20 minutes</option>
+            <option value={30}>30 minutes</option>
+          </select>
+        </label>
+      </div>
     </div>
   );
+  const formatTime = (time: string): string => {
+    const [hourString, minute] = time.split(":");
+    let hour = parseInt(hourString, 10);
+    const isPM = hour >= 12;
 
+    if (hour > 12) {
+      hour -= 12;
+    } else if (hour === 0) {
+      hour = 12;
+    }
+
+    return `${hour}:${minute} ${isPM ? "PM" : "AM"}`;
+  };
   const renderSlotManagement = () => (
     <div className="w-full p-4">
       {selectedDates.length === 0 ? (
-        <p>No dates selected.</p>
+        <p>Select date to mark available or to manage schedule.</p>
       ) : (
         <>
-          <h2 className="text-xl font-semibold mb-4">
-            Manage Slots for Date{" "}
-            {formatDateInTimeZone(selectedDates[0], timeZone)}
-          </h2>
+          <h3 className="text-xl font-normal mb-4">
+            Manage Slots for{" "}
+            {/* {formatDateInTimeZone(selectedDates[0], timeZone)} */}
+            {selectedDates[0].toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "long", // 'short' for abbreviated month names
+              year: "numeric",
+            })}
+          </h3>
           <button
             className="bg-red-500 text-white px-4 py-2 mb-4 rounded"
             onClick={handleCancelAllSlots}
@@ -252,10 +298,10 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
                 className="border p-4 my-2 flex justify-between items-center hover:bg-gray-100 transition duration-200"
               >
                 <div>
-                  <p className="font-medium">Time: {slot.time}</p>
+                  <p className="font-medium">Time: {formatTime(slot.time)}</p>
                   <p>Status: {slot.status}</p>
                 </div>
-                {slot.status === "available" && (
+                {(slot.status === "available" || slot.status === "booked") && (
                   <button
                     className="bg-red-500 text-white px-4 py-2 rounded"
                     onClick={() => handleCancelSlot(slot.id)}
@@ -273,6 +319,14 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
 
   return (
     <div className="flex flex-col lg:flex-row mt-16">
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
+          <div className="loader">
+            <Loading />
+          </div>{" "}
+          {/* Customize your loader */}
+        </div>
+      )}
       <div className="w-full lg:w-1/4 border-r p-4">
         <h2 className="text-xl font-semibold mb-4">Calendar</h2>
         <DatePicker

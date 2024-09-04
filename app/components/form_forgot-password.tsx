@@ -76,12 +76,10 @@ const ForgotPasswordForm = () => {
                 About
               </Link>
             </li>
-            {/* Add more links as needed */}
           </ul>
         </div>
       </nav>
 
-      {/* Main content */}
       <div className="flex items-center justify-center py-16">
         <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
           <h2 className="text-3xl font-extrabold text-center text-gray-800 mb-6">
@@ -149,7 +147,7 @@ const ForgotPasswordForm = () => {
             <div>
               <button
                 type="submit"
-                className="w-full bg-indigo-600 text-white font-semibold py-2 px-4 rounded-md shadow hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500"
+                className="w-full bg-teal-500 text-white font-semibold py-2 px-4 rounded-md shadow hover:bg-teal-700 focus:ring-2 focus:ring-indigo-500"
               >
                 Send Reset Link
               </button>

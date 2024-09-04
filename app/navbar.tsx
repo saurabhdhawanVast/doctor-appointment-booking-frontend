@@ -5,6 +5,7 @@ import useLoginStore from "@/store/useLoginStore";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import imageDemo from "../public/images/avatar-icon.png";
+import Logo from "../public/images/logooo.png"; // Adjust the path
 import { Ellipsis } from "react-css-spinners"; // Import the Ellipsis spinner
 
 const Navbar = () => {
@@ -49,6 +50,7 @@ const Navbar = () => {
   const router = useRouter();
   const role = user?._doc?.role;
   const doctorId = doctor?._id;
+  const patientId = patient?._id;
 
   useEffect(() => {
     const loadData = async () => {
@@ -78,7 +80,11 @@ const Navbar = () => {
 
   const handleProfile = async () => {
     try {
-      router.push(`/profile/${user?._doc._id}`);
+      if (patient) {
+        router.push(`/patient/profile/${user?._doc._id}`);
+      } else {
+        router.push(`/doctor/profile/${user?._doc._id}`);
+      }
     } catch (error) {
       console.error("Update failed:", error);
     }
@@ -135,7 +141,7 @@ const Navbar = () => {
             </li>
 
             <li>
-              <Link href={`/doctor/mark-available/${doctorId}`}>
+              <Link href={`/doctor/manage-schedule/${doctorId}`}>
                 Manage Schedule
               </Link>
             </li>
@@ -156,16 +162,23 @@ const Navbar = () => {
               <Link href={`/patient/myAppointments`}>View Appointments</Link>
             </li>
             <li>
-              <Link href="/medical-records">Manage Medical Records</Link>
+              <Link href="/patient/medical-records">
+                Manage Medical Records
+              </Link>
             </li>
             <li>
-              <Link href="patient/prescriptions">View Prescriptions</Link>
+              <Link href={`/patient/prescriptions/${patientId}`}>
+                View Prescriptions
+              </Link>
             </li>
             <li>
               <Link href="/patient/find-doctor">Find Doctor</Link>
             </li>
             <li>
               <Link href="/article">View Articles</Link>
+            </li>
+            <li>
+              <Link href="/patient/reports">Reports</Link>
             </li>
           </>
         );
@@ -202,7 +215,12 @@ const Navbar = () => {
       ) : (
         <div className="navbar bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 fixed top-0 left-0 right-0 z-50 text-white shadow-lg h-16">
           <div className="navbar-start">
-            <Link href="/" className="btn btn-ghost text-2xl font-bold">
+            <Link
+              href="/"
+              className="btn  text-2xl font-bold bg-teal-500 h-fit hover:bg-teal-500 border-none"
+            >
+              <img src={Logo.src} alt="Logo" className="h-14 w-14" />{" "}
+              {/* Adjust size as needed */}
               DABS
             </Link>
           </div>
