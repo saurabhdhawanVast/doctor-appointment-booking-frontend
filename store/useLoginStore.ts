@@ -72,11 +72,11 @@ export interface Doctor {
     clinicAddress?: string;
     city?: string;
     state?: string;
-    morningStartTime?: string; 
-    morningEndTime?: string; 
-    eveningStartTime?: string; 
-    eveningEndTime?: string; 
-    slotDuration?: number; 
+    morningStartTime?: string;
+    morningEndTime?: string;
+    eveningStartTime?: string;
+    eveningEndTime?: string;
+    slotDuration?: number;
   };
   city: string;
   state: string;
@@ -142,11 +142,31 @@ const useLoginStore = create<LoginState>((set, get) => ({
       if (typeof window !== "undefined") {
         sessionStorage.setItem("token", accessToken);
       }
-      set({ isLoggedIn: true, token: accessToken });
-
 
       // Fetch user profile after login
       await get().fetchUser();
+
+      const user = get().user;
+      if (user && user._doc.role === "doctor") {
+        const doctorResponse = await axiosInstance.get(
+          `/doctors/fetchDoctorByUserId/${user._doc._id}`
+        );
+
+        const doctor = doctorResponse.data;
+        set({ doctor });
+
+        if (doctor.isVerified === false) {
+          toast.error("You are yet to be verified by the admin.");
+          get().logout();
+          return;
+        }
+
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("doctor", JSON.stringify(doctor));
+        }
+      }
+
+      set({ isLoggedIn: true, token: accessToken });
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error(

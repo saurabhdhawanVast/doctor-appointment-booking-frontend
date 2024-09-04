@@ -40,7 +40,7 @@ const steps = [
       "registrationNumber",
       "yearOfRegistration",
       "stateMedicalCouncil",
-      "upload_document",
+      "document",
       "bio",
     ],
   },
