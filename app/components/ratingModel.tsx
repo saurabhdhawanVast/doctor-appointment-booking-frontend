@@ -3,7 +3,7 @@ import { useState } from "react";
 interface RatingModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (ratingData: { rating: number; comment: string }) => void;
+  onSubmit: (ratingData: { rating: number; comment?: string }) => void;
 }
 const RatingModal: React.FC<RatingModalProps> = ({
   isOpen,
@@ -16,7 +16,8 @@ const RatingModal: React.FC<RatingModalProps> = ({
   if (!isOpen) return null;
 
   const handleRatingSubmit = () => {
-    onSubmit({ rating, comment });
+    onSubmit({ rating, comment: comment || undefined });
+    console.log(rating);
     onClose();
   };
 

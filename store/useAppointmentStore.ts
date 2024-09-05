@@ -6,6 +6,7 @@ interface Appointment {
   doctor: Doctor;
   patient: Patient;
   appointmentDate: Date;
+  isAppointmentRated?: boolean;
   slot: Slot;
   status: string;
 }
@@ -152,6 +153,15 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
           if (selectedSlot) {
             appointment.slot = selectedSlot;
           }
+        }
+        let ratings = await https.get(
+          `/ratings/appointment/${appointment._id}`
+        );
+        console.log("ratings", ratings);
+        if (ratings && ratings.data && ratings.data.length > 0) {
+          appointment.isAppointmentRated = true;
+        } else {
+          appointment.isAppointmentRated = false;
         }
       }
       console.log(response.data);

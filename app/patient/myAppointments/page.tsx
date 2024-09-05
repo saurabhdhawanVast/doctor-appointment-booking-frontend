@@ -45,7 +45,7 @@ const MyAppointmentsList = () => {
 
   const handleRatingSubmit = async (ratingData: {
     rating: number;
-    comment: string;
+    comment?: string;
   }) => {
     let appointment = upcomingAppointments.find(
       (appointment) =>
@@ -61,13 +61,13 @@ const MyAppointmentsList = () => {
     ) {
       let payload = {
         rating: ratingData.rating,
-        comment: ratingData.comment,
+        comment: ratingData.comment || "",
         doctor: appointment.doctor._id,
+        appointment: appointment._id,
         patient: patient._id,
       };
       console.log("payload", payload);
       await createRating(payload);
-      toast.success("Thank you for providing your feedback!");
     }
   };
 
@@ -158,7 +158,8 @@ const MyAppointmentsList = () => {
                 </p>
                 {appointment.status === "completed" && (
                   <button
-                    className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition"
+                    className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition disabled:bg-blue-200"
+                    disabled={appointment.isAppointmentRated}
                     onClick={() => openRatingModal(appointment._id)}
                   >
                     Rate Appointment
@@ -241,7 +242,8 @@ const MyAppointmentsList = () => {
                   </p>
                   {appointment.status === "completed" && (
                     <button
-                      className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition"
+                      className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition disabled:bg-blue-200"
+                      disabled={appointment.isAppointmentRated}
                       onClick={() => openRatingModal(appointment._id)}
                     >
                       Rate Appointment
