@@ -8,6 +8,7 @@ import Link from "next/link";
 import useLoginStore from "@/store/useLoginStore";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
+import ReviewList from "@/app/components/reviewModel";
 export interface Doctor {
   _id: string;
   name: string;
@@ -83,6 +84,8 @@ const SearchDoctorsPage = () => {
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [isReviewModelOpen, setIsReviewModelOpen] = useState(false);
+  const [selectedDoctor, setSelectedDoctor] = useState("");
   // const patient = usePatientStore((state) => state.patient);
 
   //for getting user logged in
@@ -204,6 +207,15 @@ const SearchDoctorsPage = () => {
       fetchUser();
     }
   }, [isLoggedIn, fetchUser]);
+
+  const handleReviewModelClose = () => {
+    setIsReviewModelOpen(false);
+    setSelectedDoctor("");
+  };
+  const handleReviewModelOpen = (doctor: any) => {
+    setIsReviewModelOpen(true);
+    setSelectedDoctor(doctor);
+  };
 
   const handleGetLocation = () => {
     if (navigator.geolocation) {
@@ -523,8 +535,16 @@ const SearchDoctorsPage = () => {
                         )}
                       </p>
                     </div>
-                    <div className="flex mt-2">
-                      {renderStars(doctor?.avgRating)}
+                    <div className="ml-4">
+                      <div className="flex mt-2">
+                        {renderStars(doctor?.avgRating)}
+                      </div>
+                      <div
+                        className="text-center text-sm underline hover:text-blue-500 cursor-pointer"
+                        onClick={() => handleReviewModelOpen(doctor._id)}
+                      >
+                        Reviews
+                      </div>
                     </div>
                   </div>
                   <div className="text-right">
@@ -541,6 +561,11 @@ const SearchDoctorsPage = () => {
           </ul>
         </div>
       )}
+      <ReviewList
+        isOpen={isReviewModelOpen}
+        onClose={handleReviewModelClose}
+        doctorId={selectedDoctor}
+      />
     </div>
   );
 };

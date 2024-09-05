@@ -13,9 +13,12 @@ import featureImg from "../public/images/feature-img.png";
 import faqImg from "../public/images/faq-img.png";
 import videoIcon from "../public/images/video-icon.png";
 import avatarIcon from "../public/images/avatar-icon.png";
+import ReviewList from "./components/reviewModel";
 
 export default function Home() {
   const [doctors, setDoctors] = useState<any[]>([]);
+  const [isReviewModelOpen, setIsReviewModelOpen] = useState(false);
+  const [selectedDoctor, setSelectedDoctor] = useState("");
   const fetchDoctors = useDoctorStore((state) => state.fetchDoctors);
 
   useEffect(() => {
@@ -48,6 +51,14 @@ export default function Home() {
       }
     }
     return stars;
+  };
+  const handleReviewModelClose = () => {
+    setIsReviewModelOpen(false);
+    setSelectedDoctor("");
+  };
+  const handleReviewModelOpen = (doctor: any) => {
+    setIsReviewModelOpen(true);
+    setSelectedDoctor(doctor);
   };
   return (
     <>
@@ -180,11 +191,16 @@ export default function Home() {
                         View Profile
                       </Link>
                     </div>
-                    <div className="flex mt-2">
-                      {renderStars(doctor.avgRating)}
-                      {/* <span className="ml-2 text-gray-600">
-                        {doctor.ratings.toFixed(1)} / 5
-                      </span> */}
+                    <div>
+                      <div className="flex mt-2">
+                        {renderStars(doctor.avgRating)}
+                      </div>
+                      <div
+                        className="text-center text-sm underline hover:text-blue-500 cursor-pointer"
+                        onClick={() => handleReviewModelOpen(doctor._id)}
+                      >
+                        Reviews
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -350,6 +366,11 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <ReviewList
+        isOpen={isReviewModelOpen}
+        onClose={handleReviewModelClose}
+        doctorId={selectedDoctor}
+      />
     </>
   );
 }
