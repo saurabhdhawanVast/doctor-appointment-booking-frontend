@@ -3,7 +3,7 @@ import LoginForm from "@/app/components/login_form";
 
 const Login = () => {
   return (
-    <div>
+    <div className="min-h-screen">
       <LoginForm />
     </div>
   );

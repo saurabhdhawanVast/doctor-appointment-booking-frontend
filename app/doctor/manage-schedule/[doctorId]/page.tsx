@@ -327,7 +327,7 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
           {/* Customize your loader */}
         </div>
       )}
-      <div className="w-full   lg:w-1/6 border-r p-4">
+      <div className="w-58    border-r p-4">
         <h2 className="text-xl font-semibold mb-4">Calendar</h2>
         <DatePicker
           selected={null} // Keep this null as we handle multiple dates

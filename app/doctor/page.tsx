@@ -132,6 +132,21 @@ const Doctor = () => {
     return appointments.slice(startIndex, endIndex);
   };
 
+  const isAppointmentDate = (date: any) => {
+    console.log(appointments);
+    return appointments.some(
+      (appointment) =>
+        new Date(appointment.date).toDateString() === date.toDateString()
+    );
+  };
+
+  // Helper to apply class based on whether it's an appointment or not
+  const getDateClassName = (date: any) => {
+    return isAppointmentDate(date)
+      ? "bg-green-500 text-white" // Appointment date (highlight with green)
+      : "bg-[#f55d5d] text-black"; // Non-appointment date (highlight with red)
+  };
+
   const totalPages = Math.ceil(getFilteredAppointments().length / itemsPerPage);
 
   const renderSlots = (slots: any) => {
@@ -301,18 +316,31 @@ const Doctor = () => {
             Select Date
           </button>
           {isCalendarOpen && (
-            <DatePicker
-              selected={selectedDate}
-              onChange={(date) => {
-                setSelectedDate(date);
-                setFilter("custom");
-                setIsCalendarOpen(false); // Close the calendar after selecting a date
-              }}
-              highlightDates={appointments.map(
-                (appointment) => new Date(appointment.date)
-              )}
-              inline
-            />
+            <div>
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date) => {
+                  setSelectedDate(date);
+                  setFilter("custom");
+                  setIsCalendarOpen(false); // Close calendar after selecting a date
+                }}
+                highlightDates={appointments.map(
+                  (appointment) => new Date(appointment.date)
+                )}
+                dayClassName={(date) => getDateClassName(date)} // Apply the highlighting
+                inline
+              />
+              <div className="flex flex-col space-y-4 mt-4">
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-green-500"></div>
+                  <span className="text-gray-700">Appointments</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 bg-[#f55d5d]"></div>
+                  <span className="text-gray-700">No Appointments</span>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </aside>
@@ -410,15 +438,27 @@ const Doctor = () => {
                     onChange={(date) => {
                       setSelectedDate(date);
                       setFilter("custom");
-                      setIsCalendarOpen(false);
-                      setIsDropdownOpen(false); // Close the calendar after selecting a date
+                      setIsCalendarOpen(false); // Close calendar after selecting a date
                     }}
                     highlightDates={appointments.map(
                       (appointment) => new Date(appointment.date)
                     )}
+                    dayClassName={(date) => getDateClassName(date)} // Apply the highlighting
                     inline
                   />
                 )}
+                {
+                  <div className="flex flex-col space-y-4 mt-4">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-green-500"></div>
+                      <span className="text-gray-700">Appointments</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-[#f55d5d]"></div>
+                      <span className="text-gray-700">No Appointments</span>
+                    </div>
+                  </div>
+                }
               </div>
             )}
           </div>
