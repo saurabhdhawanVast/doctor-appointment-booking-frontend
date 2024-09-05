@@ -1,6 +1,8 @@
 import { toast } from "react-toastify";
 import { create } from "zustand";
 import axios from "axios";
+import Cookies from "js-cookie";
+import { Cookie } from "next/font/google";
 
 interface Input {
   email: string;
@@ -147,6 +149,14 @@ const useLoginStore = create<LoginState>((set, get) => ({
       await get().fetchUser();
 
       const user = get().user;
+      let role: string;
+      if (user) {
+        role = user._doc.role;
+        console.log(`Loggedin user role is ${role}`);
+        // Store role in a cookie
+        Cookies.set("role", role, { expires: 7, path: "/" });
+        Cookies.set("authToken", accessToken, { expires: 7, path: "/" }); // Cookie valid for 7 days, available on all paths
+      }
       if (user && user._doc.role === "doctor") {
         const doctorResponse = await axiosInstance.get(
           `/doctors/fetchDoctorByUserId/${user._doc._id}`
@@ -258,6 +268,8 @@ const useLoginStore = create<LoginState>((set, get) => ({
       sessionStorage.removeItem("user");
       sessionStorage.removeItem("doctor");
       sessionStorage.removeItem("patient");
+      Cookies.remove("role");
+      Cookies.remove("authToken");
     }
     set({
       isLoggedIn: false,
