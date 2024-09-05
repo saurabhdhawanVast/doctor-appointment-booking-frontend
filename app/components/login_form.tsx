@@ -50,99 +50,105 @@ const LoginForm = () => {
 
   return (
     <motion.div
-      className="py-24 h-96 w-full"
+      //className="relative bg-black w-[calc(100vw-2rem)] h-[calc(100vh-7rem-4rem)] mx-auto mt-28 mb-4 flex justify-center items-center overflow-hidden rounded-3xl bg-gradient-to-r from-teal-500 via-teal-600 to-teal-700 flex-wrap"
+      className="relative mx-auto mt-28 ml-8 mr-8 h-[calc(100vh-7rem-4rem)] flex justify-center items-center overflow-hidden rounded-3xl bg-gradient-to-r from-teal-500 via-teal-600 to-teal-700 flex-wrap"
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
-      <div className="relative rounded-3xl bg-gradient-to-r from-teal-400 via-teal-500 to-teal-700 flex flex-wrap  justify-center items-center ml-8 mr-8 overflow-hidden">
-        <div className="absolute top-0 transform translate-x-[220px] translate-y-[0px] w-[300px] h-[400px]  z-20  hidden md:block transition-transform duration-300 ">
-          <Image
-            src="/images/portrait-3d-male-doctor.png"
-            alt="3D Male Doctor"
-            layout="fill"
-            objectFit="contain"
-          />
-        </div>
-        <motion.div
-          className="w-[400px] p-8 "
-          initial={{ scale: 0.95 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 0.4 }}
-        >
-          <div className="bg-white w-full   rounded-lg shadow-lg overflow-hidden mx-auto p-4">
-            <h2 className="text-2xl font-semibold text-gray-700 text-center m-2">
-              Login
-            </h2>
-            <form onSubmit={handleSubmit(processForm)} className="space-y-2">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-gray-700 text-sm font-medium mb-2"
-                >
-                  Email
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  {...register("email")}
-                  autoComplete="off"
-                  className="block w-full h-8 rounded-lg border border-gray-300 py-2 px-3 text-gray-900 shadow-sm focus:border-sky-600 focus:ring-1 focus:ring-sky-600"
-                />
-                {errors.email && (
-                  <p className="mt-1 text-sm text-red-500">
-                    {errors.email.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block text-gray-700 text-sm font-medium mb-2"
-                >
-                  Password
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  {...register("password")}
-                  autoComplete="current-password"
-                  className="block w-full h-8 rounded-lg border border-gray-300 py-2 px-3 text-gray-900 shadow-sm focus:border-sky-600 focus:ring-1 focus:ring-sky-600"
-                />
-                {errors.password && (
-                  <p className="mt-1 text-sm text-red-500">
-                    {errors.password.message}
-                  </p>
-                )}
-              </div>
-
-              <button
-                type="submit"
-                className=" w-full  bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors duration-200"
-              >
-                Login
-              </button>
-            </form>
-            <div className="mt-4 flex items-center justify-between">
-              <span className="border-b w-1/5 md:w-1/4"></span>
-              <span className="text-sm text-gray-500">
-                Are you new?
-                <Link href="/register">Sign Up</Link>
-              </span>
-              <span className="border-b w-1/5 md:w-1/4"></span>
-            </div>
-            <div className="mt-4 text-center">
-              <Link
-                href="/forgot-password"
-                className="text-sm text-gray-500 hover:text-gray-700 font-semibold"
-              >
-                Forgot Password?
-              </Link>
-            </div>
-          </div>
-        </motion.div>
+      {/* Image */}
+      <div className="absolute bottom-0 left-[70%] transform -translate-x-1/2 w-[10%] h-[30%] sm:w-[10%] sm:h-[35%] md:w-[10%] md:h-[50%] lg:w-[15%] lg:h-[75%] xl:w-[21%] xl:h-[90%] z-20 hidden md:block transition-transform duration-300">
+        <Image
+          src="/images/portrait-3d-male-doctor.png"
+          alt="3D Male Doctor"
+          layout="fill"
+          objectFit="contain"
+        />
       </div>
+
+      <motion.div
+        // className="relative rounded-2xl w-[90%] sm:w-[70%] md:w-[50%] lg:w-[40%] xl:w-[30%] h-[90%] max-w-[calc(100% - 2rem)] max-h-[calc(100vh - 2rem)] bg-white flex flex-col justify-center items-center mx-auto p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12"
+        className="w-full h-fit max-w-md  p-4 bg-white ml-2 mr-2 rounded-xl  "
+        initial={{ scale: 0.95 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.4 }}
+      >
+        <h2 className="text-3xl sm:text-1xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold text-gray-700 text-center">
+          Login
+        </h2>
+
+        <form onSubmit={handleSubmit(processForm)} className="space-y-4 w-full">
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-gray-700 text-sm font-medium mb-2"
+            >
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              {...register("email")}
+              autoComplete="off"
+              className="block w-full rounded-lg border border-gray-300 py-2 px-3 text-gray-900 shadow-sm focus:border-sky-600 focus:ring-1 focus:ring-sky-600"
+            />
+            {errors.email && (
+              <p className="mt-1 text-xs text-red-500">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-gray-700 text-sm font-medium mb-2"
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              {...register("password")}
+              autoComplete="current-password"
+              className="block w-full rounded-lg border border-gray-300 py-2 px-3 text-gray-900 shadow-sm focus:border-sky-600 focus:ring-1 focus:ring-sky-600"
+            />
+            {errors.password && (
+              <p className="mt-1 text-xs text-red-500">
+                {errors.password.message}
+              </p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="w-full  bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors duration-200 relative"
+          >
+            Login
+          </button>
+        </form>
+        {/* </div> */}
+
+        <div className="mt-4 flex flex-col items-center w-full max-w-[400px]">
+          <div className="flex items-center justify-between w-full">
+            <span className="border-b w-1/5 md:w-1/4"></span>
+            <span className="text-sm text-gray-500 text-center">
+              Are you new? <Link href="/register">Sign Up</Link>
+            </span>
+            <span className="border-b w-1/5 md:w-1/4"></span>
+          </div>
+          <div className="mt-4 text-center">
+            <Link
+              href="/forgot-password"
+              className="text-sm text-gray-500 hover:text-gray-700 font-semibold"
+            >
+              Forgot Password?
+            </Link>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* </div> */}
     </motion.div>
   );
 };

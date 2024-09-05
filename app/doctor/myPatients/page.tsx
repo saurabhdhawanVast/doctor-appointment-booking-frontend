@@ -50,17 +50,19 @@ const MyPatients = () => {
 
   return (
     <div className="mt-16 p-8">
-      <h2 className="text-2xl font-bold mb-4">My Patients</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">My Patients</h2>
 
-      {/* Search Bar */}
-      <div className="mb-4">
-        <input
-          type="text"
-          placeholder="Search by patient name..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="p-2 border rounded-lg w-full"
-        />
+        {/* Search Bar */}
+        <div>
+          <input
+            type="text"
+            placeholder="Search by patient name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="p-2 border rounded-lg w-full md:w-64 lg:w-80"
+          />
+        </div>
       </div>
 
       <ul>
