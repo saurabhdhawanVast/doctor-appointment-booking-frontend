@@ -14,6 +14,7 @@ import faqImg from "../public/images/faq-img.png";
 import videoIcon from "../public/images/video-icon.png";
 import avatarIcon from "../public/images/avatar-icon.png";
 import ReviewList from "./components/reviewModel";
+import Typewriter from "typewriter-effect";
 
 export default function Home() {
   const [doctors, setDoctors] = useState<any[]>([]);
@@ -67,10 +68,26 @@ export default function Home() {
       {/* Hero Section */}
       <section className="hero bg-blue-500 text-white text-center py-24">
         <div className="container mx-auto">
-          <h1 className="text-4xl font-bold mb-4">
+          <div className="container mx-auto text-center">
+            {/* <h1 className="text-9xl font-bold">DABS</h1> */}
+            <label className="block text-4xl font-bold">
+              <Typewriter
+                options={{
+                  // strings: ["Doctors", "Appointment", "Booking", "System"],
+                  strings: ["Doctors Appointment Booking System"],
+                  autoStart: true,
+                  loop: true,
+                  delay: 200,
+                  cursor: "|",
+                }}
+              />
+            </label>
+          </div>
+
+          <h1 className="text-4xl font-bold mt-6 mb-4">
             We Help You Find the Best Doctors
           </h1>
-          <p className="text-xl mb-6">
+          <p className="text-xl ">
             Easily book your appointments and get the best healthcare services.
           </p>
         </div>

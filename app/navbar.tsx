@@ -121,7 +121,7 @@ const Navbar = () => {
               <Link href="/dashboard">Dashboard</Link>
             </li>
             <li>
-              <Link href="/manage-users">Manage Users</Link>
+              <Link href="/admin/users">Users</Link>
             </li>
             <li>
               <Link href="/settings">Settings</Link>

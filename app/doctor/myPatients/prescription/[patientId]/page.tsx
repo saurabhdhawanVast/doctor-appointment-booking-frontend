@@ -100,16 +100,18 @@ const PatientPrescriptions = ({
 
   return (
     <div className="mt-16 p-8">
-      <h2 className="text-2xl font-bold mb-4">Patient Prescriptions</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Patient Prescriptions</h2>
 
-      {/* Date Picker */}
-      <div className="mb-4">
-        <DatePicker
-          selected={selectedDate}
-          onChange={(date) => setSelectedDate(date)}
-          placeholderText="Select a date"
-          className="p-2 border rounded-lg w-full"
-        />
+        {/* Date Picker */}
+        <div className="w-64">
+          <DatePicker
+            selected={selectedDate}
+            onChange={(date) => setSelectedDate(date)}
+            placeholderText="Select a date"
+            className="p-2 border rounded-lg w-full"
+          />
+        </div>
       </div>
 
       <ul>
