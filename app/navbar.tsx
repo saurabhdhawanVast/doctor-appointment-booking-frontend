@@ -129,13 +129,10 @@ const Navbar = () => {
         return (
           <div className="menu menu-horizontal  ">
             <li>
-              <Link href="/dashboard">Dashboard</Link>
+              <Link href="/admin">Dashboard</Link>
             </li>
             <li>
               <Link href="/admin/users">Users</Link>
-            </li>
-            <li>
-              <Link href="/settings">Settings</Link>
             </li>
           </div>
         );
@@ -274,33 +271,6 @@ const Navbar = () => {
                     />
                   </div>
                 </div>
-
-                {/* <div className="flex items-center w-10 h-6 circle">
-                  <div>
-                    {" "}
-                    <Image
-                      src={
-                        doctor && doctor.profilePic
-                          ? doctor.profilePic
-                          : patient && patient.profilePic
-                          ? patient.profilePic
-                          : imageDemo
-                      }
-                      alt="Avatar"
-                      width={100}
-                      height={100}
-                      className="rounded-full border-2 border-white w-8 h-8"
-                      onClick={toggleDropdown}
-                    />
-                  </div>
-                </div>
-                <div className="text-sem">
-                  {doctor && doctor.name.split(" ")[0]
-                    ? doctor.name.split(" ")[0]
-                    : patient && patient.name.split(" ")[0]
-                    ? patient.name.split(" ")[0]
-                    : ""}
-                </div> */}
 
                 {dropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">

@@ -810,7 +810,7 @@ export default function Form_Doctor() {
                 </p>
                 {/* Address */}
                 <div className="flex flex-wrap mt-2">
-                  <div className="sm:col-span-2">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="clinicName"
                       className="block text-sm font-medium leading-6 text-gray-900"
