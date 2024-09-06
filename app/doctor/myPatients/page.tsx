@@ -81,6 +81,13 @@ const MyPatients = () => {
               </div>
 
               <div>
+                <button className="px-4 py-2 mr-4 bg-teal-600 text-white rounded transition duration-300">
+                  <Link
+                    href={`/doctor/myPatients/reports/${prescription.patientId}`}
+                  >
+                    View Reports
+                  </Link>
+                </button>
                 <button className="px-4 py-2 bg-teal-600 text-white rounded transition duration-300">
                   <Link
                     href={`/doctor/myPatients/prescription/${prescription.patientId}`}

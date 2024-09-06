@@ -145,7 +145,13 @@ const MyAppointmentsList = () => {
                 </p>
                 <p className="text-sm text-gray-500 mb-1">
                   <strong>Time:</strong>{" "}
-                  <span className="font-medium">{appointment.slot.time}</span>
+                  {new Date(
+                    `1970-01-01T${appointment.slot.time}:00`
+                  ).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
                 </p>
                 <p
                   className={`text-sm ${
@@ -229,7 +235,13 @@ const MyAppointmentsList = () => {
                   </p>
                   <p className="text-sm text-gray-500 mb-1">
                     <strong>Time:</strong>{" "}
-                    <span className="font-medium">{appointment.slot.time}</span>
+                    {new Date(
+                      `1970-01-01T${appointment.slot.time}:00`
+                    ).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                    })}
                   </p>
                   <p
                     className={`text-sm ${

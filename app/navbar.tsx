@@ -7,16 +7,20 @@ import Image from "next/image";
 import imageDemo from "../public/images/avatar-icon.png";
 import Logo from "../public/images/logooo.png"; // Adjust the path
 import { Ellipsis } from "react-css-spinners"; // Import the Ellipsis spinner
+import ReviewList from "./components/reviewModel";
+import { useArticleStore } from "@/store/useArticleStore";
 
 const Navbar = () => {
   const isLoggedIn = useLoginStore((state) => state.isLoggedIn);
   const user = useLoginStore((state) => state.user);
   const logout = useLoginStore((state) => state.logout);
+  const setEditArticle = useArticleStore((state) => state.setEditArticle);
   const doctor = useLoginStore((state) => state.doctor);
   const patient = useLoginStore((state) => state.patient);
   const fetchUser = useLoginStore((state) => state.fetchUser);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isReviewModelOpen, setIsReviewModelOpen] = useState(false);
   // const [loading, setLoading] = useState(() => {
   //   return isLoggedIn ? true : false;
   // });
@@ -39,7 +43,13 @@ const Navbar = () => {
       setDropdownOpen(false);
     }
   };
-
+  const handleReviewModelClose = () => {
+    setIsReviewModelOpen(false);
+  };
+  const handleReviewModelOpen = () => {
+    setDropdownOpen(false);
+    setIsReviewModelOpen(true);
+  };
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
@@ -80,6 +90,7 @@ const Navbar = () => {
 
   const handleProfile = async () => {
     try {
+      setDropdownOpen(false);
       if (patient) {
         router.push(`/patient/profile/${user?._doc._id}`);
       } else {
@@ -148,7 +159,7 @@ const Navbar = () => {
             <li>
               <Link href="/doctor/myPatients">My Patients</Link>
             </li>
-            <li>
+            <li onClick={() => setEditArticle(null)}>
               <Link href={`/doctor/article-form/${doctorId}`}>
                 Create Article
               </Link>
@@ -299,6 +310,36 @@ const Navbar = () => {
                     >
                       Manage Profile
                     </button>
+                    {role === "doctor" && (
+                      <button
+                        onClick={handleReviewModelOpen}
+                        className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                      >
+                        My Reviews
+                      </button>
+                    )}
+                    {role === "doctor" && (
+                      <button
+                        onClick={() => {
+                          router.push("/doctor/myArticles");
+                          setDropdownOpen(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                      >
+                        My Articles
+                      </button>
+                    )}
+                    {role === "doctor" && (
+                      <button
+                        onClick={() => {
+                          router.push("/article");
+                          setDropdownOpen(false);
+                        }}
+                        className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                      >
+                        All Articles
+                      </button>
+                    )}
                     <button
                       onClick={handleLogout}
                       className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
@@ -378,6 +419,11 @@ const Navbar = () => {
           </div>
         </div>
       )}
+      <ReviewList
+        isOpen={isReviewModelOpen}
+        onClose={handleReviewModelClose}
+        doctorId={doctorId ? doctorId : ""}
+      />
     </div>
   );
 };

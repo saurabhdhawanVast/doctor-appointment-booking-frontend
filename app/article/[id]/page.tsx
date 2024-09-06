@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import axios from "axios";
 import Head from "next/head";
 import { useArticleStore } from "@/store/useArticleStore";
 
@@ -76,23 +74,19 @@ const ArticlePage = ({ params }: ArticlePageProps) => {
       </Head>
       <div className="relative">
         {/* Hero Image */}
-        <div
-          className="w-full h-[60vh] bg-cover bg-center"
-          style={{
-            backgroundImage: `url(${
-              article.image ? article.image : "/images/default.jpg"
-            })`,
-          }}
-        >
-          <div className="absolute inset-0 bg-black bg-opacity-5 flex items-center justify-center">
-            <h1 className="text-5xl font-bold text-white drop-shadow-lg">
-              {article.title}
-            </h1>
-          </div>
+        <div className="flex justify-center bg-gray-100">
+          <img
+            className="w-3/5"
+            src={article.image ? article.image : "/images/default.jpg"}
+          ></img>
         </div>
-
+        <div className="bg-gray-100 flex items-center justify-center">
+          <h1 className="text-3xl mt-2 font-bold text-gray-700 drop-shadow-lg">
+            {article.title}
+          </h1>
+        </div>
         {/* Article Content */}
-        <div className="flex justify-center py-12 px-4 bg-gray-100">
+        <div className="flex justify-center pb-12 pt-4 px-4 bg-gray-100">
           <div className="max-w-3xl w-full">
             <div className="mb-6">
               <p className="text-lg text-gray-600">
