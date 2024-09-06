@@ -7,6 +7,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import AddReportsToPrescriptionForm from "@/app/components/AddReportsToPrescriptionForm";
 // Define interfaces for Medicine and Prescription
 interface Medicine {
   name: string;
@@ -49,7 +50,6 @@ const modalStyle = {
 const PrescriptionPage = () => {
   const params = useParams();
   const patientId = params.patientId;
-  console.log(`patientId is :${patientId}`);
   const { prescriptions, fetchPrescriptions } = usePrescriptionStore(
     (state) => ({
       prescriptions: state.prescriptions,
@@ -60,6 +60,10 @@ const PrescriptionPage = () => {
   const [selectedPrescription, setSelectedPrescription] =
     useState<Prescription | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
+
+  //added reports modal is opened
+  const [addReportmodalIsOpen, setAddReportModalIsOpen] =
+    useState<boolean>(false);
 
   useEffect(() => {
     if (typeof patientId === "string") {
@@ -74,6 +78,15 @@ const PrescriptionPage = () => {
   const openModal = (prescription: Prescription) => {
     setSelectedPrescription(prescription);
     setModalIsOpen(true);
+  };
+
+  const openAddReportModal = (prescription: Prescription) => {
+    setSelectedPrescription(prescription);
+    setAddReportModalIsOpen(true);
+  };
+  const closeAddReportModal = () => {
+    setSelectedPrescription(null);
+    setAddReportModalIsOpen(false);
   };
 
   const closeModal = () => {
@@ -159,7 +172,7 @@ const PrescriptionPage = () => {
       <div className="grid grid-cols-1 gap-6">
         {prescriptions.map((prescription) => (
           <div
-            key={prescription.patientId}
+            key={prescription._id}
             className="bg-white shadow-lg rounded-lg p-6 w-full max-w-3xl mx-auto border border-gray-200"
           >
             <h4 className=" font-medium text-gray-600 mb-4">
@@ -202,6 +215,13 @@ const PrescriptionPage = () => {
               className="text-blue-500 font-medium underline hover:text-blue-700 transition duration-300"
             >
               View Full Prescription
+            </button>
+
+            <button
+              onClick={() => openAddReportModal(prescription)}
+              className="text-blue-500 ml-8 font-medium underline hover:text-blue-700 transition duration-300"
+            >
+              Add Report
             </button>
           </div>
         ))}
@@ -314,6 +334,11 @@ const PrescriptionPage = () => {
           </div>
         </Box>
       </Modal>
+      <AddReportsToPrescriptionForm
+        prescription={selectedPrescription ? selectedPrescription : undefined}
+        onClose={closeAddReportModal}
+        isOpen={addReportmodalIsOpen}
+      />
     </div>
   );
 };
