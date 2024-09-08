@@ -33,13 +33,35 @@ export interface Doctor {
   isVerified: boolean;
 }
 
+interface Patients {
+  _id: string;
+  user: string;
+  contactNumber: string;
+  address: Address;
+  bloodGroup: string;
+  gender: string;
+  profilePic: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+
+interface Address {
+  address: string;
+  city: string;
+  pinCode: number;
+  state: string;
+}
+
 interface PatientState {
   patient: Patient | null;
+  patients: Patient[] | null;
   doctors: Doctor[] | null;
   setPatient: (patient: Patient) => void;
   fetchPatient: (id: string) => void;
   updateProfile: (patient: Partial<Patient>) => void;
   fetchPatientByUserId: (userId: string) => void;
+  allPatients: () => Promise<void>;
   searchDoctors: (
     state: string,
     city: string,
@@ -53,7 +75,10 @@ interface PatientState {
 export const usePatientStore = create<PatientState>((set) => ({
   patient: null,
   doctors: null,
+  patients: null,
   setPatient: (patient) => set({ patient }),
+
+
   fetchPatient: async (id: string) => {
     try {
       const response = await axios.get(`http://localhost:3000/patients/${id}`);
@@ -104,4 +129,13 @@ export const usePatientStore = create<PatientState>((set) => ({
       console.error("Error fetching patient data:", error);
     }
   },
+
+  allPatients: async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/patients/allPatients");
+      set({ patients: response.data });
+    } catch (error) {
+      console.error("Error fetching patient data:", error);
+    }
+  }
 }));

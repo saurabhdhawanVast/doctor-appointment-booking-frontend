@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { toast } from "react-toastify";
+import Loading from "../loading";
 
 // Define the Zod schema
 const loginSchema = z.object({
@@ -21,6 +22,7 @@ type Inputs = z.infer<typeof loginSchema>;
 const LoginForm = () => {
   const login = useLoginStore((state) => state.login);
   const fetchUser = useLoginStore((state) => state.fetchUser);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const {
     register,
@@ -31,21 +33,25 @@ const LoginForm = () => {
   });
 
   const processForm: SubmitHandler<Inputs> = async (data) => {
-    await login(data);
+    try {
+      setIsLoading(true);
+      await login(data);
+      await fetchUser();
+      const user = useLoginStore.getState().user;
+      const token = useLoginStore.getState().token;
 
-    await fetchUser();
-    const user = useLoginStore.getState().user;
-    const token = useLoginStore.getState().token;
-
-    if (user?._doc?.role === "admin" && token) {
-      router.push("/admin");
-    } else if (user?._doc?.role === "patient" && token) {
-      router.push("/patient");
-    } else if (user?._doc?.role === "doctor" && token) {
-      router.push("/doctor");
+      if (user?._doc?.role === "admin" && token) {
+        router.push("/admin");
+      } else if (user?._doc?.role === "patient" && token) {
+        router.push("/patient");
+      } else if (user?._doc?.role === "doctor" && token) {
+        router.push("/doctor");
+      }
+    } catch (error) {
+      toast.error("Invalid email or password");
+    } finally {
+      setIsLoading(false);
     }
-
-    console.log(data);
   };
 
   return (
@@ -56,6 +62,14 @@ const LoginForm = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
+      {/* {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
+          <div className="loader">
+            <Loading />
+          </div>{" "}
+        </div>
+      )} */}
+
       {/* Image */}
       <div className="absolute bottom-0 left-[70%] transform -translate-x-1/2 w-[10%] h-[30%] sm:w-[10%] sm:h-[35%] md:w-[10%] md:h-[50%] lg:w-[15%] lg:h-[75%] xl:w-[21%] xl:h-[90%] z-20 hidden md:block transition-transform duration-300">
         <Image
@@ -68,7 +82,7 @@ const LoginForm = () => {
 
       <motion.div
         // className="relative rounded-2xl w-[90%] sm:w-[70%] md:w-[50%] lg:w-[40%] xl:w-[30%] h-[90%] max-w-[calc(100% - 2rem)] max-h-[calc(100vh - 2rem)] bg-white flex flex-col justify-center items-center mx-auto p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12"
-        className="w-full h-fit max-w-md  p-4 bg-white ml-2 mr-2 rounded-xl  "
+        className="h-fit  sm:w-[90%] md:w-[50%] lg:w-[40%] xl:w-[25%] p-4 bg-white ml-2 mr-2 rounded-xl  "
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
         transition={{ duration: 0.4 }}
