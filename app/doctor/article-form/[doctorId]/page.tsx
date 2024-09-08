@@ -203,7 +203,7 @@ const CreateArticleForm: React.FC = () => {
         });
         setEditArticle(null);
         toast.success("Article Updated Successfully!");
-        router.push("/myArticles");
+        router.push("/doctor/myArticles");
       }
     } catch (error) {
       console.error("Error creating article:", error);

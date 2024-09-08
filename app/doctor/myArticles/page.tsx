@@ -60,7 +60,7 @@ const MyArticlesList = () => {
   }
 
   const handleArticleClick = async (id: string) => {
-    router.push(`/article/${id}`);
+    router.push(`/doctor/article/${id}`);
   };
 
   const handleDelete = async (id: string) => {

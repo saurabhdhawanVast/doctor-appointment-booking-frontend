@@ -189,7 +189,7 @@ const ArticlesList = () => {
     return truncatedText;
   }
   const handleArticleClick = async (id: string) => {
-    router.push(`/article/${id}`);
+    router.push(`/doctor/article/${id}`);
   };
   const resetFilter = async () => {
     setSelectedCategory(null);
