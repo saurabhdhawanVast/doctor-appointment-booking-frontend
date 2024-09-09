@@ -3,6 +3,15 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useArticleStore } from "@/store/useArticleStore";
 import { debounce } from "@mui/material";
 import { useRouter } from "next/navigation";
+import { IoMdArrowDropdown, IoMdArrowDropright } from "react-icons/io";
+import {
+  MdCategory,
+  MdKeyboardArrowLeft,
+  MdKeyboardArrowRight,
+  MdKeyboardDoubleArrowLeft,
+  MdKeyboardDoubleArrowRight,
+  MdLabel,
+} from "react-icons/md";
 
 interface Article {
   _id: string;
@@ -106,9 +115,15 @@ const categories = [
     subCategories: [
       { name: "Child Development", imagePath: "/images/childDevelopment.jpg" },
       { name: "Parenting", imagePath: "/images/parenting.jpg" },
-      { name: "Childhood Nutrition", imagePath: "/images/nutrient-suppliment.jpg" },
+      {
+        name: "Childhood Nutrition",
+        imagePath: "/images/nutrient-suppliment.jpg",
+      },
       { name: "During/After Pregnancy", imagePath: "/images/pregnancy.jpg" },
-      { name: "Positive Discipline", imagePath: "/images/positiveattitude.jpg" },
+      {
+        name: "Positive Discipline",
+        imagePath: "/images/positiveattitude.jpg",
+      },
     ],
   },
 ];
@@ -116,7 +131,7 @@ const categories = [
 const ArticlesList = () => {
   const articles = useArticleStore((state) => state.articles);
   const fetchArticles = useArticleStore((state) => state.fetchArticles);
-  const [expandCategories, setExpandCategories] = useState(false);
+  const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(
     null
@@ -125,18 +140,11 @@ const ArticlesList = () => {
   const [groupByCategory, setGroupByCategory] = useState(false);
 
   const [loading, setLoading] = useState(false);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [articlesPerPage] = useState(6);
+  const [totalPages, setTotalPages] = useState(1);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const allCategories = [
-    "Skin & Hair Care",
-    "Healthy Teeth",
-    "General Health",
-    "Fitness & Exercise",
-    "Healthy Hair",
-    "Healthy Skin",
-    "Healthy Diet",
-  ];
 
   useEffect(() => {
     const fetchAndSetArticles = async () => {
@@ -153,7 +161,7 @@ const ArticlesList = () => {
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
-        setExpandCategories(false);
+        // setExpandCategories(false);
       }
     };
 
@@ -161,10 +169,15 @@ const ArticlesList = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleCategoryClick = (category: string) => {
-    setSelectedCategory(category);
-    fetchArticles({ category });
-    setExpandCategories(false);
+  const handleToggleCategory = (categoryName: string) => {
+    // Toggle the category expanded state
+    if (expandedCategories.includes(categoryName)) {
+      setExpandedCategories(
+        expandedCategories.filter((name) => name !== categoryName)
+      );
+    } else {
+      setExpandedCategories([...expandedCategories, categoryName]);
+    }
   };
 
   function truncateHtmlContent(html: string, maxLength: number): string {
@@ -189,7 +202,7 @@ const ArticlesList = () => {
     return truncatedText;
   }
   const handleArticleClick = async (id: string) => {
-    router.push(`/doctor/article/${id}`);
+    router.push(`/patient/article/${id}`);
   };
   const resetFilter = async () => {
     setSelectedCategory(null);
@@ -210,11 +223,8 @@ const ArticlesList = () => {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
     setSearchQuery(query);
+    setCurrentPage(1);
     debouncedSearch(query);
-  };
-
-  const handleGroupByCategoryClick = () => {
-    setGroupByCategory(!groupByCategory);
   };
 
   const handleFilterSubCategory = async (subCategoryName: string) => {
@@ -238,57 +248,24 @@ const ArticlesList = () => {
     });
     setGroupByCategory(false);
   };
+  useEffect(() => {
+    setTotalPages(Math.max(1, Math.ceil(articles.length / articlesPerPage)));
+    setCurrentPage(1);
+  }, [articles]);
+  const indexOfLastArticle = currentPage * articlesPerPage;
+  const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
+  const currentArticles = articles.slice(
+    indexOfFirstArticle,
+    indexOfLastArticle
+  );
 
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
   return (
     <div className="bg-gray-100 min-h-screen">
       <div className="py-4 mt-16">
         <div className="relative flex justify-end space-x-4 pr-6 border-b">
-          <div className="relative flex items-center" ref={dropdownRef}>
-            <button
-              onClick={() => setExpandCategories(!expandCategories)}
-              className={`text-gray-700 hover:text-blue-700 mb-4 py-2 px-4 font-semibold transition duration-300 flex items-center ${
-                expandCategories ? "border-b-2 border-blue-600" : ""
-              }`}
-              aria-label="Explore categories"
-            >
-              Explore
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 320 512"
-                width="16"
-                height="16"
-                fill="currentColor"
-                className="ml-1"
-              >
-                <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
-              </svg>
-            </button>
-
-            {expandCategories && (
-              <div className="absolute top-8 left-6 mt-2 w-64 bg-white text-gray-800 rounded-lg shadow-lg z-50">
-                {allCategories.map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => handleCategoryClick(category)}
-                    className="block w-full text-left py-2 px-4 hover:bg-gray-100 transition duration-200"
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className="relative flex items-center">
-            <button
-              onClick={handleGroupByCategoryClick}
-              className={`text-gray-700 mb-4 hover:text-blue-700 py-2 px-4 font-semibold transition duration-300 flex items-center ${
-                groupByCategory ? "border-b-2 border-blue-600" : ""
-              }`}
-              aria-label="Group by category"
-            >
-              {"Group by Category"}
-            </button>
-          </div>
           <div className="relative w-full max-w-md">
             <input
               type="text"
@@ -335,44 +312,19 @@ const ArticlesList = () => {
         )}
       </div>
       <div className="mx-auto p-6">
-        {loading ? (
-          <div className="text-center text-gray-700">Loading...</div>
-        ) : articles.length === 0 ? (
-          <div className="text-center text-gray-700">No articles found.</div>
-        ) : (
-          <div className="space-y-8">
-            {groupByCategory ? (
-              categories.map((category) => (
-                <div>
-                  <div key={category.name} className="font-semibold text-lg">
-                    {category.name}
-                  </div>
-                  <div className="flex ml-16 mt-2 justify-start items-center space-x-8">
-                    {category.subCategories.map((subCategory) => (
-                      <div
-                        key={subCategory.name}
-                        className="flex flex-col w-24 cursor-pointer p-2 text-center items-center"
-                        onClick={() =>
-                          handleFilterSubCategory(subCategory.name)
-                        }
-                      >
-                        <img
-                          className="w-24 h-20"
-                          src={subCategory.imagePath}
-                        />
-                        {subCategory.name}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {articles.map((article) => (
+        <div className="flex justify-between px-2">
+          {loading ? (
+            <div className="text-center text-gray-700">Loading...</div>
+          ) : articles.length === 0 ? (
+            <div className="text-center text-gray-700">No articles found.</div>
+          ) : (
+            <div>
+              <div className="grid grid-cols-1 md:grid-cols-2 px-3 lg:grid-cols-2 gap-6">
+                {currentArticles.map((article) => (
                   <div
                     key={article._id}
                     onClick={() => handleArticleClick(article._id)}
-                    className="bg-white cursor-pointer rounded-lg overflow-hidden shadow-lg hover:bg-blue-100 transition duration-300"
+                    className="bg-white cursor-pointer rounded-lg overflow-hidden hover:bg-blue-100 transition duration-300"
                   >
                     {/* Image Section */}
                     <div className="relative w-full h-60 overflow-hidden rounded-t-lg">
@@ -396,7 +348,14 @@ const ArticlesList = () => {
                         <p>
                           Published on:{" "}
                           <span className="font-semibold text-gray-700">
-                            {new Date(article.createdAt).toLocaleDateString()}
+                            {new Date(article.createdAt).toLocaleDateString(
+                              "en-GB",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              }
+                            )}
                           </span>
                         </p>
                       </div>
@@ -410,9 +369,117 @@ const ArticlesList = () => {
                   </div>
                 ))}
               </div>
-            )}
+              <div className="flex items-center space-x-2 justify-end mt-6">
+                <button
+                  onClick={() => handlePageChange(1)}
+                  disabled={currentPage === 1}
+                  className="w-10 h-10 flex items-center justify-center bg-blue-500 text-white disabled:bg-gray-400"
+                >
+                  <MdKeyboardDoubleArrowLeft />
+                </button>
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="w-10 h-10 flex items-center justify-center bg-blue-500 text-white disabled:bg-gray-400"
+                >
+                  <MdKeyboardArrowLeft />
+                </button>
+
+                {/* Display previous page number if it exists */}
+                {currentPage > 2 && (
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    className="w-10 h-10 flex items-center justify-center bg-gray-200 text-black"
+                  >
+                    {currentPage - 1}
+                  </button>
+                )}
+
+                {/* Display current page number */}
+                <span className="w-10 h-10 flex items-center justify-center bg-blue-500 text-white">
+                  {currentPage}
+                </span>
+
+                {/* Display next page number if it exists */}
+                {currentPage < totalPages - 1 && (
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    className="w-10 h-10 flex items-center justify-center bg-gray-200 text-black"
+                  >
+                    {currentPage + 1}
+                  </button>
+                )}
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="w-10 h-10 flex items-center justify-center bg-blue-500 text-white disabled:bg-gray-400"
+                >
+                  <MdKeyboardArrowRight />
+                </button>
+                <button
+                  onClick={() => handlePageChange(totalPages)}
+                  disabled={currentPage === totalPages}
+                  className="w-10 h-10 flex items-center justify-center bg-blue-500 text-white disabled:bg-gray-400"
+                >
+                  <MdKeyboardDoubleArrowRight />
+                </button>
+              </div>
+            </div>
+          )}
+          <div className="px-6 w-2/5 border rounded-md">
+            <h2 className="text-center mt-3 border-b pb-1 text-xl border-black mb-6">
+              Our Categories...
+            </h2>
+            {categories.map((category) => (
+              <div key={category.name} className="mb-4">
+                {/* Category Item */}
+                <div
+                  className={`flex font-semibold text-lg cursor-pointer p-2 rounded-lg 
+                  ${
+                    selectedCategory === category.name
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-100 text-gray-700"
+                  }
+                  hover:bg-blue-200 hover:text-blue-900 transition-all duration-200`}
+                  onClick={() => handleToggleCategory(category.name)}
+                >
+                  {/* Arrow Icon */}
+                  <div className="mt-1 text-xl mr-2">
+                    {expandedCategories.includes(category.name) ? (
+                      <IoMdArrowDropdown />
+                    ) : (
+                      <IoMdArrowDropright />
+                    )}
+                  </div>
+                  {category.name}
+                </div>
+                {expandedCategories.includes(category.name) && (
+                  <div className="flex flex-col mt-2 ml-6">
+                    {category.subCategories.map((subCategory) => (
+                      <div
+                        key={subCategory.name}
+                        className={`flex items-center cursor-pointer text-left pl-4 py-1 rounded-lg
+                                    ${
+                                      selectedSubCategory === subCategory.name
+                                        ? "bg-green-500 text-white"
+                                        : "bg-gray-100 text-gray-700"
+                                    }
+                                    hover:bg-green-200 hover:text-green-900 transition-all duration-200`}
+                        onClick={() =>
+                          handleFilterSubCategory(subCategory.name)
+                        }
+                      >
+                        <MdCategory className="mr-2 text-gray-600" />
+                        {subCategory.name}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

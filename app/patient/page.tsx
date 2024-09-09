@@ -121,19 +121,41 @@
 // };
 
 // export default Doctor;
-
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useRouter } from "next/navigation";
+import { FaSearch } from "react-icons/fa"; // Import search icon from react-icons
 
 const Doctor = () => {
   const router = useRouter();
 
-  const handleButtonClick = () => {
-    router.push("patient/find-doctor"); // Replace '/appointment' with your desired route
+  const [selectedSpecialty, setSelectedSpecialty] = useState("");
+
+  const doctorSpecialties = [
+    "Cardiologist",
+    "Dermatologist",
+    "Endocrinologist",
+    "Gastroenterologist",
+    "Neurologist",
+    "Oncologist",
+    "Ophthalmologist",
+    "Orthopedic Surgeon",
+    "Pediatrician",
+    "Psychiatrist",
+    "Pulmonologist",
+    "Rheumatologist",
+    "Surgeon",
+    "Urologist",
+    "Dentist",
+  ];
+
+  const handleSearch = () => {
+    if (selectedSpecialty) {
+      router.push(`/patient/find-doctor?specialty=${selectedSpecialty}`);
+    }
   };
 
   const settings = {
@@ -143,11 +165,12 @@ const Doctor = () => {
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 2000, // Change this value for different autoplay speeds
+    autoplaySpeed: 2000,
   };
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
+      {/* Image Slider */}
       <Slider {...settings} className="w-full h-full">
         <div className="w-full h-full">
           <img
@@ -193,11 +216,37 @@ const Doctor = () => {
         </div>
       </Slider>
 
+      {/* Search Bar */}
+      <div className="absolute top-16 left-4 w-full max-w-md px-4">
+        <div className="flex items-center space-x-2 bg-white border border-gray-300 rounded-lg shadow-lg p-2">
+          <select
+            className="flex-grow p-2 border-none rounded-l-lg"
+            value={selectedSpecialty}
+            onChange={(e) => setSelectedSpecialty(e.target.value)}
+          >
+            <option value="">Select doctor by Specialty</option>
+            {doctorSpecialties.map((specialty, index) => (
+              <option key={index} value={specialty}>
+                {specialty}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="bg-teal-500 text-white p-2 rounded-r-lg flex items-center space-x-1 hover:bg-teal-600"
+            onClick={handleSearch}
+          >
+            <FaSearch />
+            <span className="hidden sm:inline">Search</span>
+          </button>
+        </div>
+      </div>
+
       {/* Get Appointment Button */}
       <div className="absolute bottom-20 right-12">
         <button
           className="btn rounded-3xl bg-transparent border-2 border-slate-500 text-teal-500 font-bold py-2 px-4 transition-all duration-300 hover:bg-teal-500 hover:text-white hover:-translate-y-2"
-          onClick={handleButtonClick}
+          onClick={() => router.push("patient/find-doctor")}
         >
           Get Appointment
         </button>

@@ -38,3 +38,82 @@ export default function RootLayout({
     </html>
   );
 }
+
+// "use client"; // Mark this as a client component
+
+// import { Inter } from "next/font/google";
+// import { useEffect } from "react";
+// import useLoginStore from "../store/useLoginStore"; // Import your login store here
+// import Navbar from "./navbar";
+// import { ToastContainer } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+// import "./globals.css";
+
+// const inter = Inter({ subsets: ["latin"] });
+
+// export default function RootLayout({
+//   children,
+// }: Readonly<{
+//   children: React.ReactNode;
+// }>) {
+//   const { logout } = useLoginStore(); // Call logout from your loginStore
+
+//   useEffect(() => {
+//     // Handle logout on tab/window close
+//     const handleBeforeUnload = () => {
+//       document.cookie =
+//         "authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+//       logout(); // Call logout from your store
+//     };
+
+//     window.addEventListener("beforeunload", handleBeforeUnload);
+
+//     return () => {
+//       window.removeEventListener("beforeunload", handleBeforeUnload);
+//     };
+//   }, [logout]);
+
+//   useEffect(() => {
+//     // Handle inactivity auto-logout
+//     let inactivityTimeout: NodeJS.Timeout;
+
+//     const resetInactivityTimer = () => {
+//       clearTimeout(inactivityTimeout);
+//       inactivityTimeout = setTimeout(() => {
+//         document.cookie =
+//           "authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+//         logout(); // Auto logout due to inactivity
+//         window.location.href = "/login"; // Redirect to login page
+//       }, 30 * 60 * 1000); // 30 minutes of inactivity
+//     };
+
+//     window.onload = resetInactivityTimer;
+//     window.onmousemove = resetInactivityTimer;
+//     window.onkeypress = resetInactivityTimer;
+
+//     return () => {
+//       clearTimeout(inactivityTimeout);
+//     };
+//   }, [logout]);
+
+//   return (
+//     <html lang="en">
+//       <body className={inter.className}>
+//         <Navbar />
+//         {children}
+//         <ToastContainer
+//           position="top-right"
+//           autoClose={4000}
+//           hideProgressBar={false}
+//           newestOnTop={false}
+//           closeOnClick
+//           rtl={false}
+//           pauseOnFocusLoss
+//           draggable
+//           pauseOnHover
+//           theme="colored"
+//         />
+//       </body>
+//     </html>
+//   );
+// }

@@ -114,7 +114,14 @@ const MyArticlesList = () => {
                     <p>
                       Published on:{" "}
                       <span className="font-semibold text-gray-700">
-                        {new Date(article.createdAt).toLocaleDateString()}
+                        {new Date(article.createdAt).toLocaleDateString(
+                          "en-GB",
+                          {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          }
+                        )}
                       </span>
                     </p>
                   </div>

@@ -50,7 +50,14 @@ const PrescriptionDetailsModal = ({
             <h3 className="text-lg font-semibold">Doctor: {doctorName}</h3>
             <p className="text-sm text-gray-600">Patient: {patientName}</p>
             <p className="text-sm text-gray-600">
-              Date: {new Date(appointmentDate).toLocaleDateString()}
+            {new Date(appointmentDate).toLocaleDateString(
+                      "en-GB",
+                      {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      }
+                    )}
             </p>
           </div>
         </div>

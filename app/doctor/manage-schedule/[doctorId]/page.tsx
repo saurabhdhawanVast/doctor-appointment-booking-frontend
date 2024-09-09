@@ -281,7 +281,7 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
             {/* {formatDateInTimeZone(selectedDates[0], timeZone)} */}
             {selectedDates[0].toLocaleDateString("en-GB", {
               day: "2-digit",
-              month: "long", // 'short' for abbreviated month names
+              month: "short", // 'short' for abbreviated month names
               year: "numeric",
             })}
           </h3>
