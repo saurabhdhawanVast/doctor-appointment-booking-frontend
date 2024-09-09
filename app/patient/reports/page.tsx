@@ -44,7 +44,13 @@ export default function ReportsPage() {
               <div>
                 <h3 className="text-lg font-bold">{report.reportName}</h3>
                 <p>{report.type}</p>
-                <p>{new Date(report.date).toLocaleDateString()}</p>
+                <p>
+                  {new Date(report.date).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </p>
               </div>
               <div className="flex">
                 <a

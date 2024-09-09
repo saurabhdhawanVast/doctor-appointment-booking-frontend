@@ -93,7 +93,12 @@ const ArticlePage = ({ params }: ArticlePageProps) => {
                 Category: {article.category} / {article.subCategory}
               </p>
               <p className="text-sm text-gray-500">
-                Published on {new Date(article.createdAt).toLocaleDateString()}
+                Published on{" "}
+                {new Date(article.createdAt).toLocaleDateString("en-GB", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                })}
               </p>
             </div>
 

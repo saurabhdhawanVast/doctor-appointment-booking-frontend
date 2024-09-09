@@ -91,7 +91,14 @@ const ReviewList: React.FC<ReviewListProps> = ({
                   </h2>
                   <p className="text-sm text-gray-500">
                     Reviewed on{" "}
-                    {new Date(review.createdAt).toLocaleDateString()}
+                    {new Date(review.createdAt).toLocaleDateString(
+                      "en-GB",
+                      {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      }
+                    )}
                   </p>
                 </div>
               </div>
