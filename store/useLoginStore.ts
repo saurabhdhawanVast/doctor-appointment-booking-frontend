@@ -155,6 +155,8 @@ const useLoginStore = create<LoginState>((set, get) => ({
         console.log(`Loggedin user role is ${role}`);
         // Store role in a cookie
         Cookies.set("role", role, { expires: 7, path: "/" });
+        // localStorage.setItem("role", role);
+
         Cookies.set("authToken", accessToken, { expires: 7, path: "/" }); // Cookie valid for 7 days, available on all paths
       }
       if (user && user._doc.role === "doctor") {
