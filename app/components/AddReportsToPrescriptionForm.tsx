@@ -32,12 +32,16 @@ interface Prescription {
 interface AddReportsToPrescriptionFormModalProps {
   isOpen: boolean;
   onClose: () => void;
+  reportAdded: boolean;
+  setReportAdded: (reportAdded: boolean) => void;
   prescription?: Prescription;
 }
 export default function AddReportsToPrescriptionForm({
   isOpen,
   onClose,
   prescription,
+  reportAdded,
+  setReportAdded,
 }: AddReportsToPrescriptionFormModalProps) {
   const { register, handleSubmit, reset, setValue } =
     useForm<ReportFormInputs>();
@@ -92,6 +96,7 @@ export default function AddReportsToPrescriptionForm({
 
       await addReport(report);
       reset();
+      setReportAdded(!reportAdded);
       onClose();
       setImage(null);
     } catch (error) {

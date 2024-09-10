@@ -235,7 +235,7 @@ const BookAppointmentPage = () => {
             dayClassName={(date) => highlightDates(date)}
             className="border border-gray-300 rounded-lg shadow-sm p-2 w-full"
             placeholderText="Select a date"
-            dateFormat="MMMM d, yyyy"
+            dateFormat="d MMM yyyy"
             minDate={new Date()} // Optional: to prevent selecting past dates
           />
           <div className="flex space-x-4 mt-4">
@@ -254,7 +254,7 @@ const BookAppointmentPage = () => {
             <>
               <h2 className="text-xl font-semibold text-gray-700 mb-4">
                 Available Slots for{" "}
-                {format(toZonedTime(selectedDate, timeZone), "MMMM d, yyyy", {
+                {format(toZonedTime(selectedDate, timeZone), "d MMM yyyy", {
                   timeZone,
                 })}
               </h2>
