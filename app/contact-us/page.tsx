@@ -24,7 +24,7 @@ export default function ContactPage() {
   const onSubmit = async (data: ContactFormInputs) => {
     setIsSubmitting(true);
     try {
-      await axios.post("/api/contact", data); // Adjust API endpoint as needed
+      await axios.post("/api/contact", data); 
       setSubmitSuccess("Your message has been sent successfully.");
       reset();
     } catch (error) {
