@@ -39,9 +39,13 @@ const https = axios.create({
 
 interface PrescriptionState {
   prescriptions: Prescription[];
+  patients: Record<string, any>; // Store patient details
+
   fetchPrescriptions: (patientId: string) => Promise<void>;
   savePrescription: (prescription: Prescription) => Promise<void>;
   fetchPrescriptionsByDoctor: (doctorId: string) => Promise<void>;
+  fetchPatientById: (patientId: string) => Promise<any>; // Add a return type for fetching patient
+
   fetchPrescriptionsByPatientAndDoctor: (
     patientId: string,
     doctorId: string
@@ -50,8 +54,9 @@ interface PrescriptionState {
 }
 
 export const usePrescriptionStore = create<PrescriptionState>()(
-  devtools((set) => ({
+  devtools((set, get) => ({
     prescriptions: [],
+    patients: {},
     fetchPrescriptions: async (patientId) => {
       try {
         console.log(`Fetching prescriptions for patientId ${patientId}`);
@@ -113,6 +118,30 @@ export const usePrescriptionStore = create<PrescriptionState>()(
         console.log("Fetched prescriptions successfully:", response.data);
       } catch (error) {
         console.error("Failed to fetch prescriptions:", error);
+      }
+    },
+    fetchPatientById: async (patientId) => {
+      const { patients } = get();
+
+      // Check if patient data is already available in the store
+      if (patients[patientId]) {
+        return patients[patientId];
+      }
+
+      try {
+        const response = await https.get(`/patients/${patientId}`);
+        const patientData = response.data;
+
+        // Store the patient data in the state
+        set((state) => ({
+          patients: { ...state.patients, [patientId]: patientData },
+        }));
+
+        console.log(`Fetched patient details for patientId ${patientId}`);
+        return patientData;
+      } catch (error) {
+        console.error("Failed to fetch patient details:", error);
+        throw error;
       }
     },
 

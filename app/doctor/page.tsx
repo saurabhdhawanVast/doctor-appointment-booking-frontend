@@ -126,6 +126,20 @@ const Doctor = () => {
     return [];
   };
 
+  const formatTime = (time: string): string => {
+    const [hourString, minute] = time.split(":");
+    let hour = parseInt(hourString, 10);
+    const isPM = hour >= 12;
+
+    if (hour > 12) {
+      hour -= 12;
+    } else if (hour === 0) {
+      hour = 12;
+    }
+
+    return `${hour}:${minute} ${isPM ? "PM" : "AM"}`;
+  };
+
   const getPaginatedAppointments = (appointments: any[]) => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -185,7 +199,9 @@ const Doctor = () => {
 
         {/* ------------------------Time Button------------------- */}
         <div className="p-2 rounded-lg flex flex-wrap items-center gap-2 flex-end">
-          <div className="text-lg text-gray-600 ml-4 mr-4">{slot.time}</div>
+          <div className="text-lg text-gray-600 ml-4 mr-4">
+            {formatTime(slot.time)}
+          </div>
           <div className="divider divider-horizontal"></div>
 
           {slot.patient && (
