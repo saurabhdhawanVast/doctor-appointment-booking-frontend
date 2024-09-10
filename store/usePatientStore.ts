@@ -32,8 +32,23 @@ export interface Doctor {
   slotDuration: number;
   isVerified: boolean;
 }
+interface Prescription {
+  _id: string;
+  patientId: string;
+  doctorId: string;
+  appointmentDate: string;
+  medicines: Medicine[];
+  note: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
-interface Patients {
+interface Medicine {
+  name: string;
+  dosage: string;
+}
+
+export interface Patients {
   _id: string;
   user: string;
   contactNumber: string;
@@ -44,7 +59,6 @@ interface Patients {
   createdAt: string;
   updatedAt: string;
 }
-
 
 interface Address {
   address: string;
@@ -62,6 +76,8 @@ interface PatientState {
   updateProfile: (patient: Partial<Patient>) => void;
   fetchPatientByUserId: (userId: string) => void;
   allPatients: () => Promise<void>;
+  prescriptions: Prescription[] | null;
+  fetchPrescriptionsByDoctor: (doctorId: string, page: number) => Promise<void>;
   searchDoctors: (
     state: string,
     city: string,
@@ -76,8 +92,9 @@ export const usePatientStore = create<PatientState>((set) => ({
   patient: null,
   doctors: null,
   patients: null,
-  setPatient: (patient) => set({ patient }),
+  prescriptions: null,
 
+  setPatient: (patient) => set({ patient }),
 
   fetchPatient: async (id: string) => {
     try {
@@ -102,7 +119,37 @@ export const usePatientStore = create<PatientState>((set) => ({
       console.error("Error updating profile:", error);
     }
   },
+  fetchPrescriptionsByDoctor: async (doctorId, page) => {
+    try {
+      console.log("fetching prescription for doctorId ", doctorId);
+      const response = await axios.get(
+        `http://localhost:3000/prescriptions/findPrescriptionByDoctorId/${doctorId}`,
+        {
+          params: { page, limit: 10 }, // Implement pagination
+        }
+      );
+      const prescriptions = response.data;
+      console.log(prescriptions);
 
+      const uniquePatientIds = Array.from(
+        new Set(prescriptions.map((p: Prescription) => p.patientId))
+      );
+      // Fetch patient details for unique patients
+      console.log(uniquePatientIds);
+      const patients = await Promise.all(
+        uniquePatientIds.map(async (id) => {
+          const patientResponse = await axios.get(
+            `http://localhost:3000/patients/${id}`
+          );
+          return patientResponse.data;
+        })
+      );
+
+      set({ prescriptions, patients });
+    } catch (error) {
+      console.error("Error fetching prescriptions:", error);
+    }
+  },
   searchDoctors: async (state, city, specialty, gender, radius, location) => {
     console.log(
       `Patient Store: state: ${state}, city: ${city}, specialty: ${specialty},gender: ${gender}, radius: ${radius}, location: ${location}`
@@ -132,10 +179,12 @@ export const usePatientStore = create<PatientState>((set) => ({
 
   allPatients: async () => {
     try {
-      const response = await axios.get("http://localhost:3000/patients/allPatients");
+      const response = await axios.get(
+        "http://localhost:3000/patients/allPatients"
+      );
       set({ patients: response.data });
     } catch (error) {
       console.error("Error fetching patient data:", error);
     }
-  }
+  },
 }));

@@ -1,124 +1,117 @@
 "use client";
-import useLoginStore from "@/store/useLoginStore";
-import { usePrescriptionStore } from "@/store/usePrescriptionStore";
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { usePatientStore } from "@/store/usePatientStore";
+import { useRouter } from "next/navigation";
+import useLoginStore, { Patient } from "@/store/useLoginStore"; // Adjust the import path
+import { FaSearch } from "react-icons/fa";
 
-const MyPatients = () => {
-  const [searchQuery, setSearchQuery] = useState(""); // State for search query
-  const [currentPage, setCurrentPage] = useState(1); // State for current page
-  const [itemsPerPage] = useState(10); // Number of items per page
-  const prescriptions = usePrescriptionStore((state) => state.prescriptions);
-  const fetchPrescriptionsByDoctor = usePrescriptionStore(
-    (state) => state.fetchPrescriptionsByDoctor
-  );
+const PatientListPage = () => {
+  const { patients, fetchPrescriptionsByDoctor } = usePatientStore();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
+  const router = useRouter();
   const doctor = useLoginStore((state) => state.doctor);
   const doctorId = doctor?._id;
 
   useEffect(() => {
-    if (doctorId) {
-      fetchPrescriptionsByDoctor(doctorId)
-        .then(() => console.log("Prescription fetching completed"))
-        .catch((error) => console.error("Error in useEffect:", error));
-    } else {
-      console.log("No doctorId available");
+    if (doctorId) fetchPrescriptionsByDoctor(doctorId, currentPage);
+  }, [currentPage, doctorId]);
+
+  useEffect(() => {
+    const filtered =
+      patients?.filter(
+        (patient: Patient) =>
+          patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          patient.contactNumber?.includes(searchTerm) // Handle optional contactNumber
+      ) || [];
+    setFilteredPatients(filtered);
+  }, [searchTerm, patients]);
+
+  const handlePatientClick = (patientId: string) => {
+    if (patientId) {
+      router.push(`/doctor/myPatients/patientDetails/${patientId}`);
     }
-    console.log("prescriptions", prescriptions);
-  }, [fetchPrescriptionsByDoctor, doctorId]);
+  };
 
-  // Filter to get unique prescriptions based on patientId
-  const uniquePrescriptions = prescriptions.filter(
-    (prescription, index, self) =>
-      index === self.findIndex((p) => p.patientId === prescription.patientId)
+  const pageSize = 10;
+  const totalPatients = filteredPatients.length;
+  const totalPages = Math.ceil(totalPatients / pageSize);
+  const paginatedPatients = filteredPatients.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
   );
-
-  // Filter prescriptions based on the search query
-  const filteredPrescriptions = uniquePrescriptions.filter((prescription) =>
-    prescription.patientName.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  // Paginate the filtered prescriptions
-  const indexOfLast = currentPage * itemsPerPage;
-  const indexOfFirst = indexOfLast - itemsPerPage;
-  const currentPrescriptions = filteredPrescriptions.slice(
-    indexOfFirst,
-    indexOfLast
-  );
-
-  // Calculate the number of pages
-  const totalPages = Math.ceil(filteredPrescriptions.length / itemsPerPage);
 
   return (
-    <div className="mt-16 p-8">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">My Patients</h2>
-
-        {/* Search Bar */}
-        <div>
+    <div className="container mx-auto px-4 py-8 mt-16">
+      {/* Search Bar */}
+      <div className="flex justify-end mb-6">
+        <div className="relative w-full max-w-xs">
           <input
             type="text"
-            placeholder="Search by patient name..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="p-2 border rounded-lg w-full md:w-64 lg:w-80"
+            placeholder="Search by name or contact number..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="p-2 pl-10 border rounded-lg w-full"
           />
+          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
         </div>
       </div>
 
-      <ul>
-        {currentPrescriptions.length > 0 ? (
-          currentPrescriptions.map((prescription) => (
-            <div
-              key={prescription.patientId}
-              className="mb-2 p-2 bg-gray-200 rounded-lg flex flex-row justify-between flex-wrap"
-            >
-              <div className="flex justify-center p-2 text-xl">
-                <li>
-                  <p>{prescription.patientName}</p>
-
-                  {/* Add more fields as needed */}
-                </li>
-              </div>
-
-              <div>
-                <button className="px-4 py-2 mr-4 bg-teal-600 text-white rounded transition duration-300">
-                  <Link
-                    href={`/doctor/myPatients/reports/${prescription.patientId}`}
-                  >
-                    View Reports
-                  </Link>
-                </button>
-                <button className="px-4 py-2 bg-teal-600 text-white rounded transition duration-300">
-                  <Link
-                    href={`/doctor/myPatients/prescription/${prescription.patientId}`}
-                  >
-                    View Prescription
-                  </Link>
-                </button>
+      {/* Patient List */}
+      <h1 className="m-4 font-normal text-xl">Treated Patients </h1>
+      <div className="space-y-6">
+        {paginatedPatients?.map((patient: Patient) => (
+          <div
+            key={patient._id}
+            className="card bg-white shadow-lg rounded-lg p-6 cursor-pointer hover:shadow-xl transition-shadow duration-300 w-full"
+            onClick={() => handlePatientClick(patient._id!)} // Ensure _id is defined
+          >
+            <div className="flex flex-col md:flex-row items-center space-x-6">
+              <img
+                src={patient.profilePic || "/default-profile.png"} // Provide a default image
+                alt={patient.name}
+                className="rounded-full w-20 h-20 object-cover"
+              />
+              <div className="flex-1 mt-4 md:mt-0">
+                <h2 className="text-xl font-normal text-blue-600">
+                  {patient.name}
+                </h2>
+                <p className="text-sm text-gray-600">
+                  Blood Group: {patient.bloodGroup}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Contact: {patient.contactNumber}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Location: {patient.address?.city}, {patient.address?.state}
+                </p>
               </div>
             </div>
-          ))
-        ) : (
-          <p>No prescriptions found.</p>
-        )}
-      </ul>
+          </div>
+        ))}
+      </div>
 
       {/* Pagination Controls */}
-      {filteredPrescriptions.length > itemsPerPage && (
-        <div className="mt-4 flex justify-center">
+      {totalPatients > pageSize && (
+        <div className="mt-6 flex justify-center space-x-4">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            className="px-4 py-2 bg-teal-600 text-white rounded transition duration-300 mr-2"
+            className={`px-4 py-2 bg-blue-500 text-white rounded-lg transition duration-300 ${
+              currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             disabled={currentPage === 1}
           >
             Previous
           </button>
-          <span className="px-4 py-2">{`Page ${currentPage} of ${totalPages}`}</span>
+          <span className="text-lg">{`Page ${currentPage} of ${totalPages}`}</span>
           <button
             onClick={() =>
               setCurrentPage((prev) => Math.min(prev + 1, totalPages))
             }
-            className="px-4 py-2 bg-teal-600 text-white rounded transition duration-300 ml-2"
+            className={`px-4 py-2 bg-blue-500 text-white rounded-lg transition duration-300 ${
+              currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             disabled={currentPage === totalPages}
           >
             Next
@@ -129,4 +122,4 @@ const MyPatients = () => {
   );
 };
 
-export default MyPatients;
+export default PatientListPage;
