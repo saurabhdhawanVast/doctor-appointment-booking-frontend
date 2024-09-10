@@ -87,7 +87,7 @@ const LoginForm = () => {
         animate={{ scale: 1 }}
         transition={{ duration: 0.4 }}
       >
-        <h2 className="text-3xl sm:text-1xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold text-gray-700 text-center">
+        <h2 className="text-3xl sm:text-1xl md:text-2xl lg:text-3xl xl:text-3xl font-semibold text-gray-700 text-center">
           Login
         </h2>
 
@@ -145,9 +145,15 @@ const LoginForm = () => {
 
         <div className="mt-4 flex flex-col items-center w-full max-w-[400px]">
           <div className="flex items-center justify-between w-full">
-            <span className="border-b w-1/5 md:w-1/4"></span>
+            <span className="border-b w-1/5 md:w-1/5"></span>
             <span className="text-sm text-gray-500 text-center">
-              Are you new? <Link href="/register">Sign Up</Link>
+              Are you new?{" "}
+              <Link
+                href="/register"
+                className="font-semibold  hover:text-gray-700"
+              >
+                Sign Up
+              </Link>
             </span>
             <span className="border-b w-1/5 md:w-1/4"></span>
           </div>

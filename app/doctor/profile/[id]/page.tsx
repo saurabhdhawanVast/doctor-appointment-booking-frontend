@@ -5,9 +5,10 @@ import { useParams, useRouter } from "next/navigation";
 import useLoginStore from "@/store/useLoginStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import useDoctorStore from "@/store/useDoctorStoree";
 import { toast } from "react-toastify";
+import useRegisterDoctorStore from "@/store/useRegisterDoctorStore";
 
 const config = {
   cUrl: "https://api.countrystatecity.in/v1/countries",
@@ -37,7 +38,6 @@ const doctorSchema = z.object({
     morningEndTime: z.string().optional(),
     eveningStartTime: z.string().optional(),
     eveningEndTime: z.string().optional(),
-    slotDuration: z.number().optional(),
   }),
 });
 
@@ -47,6 +47,7 @@ const EditDoctorProfile = () => {
   const { patient, doctor, user } = useLoginStore();
   const {
     register,
+    control,
     handleSubmit,
     setValue,
     formState: { errors },
@@ -63,50 +64,23 @@ const EditDoctorProfile = () => {
   );
   const [states, setStates] = useState<{ name: string; iso2: string }[]>([]);
   const [cities, setCities] = useState<string[]>([]);
-  const [selectedState, setSelectedState] = useState<string | undefined>("");
-  const [selectedCity, setSelectedCity] = useState<string | undefined>("");
+
   const { updateProfile } = useDoctorStore();
   const role = user?._doc?.role;
+  const state = doctor?.clinicDetails?.state;
+  const city = doctor?.clinicDetails?.city;
+  const [selectedState, setSelectedState] = useState<string | undefined>("");
+  // const [selectedState, setSelectedState] = useState<string | undefined>(state);
+  const [selectedCity, setSelectedCity] = useState<string | undefined>("");
   const router = useRouter();
 
-  // Specialties
-  const doctorSpecialties = [
-    "Cardiologist", // Heart specialist
-    "Dermatologist", // Skin specialist
-    "Endocrinologist", // Hormones and metabolism specialist
-    "Gastroenterologist", // Digestive system specialist
-    "Neurologist", // Nervous system specialist
-    "Oncologist", // Cancer specialist
-    "Ophthalmologist", // Eye specialist
-    "Orthopedic Surgeon", // Bone and joint specialist
-    "Pediatrician", // Child specialist
-    "Psychiatrist", // Mental health specialist
-    "Pulmonologist", // Lung specialist
-    "Rheumatologist", // Joint and autoimmune disease specialist
-    "Surgeon", // General surgeon
-    "Urologist", // Urinary tract specialist
-    "Dentist", // Oral health specialist
-  ];
+  const doctorSpecialties = useRegisterDoctorStore(
+    (state) => state.doctorSpecialties
+  );
+  const doctorQualifications = useRegisterDoctorStore(
+    (state) => state.doctorQualifications
+  );
 
-  const doctorQualifications = [
-    "MBBS", // Bachelor of Medicine, Bachelor of Surgery
-    "MD", // Doctor of Medicine
-    "MS", // Master of Surgery
-    "DM", // Doctorate of Medicine (super-specialization)
-    "MCh", // Master of Chirurgie (super-specialization in surgery)
-    "DNB", // Diplomate of National Board
-    "BDS", // Bachelor of Dental Surgery
-    "MDS", // Master of Dental Surgery
-    "BHMS", // Bachelor of Homeopathic Medicine and Surgery
-    "MD(Hom)", // Doctor of Medicine in Homeopathy
-    "BAMS", // Bachelor of Ayurvedic Medicine and Surgery
-    "MD(Ayurveda)", // Doctor of Medicine in Ayurveda
-    "DGO", // Diploma in Obstetrics and Gynaecology
-    "DCH", // Diploma in Child Health
-    "DNB Pediatrics", // Diplomate of National Board in Pediatrics
-    "FRCS", // Fellow of the Royal College of Surgeons (can be recognized for Indian practice if from a recognized institution)
-    "FAMS", // Fellow of the Academy of Medical Sciences (can be recognized for Indian practice if from a recognized institution)
-  ];
   useEffect(() => {
     if (doctor) {
       setValue("name", doctor.name);
@@ -125,8 +99,9 @@ const EditDoctorProfile = () => {
         "clinicDetails.clinicAddress",
         doctor.clinicDetails?.clinicAddress
       );
-      setValue("clinicDetails.city", doctor.clinicDetails?.city);
       setValue("clinicDetails.state", doctor.clinicDetails?.state);
+      setValue("clinicDetails.city", doctor.clinicDetails?.city);
+
       setValue(
         "clinicDetails.morningStartTime",
         doctor.clinicDetails?.morningStartTime
@@ -143,16 +118,25 @@ const EditDoctorProfile = () => {
         "clinicDetails.eveningEndTime",
         doctor.clinicDetails?.eveningEndTime
       );
-      setValue(
-        "clinicDetails.slotDuration",
-        doctor.clinicDetails?.slotDuration
-      );
+
       setImage(doctor.profilePic);
       setUploadedDocument(doctor.document);
       setSelectedState(doctor.clinicDetails?.state);
       setSelectedCity(doctor.clinicDetails?.city);
     }
+    console.log("name", doctor?.name);
+    console.log("state", doctor?.clinicDetails?.state);
+    console.log(doctor?.clinicDetails?.city);
   }, [doctor, setValue]);
+
+  useEffect(() => {
+    // When selectedState or selectedCity changes, update the form values
+    setValue("clinicDetails.state", selectedState);
+  }, [selectedState, setValue]);
+
+  useEffect(() => {
+    setValue("clinicDetails.city", selectedCity);
+  }, [selectedCity, setValue]);
 
   const uploadImage = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -494,19 +478,24 @@ const EditDoctorProfile = () => {
                           {...register(
                             "clinicDetails.state" as keyof DoctorInputs
                           )}
+                          defaultValue={state}
                           value={selectedState}
-                          onChange={(e) => setSelectedState(e.target.value)}
+                          onChange={(e) => {
+                            setSelectedState(e.target.value);
+                            // Perform any other actions you need when the state is changed
+                          }}
                           className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
                             errors.clinicDetails?.state ? "border-red-500" : ""
                           }`}
                         >
-                          <option value="">Select State</option>
+                          <option value="">Select a state</option>
                           {states.map((state) => (
                             <option key={state.iso2} value={state.iso2}>
                               {state.name}
                             </option>
                           ))}
                         </select>
+
                         {errors.clinicDetails?.state && (
                           <p className="mt-1 text-sm text-red-500">
                             {
@@ -519,6 +508,51 @@ const EditDoctorProfile = () => {
                           </p>
                         )}
                       </div>
+
+                      {/* <div className="sm:col-span-2 w-1/3 mr-3">
+                        <label
+                          htmlFor="state"
+                          className="block text-sm font-normal leading-6 text-gray-900"
+                        >
+                          State
+                        </label>
+                        <div className="mt-2">
+                          <Controller
+                            name="clinicDetails.state"
+                            control={control}
+                            render={({ field }) => (
+                              <select
+                                {...field}
+                                value={
+                                  selectedState
+                                    ? states.find(
+                                        (state) => state.iso2 === selectedState
+                                      )?.name
+                                    : ""
+                                }
+                                onChange={(e) => {
+                                  const selectedStateObj = states.find(
+                                    (state) => state.name === e.target.value
+                                  );
+                                  setSelectedState(
+                                    selectedStateObj?.iso2 || ""
+                                  );
+                                  field.onChange(e); // Call field.onChange with the event
+                                }}
+                                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                              >
+                                <option value="">Select a state</option>
+                                {states.map((state) => (
+                                  <option key={state.name} value={state.name}>
+                                    {state.name}
+                                  </option>
+                                ))}
+                              </select>
+                            )}
+                          />
+                        </div>
+                      </div> */}
+
                       <div className="mb-4">
                         <label
                           htmlFor="clinicDetails.city"
@@ -660,38 +694,6 @@ const EditDoctorProfile = () => {
                             {
                               (
                                 errors.clinicDetails?.eveningEndTime as {
-                                  message: string;
-                                }
-                              ).message
-                            }
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="mb-4">
-                        <label
-                          htmlFor="clinicDetails.slotDuration"
-                          className="block text-gray-700 text-md font-semibold"
-                        >
-                          Slot Duration
-                        </label>
-                        <input
-                          id="clinicDetails.slotDuration"
-                          type="number"
-                          {...register(
-                            "clinicDetails.slotDuration" as keyof DoctorInputs,
-                            {
-                              setValueAs: (value) =>
-                                value === "" ? undefined : parseInt(value, 10),
-                            }
-                          )}
-                          className="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-sky-600 sm:text-sm"
-                        />
-                        {errors.clinicDetails?.slotDuration && (
-                          <p className="mt-1 text-sm text-red-500">
-                            {
-                              (
-                                errors.clinicDetails?.slotDuration as {
                                   message: string;
                                 }
                               ).message
