@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import useDoctorStore from "@/store/useDoctorStoree";
-import { FaBars, FaTimes } from "react-icons/fa"; // Importing FontAwesome icons
+import { FaBars, FaSearch, FaTimes } from "react-icons/fa"; // Importing FontAwesome icons
 
 export default function DoctorList() {
   const { doctors, fetchDoctors, currentPage, totalPages } = useDoctorStore(
@@ -106,13 +106,16 @@ export default function DoctorList() {
 
           {/* Search Bar */}
           <div className="flex-1 flex justify-end">
-            <input
-              type="text"
-              placeholder="Search by name..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="p-2 border rounded-lg w-full max-w-xs"
-            />
+            <div className="relative w-full max-w-xs">
+              <input
+                type="text"
+                placeholder="Search by name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="p-2 pl-10 border rounded-lg w-full"
+              />
+              <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+            </div>
           </div>
         </div>
 

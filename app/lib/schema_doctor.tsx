@@ -15,7 +15,6 @@ export const FormDataSchemaDoctor = z
 
     profilePic: z
       .any()
-
       .optional()
       .refine(
         (files) =>

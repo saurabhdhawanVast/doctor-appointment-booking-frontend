@@ -43,7 +43,7 @@ const Doctor = () => {
   );
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false); // New state for calendar visibility
+  const [isCalendarOpen, setIsCalendarOpen] = useState(true); // New state for calendar visibility
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // New state for dropdown visibility
 
   // Pagination state
@@ -148,6 +148,7 @@ const Doctor = () => {
 
   const isAppointmentDate = (date: any) => {
     console.log(appointments);
+
     return appointments.some(
       (appointment) =>
         new Date(appointment.date).toDateString() === date.toDateString()
@@ -325,12 +326,12 @@ const Doctor = () => {
           Tomorrow's Appointments
         </button>
         <div className="mt-4">
-          <button
+          {/* <button
             className="w-full px-4 py-2 mb-4 rounded bg-teal-500 text-white"
             onClick={() => setIsCalendarOpen(!isCalendarOpen)}
           >
             Select Date
-          </button>
+          </button> */}
           {isCalendarOpen && (
             <div>
               <DatePicker
@@ -338,7 +339,7 @@ const Doctor = () => {
                 onChange={(date) => {
                   setSelectedDate(date);
                   setFilter("custom");
-                  setIsCalendarOpen(false); // Close calendar after selecting a date
+                  //setIsCalendarOpen(false); // Close calendar after selecting a date
                 }}
                 highlightDates={appointments.map(
                   (appointment) => new Date(appointment.date)
@@ -440,41 +441,43 @@ const Doctor = () => {
                 >
                   Tomorrow's Appointments
                 </button>
-                <button
+                {/* <button
                   className="block px-4 py-2 w-full text-left hover:bg-gray-100"
                   onClick={() => {
                     setIsCalendarOpen(!isCalendarOpen);
                   }}
                 >
                   Select Date
-                </button>
+                </button> */}
                 {isCalendarOpen && (
-                  <DatePicker
-                    selected={selectedDate}
-                    onChange={(date) => {
-                      setSelectedDate(date);
-                      setFilter("custom");
-                      setIsCalendarOpen(false); // Close calendar after selecting a date
-                    }}
-                    highlightDates={appointments.map(
-                      (appointment) => new Date(appointment.date)
-                    )}
-                    dayClassName={(date) => getDateClassName(date)} // Apply the highlighting
-                    inline
-                  />
-                )}
-                {
-                  <div className="flex flex-col space-y-4 mt-4">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-4 h-4 bg-green-500"></div>
-                      <span className="text-gray-700">Appointments</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-4 h-4 bg-[#f55d5d]"></div>
-                      <span className="text-gray-700">No Appointments</span>
-                    </div>
+                  <div>
+                    <DatePicker
+                      selected={selectedDate}
+                      onChange={(date) => {
+                        setSelectedDate(date);
+                        setFilter("custom");
+                        //setIsCalendarOpen(false); // Close calendar after selecting a date
+                      }}
+                      highlightDates={appointments.map(
+                        (appointment) => new Date(appointment.date)
+                      )}
+                      dayClassName={(date) => getDateClassName(date)} // Apply the highlighting
+                      inline
+                    />
+                    {
+                      <div className="flex flex-col space-y-4 mt-4">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-4 h-4 bg-green-500"></div>
+                          <span className="text-gray-700">Appointments</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-4 h-4 bg-[#f55d5d]"></div>
+                          <span className="text-gray-700">No Appointments</span>
+                        </div>
+                      </div>
+                    }
                   </div>
-                }
+                )}
               </div>
             )}
           </div>

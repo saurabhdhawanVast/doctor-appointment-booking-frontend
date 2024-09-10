@@ -172,11 +172,12 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
     }
   },
   fetchAppointments: async (doctorId: string, initialDate?: Date) => {
+
     try {
       const response = await https.get(
         `/appointments/getAppointmentsByDoctorId?doctorId=${doctorId}`
       );
-      console.log(response);
+      console.log("response.data", response.data);
       const appointments: DateWithSlots[] = response.data;
 
       let filteredAppointments: DateWithSlots[] = [];
@@ -202,7 +203,8 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
           );
         });
       }
-
+      // console.log("filteredAppointments", filteredAppointments);
+      // console.log("appointments", appointments);
       set({
         appointments,
         filteredAppointments:

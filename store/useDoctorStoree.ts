@@ -208,22 +208,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
       console.error("Error updating profile:", error);
     }
   },
-  // verifyDoctor: async (id: string) => {
-  //   try {
-  //     await axiosInstance.post(`/doctors/${id}/verify`);
-  //     set((state) => ({
-  //       doctors: state.doctors.map((doc) =>
-  //         doc._id === id ? { ...doc, isVerified: true } : doc
-  //       ),
-  //       doctor:
-  //         state.doctor && state.doctor._id === id
-  //           ? { ...state.doctor, isVerified: true }
-  //           : state.doctor,
-  //     }));
-  //   } catch (error) {
-  //     console.error(`Error verifying doctor: ${error}`);
-  //   }
-  // },
+
 
   fetchAvailableDates: async (id: string) => {
     set({ loading: true });
