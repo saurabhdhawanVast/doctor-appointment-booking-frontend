@@ -109,7 +109,7 @@ const Navbar = () => {
             <Link href="/">Home</Link>
           </li>
           <li>
-            <Link href="/about">About</Link>
+            <Link href="/aboutUs">About</Link>
           </li>
           <li>
             <Link href="/services">Services</Link>
@@ -157,8 +157,9 @@ const Navbar = () => {
               <Link href="/doctor/myPatients">My Patients</Link>
             </li>
             <li onClick={() => setEditArticle(null)}>
-              <Link href={`/doctor/article-form/${doctorId}`}>
-                Create Article
+            <Link href={`/doctor/article`}>
+
+                Article
               </Link>
             </li>
           </div>
@@ -167,12 +168,10 @@ const Navbar = () => {
         return (
           <div className="menu menu-horizontal">
             <li>
-              <Link href={`/patient/myAppointments`}>View Appointments</Link>
+              <Link href="/patient/find-doctor">Find Doctor</Link>
             </li>
             <li>
-              <Link href="/patient/medical-records">
-                Manage Medical Records
-              </Link>
+              <Link href={`/patient/myAppointments`}>View Appointments</Link>
             </li>
             <li>
               <Link href={`/patient/prescriptions/${patientId}`}>
@@ -180,13 +179,10 @@ const Navbar = () => {
               </Link>
             </li>
             <li>
-              <Link href="/patient/find-doctor">Find Doctor</Link>
+              <Link href="/patient/article">View Articles</Link>
             </li>
             <li>
-              <Link href="/article">View Articles</Link>
-            </li>
-            <li>
-              <Link href="/patient/reports">Reports</Link>
+              <Link href="/patient/reports">View Reports</Link>
             </li>
           </div>
         );
@@ -302,7 +298,7 @@ const Navbar = () => {
                     {role === "doctor" && (
                       <button
                         onClick={() => {
-                          router.push("/article");
+                          router.push("/doctor/article");
                           setDropdownOpen(false);
                         }}
                         className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
