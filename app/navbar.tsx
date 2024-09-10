@@ -112,11 +112,9 @@ const Navbar = () => {
             <Link href="/aboutUs">About</Link>
           </li>
           <li>
-            <Link href="/services">Services</Link>
+            <Link href="/dataSecurity">Data Security</Link>
           </li>
-          <li>
-            <Link href="/doctors">Doctors</Link>
-          </li>
+
           <li>
             <Link href="/contact-us">Contact Us</Link>
           </li>
@@ -157,10 +155,7 @@ const Navbar = () => {
               <Link href="/doctor/myPatients">My Patients</Link>
             </li>
             <li onClick={() => setEditArticle(null)}>
-            <Link href={`/doctor/article`}>
-
-                Article
-              </Link>
+              <Link href={`/doctor/article`}>Article</Link>
             </li>
           </div>
         );
