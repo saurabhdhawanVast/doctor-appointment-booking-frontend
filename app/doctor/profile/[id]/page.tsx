@@ -38,6 +38,7 @@ const doctorSchema = z.object({
     morningEndTime: z.string().optional(),
     eveningStartTime: z.string().optional(),
     eveningEndTime: z.string().optional(),
+    slotDuration: z.number().optional(),
   }),
 });
 
@@ -118,7 +119,7 @@ const EditDoctorProfile = () => {
         "clinicDetails.eveningEndTime",
         doctor.clinicDetails?.eveningEndTime
       );
-
+      setValue("clinicDetails.slotDuration", 15);
       setImage(doctor.profilePic);
       setUploadedDocument(doctor.document);
       setSelectedState(doctor.clinicDetails?.state);
@@ -215,6 +216,7 @@ const EditDoctorProfile = () => {
 
   const handleUpdate: SubmitHandler<DoctorInputs> = (data) => {
     if (doctor) {
+      console.log("Data is : ", data);
       updateProfile({ ...data, _id: doctor?._id });
       toast.success("Profile updated successfully");
       handleCancel();

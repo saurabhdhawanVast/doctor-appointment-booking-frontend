@@ -1,137 +1,208 @@
-// pages/contact.tsx
 "use client";
-import { useForm } from "react-hook-form";
-import { useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
+import {
+  FaEnvelope,
+  FaUser,
+  FaCommentDots,
+  FaPaperPlane,
+} from "react-icons/fa";
+import { motion } from "framer-motion";
+import useContactStore from "@/store/useContactStore";
 
-interface ContactFormInputs {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-}
+const ContactUs = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [formStatus, setFormStatus] = useState("");
+  const createContact = useContactStore((state) => state.createContact);
 
-export default function ContactPage() {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<ContactFormInputs>();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
-  const onSubmit = async (data: ContactFormInputs) => {
-    setIsSubmitting(true);
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setFormStatus("Sending..."); // Optional: Add sending status
     try {
-      await axios.post("/api/contact", data); 
-      setSubmitSuccess("Your message has been sent successfully.");
-      reset();
-    } catch (error) {
-      setSubmitSuccess(
-        "There was an error sending your message. Please try again."
+      console.log("Sending contact data:", formData); // Debug log for form data
+      await createContact(formData);
+      setFormStatus("Message sent successfully!");
+      setFormData({
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+      });
+    } catch (error: any) {
+      console.error("Error sending message:", error);
+      // Better error message handling
+      setFormStatus(
+        error.response?.data?.message || "An error occurred. Please try again later."
       );
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4">Contact Us</h1>
-      <p className="mb-6 text-gray-600">
-        If you have any questions or need support, please fill out the form
-        below, and we will get back to you as soon as possible.
-      </p>
-
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="bg-white p-6 rounded-lg shadow-lg"
-      >
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Name
-          </label>
-          <input
-            type="text"
-            {...register("name", { required: "Name is required" })}
-            className="w-full px-3 py-2 border rounded-lg"
-            placeholder="Enter your name"
-          />
-          {errors.name && (
-            <p className="text-red-500 text-xs italic">{errors.name.message}</p>
-          )}
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Email
-          </label>
-          <input
-            type="email"
-            {...register("email", { required: "Email is required" })}
-            className="w-full px-3 py-2 border rounded-lg"
-            placeholder="Enter your email"
-          />
-          {errors.email && (
-            <p className="text-red-500 text-xs italic">
-              {errors.email.message}
-            </p>
-          )}
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Subject
-          </label>
-          <input
-            type="text"
-            {...register("subject", { required: "Subject is required" })}
-            className="w-full px-3 py-2 border rounded-lg"
-            placeholder="Enter the subject"
-          />
-          {errors.subject && (
-            <p className="text-red-500 text-xs italic">
-              {errors.subject.message}
-            </p>
-          )}
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Message
-          </label>
-          <textarea
-            {...register("message", { required: "Message is required" })}
-            className="w-full px-3 py-2 border rounded-lg"
-            rows={4}
-            placeholder="Enter your message"
-          />
-          {errors.message && (
-            <p className="text-red-500 text-xs italic">
-              {errors.message.message}
-            </p>
-          )}
-        </div>
-
-        <div className="mb-4">
-          {submitSuccess && (
-            <p className="text-green-500 text-sm">{submitSuccess}</p>
-          )}
-        </div>
-
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className={`bg-blue-500 text-white py-2 px-4 rounded ${
-              isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+    <div className="font-sans text-gray-800">
+      {/* Hero Section with Background */}
+      <section className="relative h-64 bg-gradient-to-r from-blue-600 to-green-400 text-white">
+        <div className="absolute inset-0 bg-contact-bg-pattern bg-center bg-cover opacity-70"></div>
+        <div className="absolute inset-0 flex flex-col justify-center items-center text-center z-10">
+          <motion.h1
+            className="text-5xl font-extrabold"
+            initial={{ opacity: 0, y: -30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
           >
-            {isSubmitting ? "Sending..." : "Send Message"}
-          </button>
+            Contact Us
+          </motion.h1>
+          <motion.p
+            className="text-xl mt-4"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.3 }}
+          >
+            We're always here to help!
+          </motion.p>
         </div>
-      </form>
+      </section>
+
+      {/* Contact Form Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-6 md:px-12">
+          <motion.div
+            className="mb-12 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.7 }}
+          >
+            <h2 className="text-4xl font-semibold text-blue-600 mb-6">
+              Get in Touch
+            </h2>
+            <p className="text-gray-600">
+              We’d love to hear from you! Fill out the form below to reach us.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="max-w-lg mx-auto bg-white p-8 rounded-xl shadow-xl"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="relative flex items-center border-b border-blue-500 py-2">
+                <FaUser className="text-blue-600 absolute left-3" />
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  placeholder="Your Name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full pl-10 p-3 border-b focus:outline-none focus:border-blue-500 focus:ring-0"
+                  required
+                />
+              </div>
+
+              <div className="relative flex items-center border-b border-green-500 py-2">
+                <FaEnvelope className="text-green-600 absolute left-3" />
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="Your Email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full pl-10 p-3 border-b focus:outline-none focus:border-green-500 focus:ring-0"
+                  required
+                />
+              </div>
+
+              <div className="relative flex items-center border-b border-yellow-500 py-2">
+                <FaCommentDots className="text-yellow-600 absolute left-3" />
+                <input
+                  type="text"
+                  id="subject"
+                  name="subject"
+                  placeholder="Subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  className="w-full pl-10 p-3 border-b focus:outline-none focus:border-yellow-500 focus:ring-0"
+                  required
+                />
+              </div>
+
+              <div className="relative flex items-start border-b border-red-500 py-2">
+                <FaCommentDots className="text-red-600 absolute left-3 mt-3" />
+                <textarea
+                  id="message"
+                  name="message"
+                  placeholder="Your Message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  className="w-full pl-10 p-3 border-b focus:outline-none focus:border-red-500 focus:ring-0"
+                  rows={5}
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full flex items-center justify-center py-3 bg-gradient-to-r from-blue-600 to-green-500 text-white font-semibold rounded-md shadow-md hover:from-blue-500 hover:to-green-400 transition duration-300"
+              >
+                <FaPaperPlane className="mr-2" />
+                Send Message
+              </button>
+
+              {/* Display form status */}
+              {formStatus && (
+                <motion.p
+                  className={`text-center mt-4 font-semibold ${
+                    formStatus.includes("successfully")
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  {formStatus}
+                </motion.p>
+              )}
+            </form>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-8 bg-gray-900 text-gray-200">
+        <div className="container mx-auto px-6 md:px-12">
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold text-white mb-4">
+              Reach Out Anytime!
+            </h2>
+            <p className="text-gray-400 mb-4">
+              Feel free to send us a message via the contact form above or visit
+              our{" "}
+              <a href="/aboutUs" className="text-blue-500">
+                About Us
+              </a>{" "}
+              page for more information.
+            </p>
+            <p className="text-gray-400 mt-4">
+              © 2024 DABMS. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
-}
+};
+
+export default ContactUs;

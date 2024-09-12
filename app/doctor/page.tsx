@@ -186,13 +186,15 @@ const Doctor = () => {
             />
           </div>
           <div className="flex-1 space-y-1 ">
-            <div className="text-lg font-medium">
+            <div className="text-md text-blue-600 font-normal">
               {slot.patient?.name || "No appointment"}
             </div>
             {slot.patient && (
               <div className="text-sm text-gray-500">
-                <div>{slot.patient?.contactNumber || "No contact info"}</div>
-                <div>{slot.patient?.email || "No email info"}</div>
+                <div>
+                  Contact Number :{" "}
+                  {slot.patient?.contactNumber || "No contact info"}
+                </div>
               </div>
             )}
           </div>
@@ -200,7 +202,7 @@ const Doctor = () => {
 
         {/* ------------------------Time Button------------------- */}
         <div className="p-2 rounded-lg flex flex-wrap items-center gap-2 flex-end">
-          <div className="text-lg text-gray-600 ml-4 mr-4">
+          <div className="text-md text-gray-600 ml-4 mr-4">
             {formatTime(slot.time)}
           </div>
           <div className="divider divider-horizontal"></div>
@@ -247,7 +249,7 @@ const Doctor = () => {
     return (
       <motion.div key={appointment.date} className="p-2 mb-2 ">
         <div className="flex mb-2 ">
-          <h2 className="font-semibold ">{formattedDate}</h2>
+          <h2 className="font-normal ">{formattedDate}</h2>
         </div>
         {renderSlots(appointment.appointmentsBooked)}
       </motion.div>
@@ -298,9 +300,9 @@ const Doctor = () => {
         >
           &#9776; {/* Hamburger icon */}
         </button>
-        <h2 className="text-xl font-semibold mb-4">Filter Appointments</h2>
+        <h2 className="text-lg font-normal mb-4">Filter Appointments</h2>
         <button
-          className={`flex items-center px-4 py-2 mb-4 rounded w-full ${
+          className={`flex items-center px-4 py-2 mb-4 font-md rounded w-full ${
             filter === "today" ? "bg-teal-500 text-white" : "bg-gray-200"
           }`}
           onClick={() => {
@@ -313,7 +315,7 @@ const Doctor = () => {
           Today's Appointments
         </button>
         <button
-          className={`flex items-center px-2 py-2 rounded w-full ${
+          className={`flex items-center px-2 py-2 font-md rounded w-full ${
             filter === "tomorrow" ? "bg-teal-500 text-white" : "bg-gray-200"
           }`}
           onClick={() => {
@@ -371,7 +373,7 @@ const Doctor = () => {
       ) : (
         <main className="flex-1 p-4 mt-16 overflow-y-auto">
           <div className="flex items-center justify-between bg-gray-200 p-2 rounded-lg">
-            <h1 className="text-2xl font-bold">Appointments</h1>
+            <h1 className="text-lg font-normal">Appointments</h1>
             <button
               className="md:hidden text-2xl"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -470,9 +472,11 @@ const Doctor = () => {
                           <div className="w-4 h-4 bg-green-500"></div>
                           <span className="text-gray-700">Appointments</span>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <div className="w-4 h-4 bg-[#f55d5d]"></div>
-                          <span className="text-gray-700">No Appointments</span>
+                        <div className="flex items-center space-x-2 ">
+                          <div className="w-4 h-4 bg-[#f55d5d] "></div>
+                          <span className="text-gray-700 ">
+                            No Appointments
+                          </span>
                         </div>
                       </div>
                     }
