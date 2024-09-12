@@ -11,6 +11,7 @@ import {
   MdKeyboardDoubleArrowLeft,
   MdKeyboardDoubleArrowRight,
 } from "react-icons/md";
+import useLoginStore from "@/store/useLoginStore";
 
 interface Article {
   _id: string;
@@ -26,107 +27,107 @@ interface Article {
 }
 
 const categories = [
-    {
-      name: "Healthy Hair",
-      subCategories: [
-        { name: "Hair Growth", imagePath: "/images/hairGrowth.jfif" },
-        { name: "Hair Loss Prevention", imagePath: "/images/hairLoss.jfif" },
-        // { name: "Hair Care Tips", imagePath: "/images/default.jpg" },
-        { name: "Scalp Treatments", imagePath: "/images/scalp-treatment.jpg" },
-        { name: "Hair Coloring", imagePath: "/images/hairColor.jfif" },
-      ],
-    },
-    {
-      name: "Healthy Skin",
-      subCategories: [
-        { name: "Acne Treatment", imagePath: "/images/acane.jfif" },
-        { name: "Anti-Aging", imagePath: "/images/anti-aging.jfif" },
-        { name: "Skin Hydration", imagePath: "/images/skin hydration.jfif" },
-        { name: "Sun Protection", imagePath: "/images/sun protection.jfif" },
-        { name: "Skin Brightening", imagePath: "/images/skin-brightning.jpg" },
-      ],
-    },
-    {
-      name: "Healthy Diet",
-      subCategories: [
-        { name: "Balanced Nutrition", imagePath: "/images/balance-diet.jpg" },
-        { name: "Weight Management", imagePath: "/images/weight-manegement.jpg" },
-        { name: "Detox Diet", imagePath: "/images/detox-diet.jpg" },
-        { name: "Meal Planning", imagePath: "/images/meal-planning.jpg" },
-        {
-          name: "Nutritional Supplements",
-          imagePath: "/images/nutrient-suppliment.jpg",
-        },
-      ],
-    },
-    {
-      name: "Healthy Teeth",
-      subCategories: [
-        { name: "Brushing Techniques", imagePath: "/images/brushing.jpg" },
-        { name: "Flossing Tips", imagePath: "/images/flossingtips.jpg" },
-        { name: "Oral Hygiene", imagePath: "/images/27503.jpg" },
-        { name: "Teeth Whitening", imagePath: "/images/whitning.jpg" },
-        // { name: "Dentist Visits", imagePath: "/images/default.jpg" },
-      ],
-    },
-    {
-      name: "General Health",
-      subCategories: [
-        { name: "Immunity Boost", imagePath: "/images/3985459.jpg" },
-        { name: "Injury care", imagePath: "/images/injurysaf.jpg" },
-        { name: "Healthy Digestion", imagePath: "/images/9344789.jpg" },
-        { name: "Periods Care", imagePath: "/images/periods.jpg" },
-        { name: "Sleep Better", imagePath: "/images/sleeping.jpg" },
-      ],
-    },
-    {
-      name: "Fitness & Exercise",
-      subCategories: [
-        { name: "Cardio Workouts", imagePath: "/images/cardio-workout.jpg" },
-        { name: "Strength Training", imagePath: "/images/strength-training.jpg" },
-        { name: "Meditation", imagePath: "/images/meditation.jpg" },
-        { name: "Everyday Fitness", imagePath: "/images/everyday-fitness.jpg" },
-        { name: "Yoga", imagePath: "/images/yoga.jpg" },
-      ],
-    },
-    {
-      name: "Pain Management",
-      subCategories: [
-        { name: "Back Pain", imagePath: "/images/back-pain.jpg" },
-        { name: "Neck Pain", imagePath: "/images/neck-pain.jpg" },
-        { name: "Headache", imagePath: "/images/headache.jfif" },
-        { name: "Knee Pain", imagePath: "/images/kneePain.jfif" },
-        { name: "Physical Therapy", imagePath: "/images/physicalTherapy.jfif" },
-      ],
-    },
-    {
-      name: "Mental Well-being",
-      subCategories: [
-        { name: "Stress Reduction", imagePath: "/images/stressReduction.jfif" },
-        { name: "Depression Management", imagePath: "/images/depression.jfif" },
-        { name: "Addiction", imagePath: "/images/addiction.jfif" },
-        { name: "Counseling", imagePath: "/images/councelling.jfif" },
-        { name: "Emotional Support", imagePath: "/images/emotionalSupport.jfif" },
-        { name: "Anger Manegment", imagePath: "/images/angerManagement.jfif" },
-      ],
-    },
-    {
-      name: "Kids & Parenting",
-      subCategories: [
-        { name: "Child Development", imagePath: "/images/childDevelopment.jpg" },
-        { name: "Parenting", imagePath: "/images/parenting.jpg" },
-        {
-          name: "Childhood Nutrition",
-          imagePath: "/images/nutrient-suppliment.jpg",
-        },
-        { name: "During/After Pregnancy", imagePath: "/images/pregnancy.jpg" },
-        {
-          name: "Positive Discipline",
-          imagePath: "/images/positiveattitude.jpg",
-        },
-      ],
-    },
-  ];
+  {
+    name: "Healthy Hair",
+    subCategories: [
+      { name: "Hair Growth", imagePath: "/images/hairGrowth.jfif" },
+      { name: "Hair Loss Prevention", imagePath: "/images/hairLoss.jfif" },
+      // { name: "Hair Care Tips", imagePath: "/images/default.jpg" },
+      { name: "Scalp Treatments", imagePath: "/images/scalp-treatment.jpg" },
+      { name: "Hair Coloring", imagePath: "/images/hairColor.jfif" },
+    ],
+  },
+  {
+    name: "Healthy Skin",
+    subCategories: [
+      { name: "Acne Treatment", imagePath: "/images/acane.jfif" },
+      { name: "Anti-Aging", imagePath: "/images/anti-aging.jfif" },
+      { name: "Skin Hydration", imagePath: "/images/skin hydration.jfif" },
+      { name: "Sun Protection", imagePath: "/images/sun protection.jfif" },
+      { name: "Skin Brightening", imagePath: "/images/skin-brightning.jpg" },
+    ],
+  },
+  {
+    name: "Healthy Diet",
+    subCategories: [
+      { name: "Balanced Nutrition", imagePath: "/images/balance-diet.jpg" },
+      { name: "Weight Management", imagePath: "/images/weight-manegement.jpg" },
+      { name: "Detox Diet", imagePath: "/images/detox-diet.jpg" },
+      { name: "Meal Planning", imagePath: "/images/meal-planning.jpg" },
+      {
+        name: "Nutritional Supplements",
+        imagePath: "/images/nutrient-suppliment.jpg",
+      },
+    ],
+  },
+  {
+    name: "Healthy Teeth",
+    subCategories: [
+      { name: "Brushing Techniques", imagePath: "/images/brushing.jpg" },
+      { name: "Flossing Tips", imagePath: "/images/flossingtips.jpg" },
+      { name: "Oral Hygiene", imagePath: "/images/27503.jpg" },
+      { name: "Teeth Whitening", imagePath: "/images/whitning.jpg" },
+      // { name: "Dentist Visits", imagePath: "/images/default.jpg" },
+    ],
+  },
+  {
+    name: "General Health",
+    subCategories: [
+      { name: "Immunity Boost", imagePath: "/images/3985459.jpg" },
+      { name: "Injury care", imagePath: "/images/injurysaf.jpg" },
+      { name: "Healthy Digestion", imagePath: "/images/9344789.jpg" },
+      { name: "Periods Care", imagePath: "/images/periods.jpg" },
+      { name: "Sleep Better", imagePath: "/images/sleeping.jpg" },
+    ],
+  },
+  {
+    name: "Fitness & Exercise",
+    subCategories: [
+      { name: "Cardio Workouts", imagePath: "/images/cardio-workout.jpg" },
+      { name: "Strength Training", imagePath: "/images/strength-training.jpg" },
+      { name: "Meditation", imagePath: "/images/meditation.jpg" },
+      { name: "Everyday Fitness", imagePath: "/images/everyday-fitness.jpg" },
+      { name: "Yoga", imagePath: "/images/yoga.jpg" },
+    ],
+  },
+  {
+    name: "Pain Management",
+    subCategories: [
+      { name: "Back Pain", imagePath: "/images/back-pain.jpg" },
+      { name: "Neck Pain", imagePath: "/images/neck-pain.jpg" },
+      { name: "Headache", imagePath: "/images/headache.jfif" },
+      { name: "Knee Pain", imagePath: "/images/kneePain.jfif" },
+      { name: "Physical Therapy", imagePath: "/images/physicalTherapy.jfif" },
+    ],
+  },
+  {
+    name: "Mental Well-being",
+    subCategories: [
+      { name: "Stress Reduction", imagePath: "/images/stressReduction.jfif" },
+      { name: "Depression Management", imagePath: "/images/depression.jfif" },
+      { name: "Addiction", imagePath: "/images/addiction.jfif" },
+      { name: "Counseling", imagePath: "/images/councelling.jfif" },
+      { name: "Emotional Support", imagePath: "/images/emotionalSupport.jfif" },
+      { name: "Anger Manegment", imagePath: "/images/angerManagement.jfif" },
+    ],
+  },
+  {
+    name: "Kids & Parenting",
+    subCategories: [
+      { name: "Child Development", imagePath: "/images/childDevelopment.jpg" },
+      { name: "Parenting", imagePath: "/images/parenting.jpg" },
+      {
+        name: "Childhood Nutrition",
+        imagePath: "/images/nutrient-suppliment.jpg",
+      },
+      { name: "During/After Pregnancy", imagePath: "/images/pregnancy.jpg" },
+      {
+        name: "Positive Discipline",
+        imagePath: "/images/positiveattitude.jpg",
+      },
+    ],
+  },
+];
 
 const ArticlesList = () => {
   const articles = useArticleStore((state) => state.articles);
@@ -141,6 +142,8 @@ const ArticlesList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [articlesPerPage] = useState(6);
   const [totalPages, setTotalPages] = useState(1);
+  const doctor = useLoginStore((state) => state.doctor);
+  const doctorId = doctor?._id;
   const router = useRouter();
 
   useEffect(() => {
@@ -254,15 +257,15 @@ const ArticlesList = () => {
       <div className="py-4 mt-16">
         {/* Search Bar and Buttons */}
         <div className="relative flex justify-between items-center px-6 border-b">
-        <div className="flex space-x-2">
+          <div className="flex space-x-2">
             <button
-              onClick={() => router.push('/doctor/article-form/${doctorId}')}
+              onClick={() => router.push(`/doctor/article-form/${doctorId}`)}
               className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-semibold transition duration-300"
             >
               Create Article
             </button>
             <button
-              onClick={() => router.push('/doctor/myArticles')}
+              onClick={() => router.push("/doctor/myArticles")}
               className="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-semibold transition duration-300"
             >
               My Articles
@@ -297,7 +300,6 @@ const ArticlesList = () => {
           </div>
 
           {/* Buttons */}
-          
         </div>
 
         {/* Selected Category and Reset Button */}
@@ -481,7 +483,9 @@ const ArticlesList = () => {
                               : "bg-gray-100 text-gray-700"
                           }
                           hover:bg-green-200 hover:text-green-900 transition-all duration-200`}
-                        onClick={() => handleFilterSubCategory(subCategory.name)}
+                        onClick={() =>
+                          handleFilterSubCategory(subCategory.name)
+                        }
                       >
                         <MdCategory className="mr-2 text-gray-600" />
                         {subCategory.name}
@@ -768,7 +772,7 @@ export default ArticlesList;
 //     <div className="bg-gray-100 min-h-screen">
 //       <div className="py-4 mt-16">
 //         <div className="relative flex justify-end space-x-4 pr-6 border-b">
-          
+
 //           <div className="relative w-full max-w-md">
 //             <input
 //               type="text"
@@ -938,7 +942,7 @@ export default ArticlesList;
 //               <div key={category.name} className="mb-4">
 //                 {/* Category Item */}
 //                 <div
-//                   className={`flex font-semibold text-lg cursor-pointer p-2 rounded-lg 
+//                   className={`flex font-semibold text-lg cursor-pointer p-2 rounded-lg
 //                   ${
 //                     selectedCategory === category.name
 //                       ? "bg-blue-500 text-white"

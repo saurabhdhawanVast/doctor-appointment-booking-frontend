@@ -139,6 +139,7 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
       const queryString = new URLSearchParams({
         filter: JSON.stringify(query),
       }).toString();
+      console.log("Query String is ", queryString);
       const response = await https.get(`/appointments?${queryString}`);
       for (let appointment of response.data) {
         let slots = appointment?.doctor?.availability?.find(
@@ -172,7 +173,6 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
     }
   },
   fetchAppointments: async (doctorId: string, initialDate?: Date) => {
-
     try {
       const response = await https.get(
         `/appointments/getAppointmentsByDoctorId?doctorId=${doctorId}`
