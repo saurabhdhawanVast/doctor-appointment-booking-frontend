@@ -248,7 +248,7 @@ const PrescriptionPage = () => {
       {sortedPrescriptions.map((prescription, index) => (
         <div
           key={index}
-          className="bg-white shadow-lg hover:shadow-2xl transform transition-transform duration-300 ease-in-out hover:scale-105 rounded-lg p-6 mb-6 flex flex-col sm:flex-row justify-between items-start mt-15"
+          className="bg-white shadow-lg hover:shadow-2xl transform transition-transform duration-300 ease-in-out rounded-lg p-6 mb-6 flex flex-col sm:flex-row justify-between items-start mt-15"
         >
           {/* Content Section */}
           <div className="w-full sm:w-3/4 flex flex-col">
