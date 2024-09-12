@@ -4,12 +4,14 @@ import { usePatientStore } from "@/store/usePatientStore";
 import { useRouter } from "next/navigation";
 import useLoginStore, { Patient } from "@/store/useLoginStore"; // Adjust the import path
 import { FaSearch } from "react-icons/fa";
+import Loading from "../../loading";
 
 const PatientListPage = () => {
   const { patients, fetchPrescriptionsByDoctor } = usePatientStore();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
+  const [loading, setLoading] = useState(false); // Loading state
   const router = useRouter();
   const doctor = useLoginStore((state) => state.doctor);
   const doctorId = doctor?._id;
@@ -30,6 +32,7 @@ const PatientListPage = () => {
 
   const handlePatientClick = (patientId: string) => {
     if (patientId) {
+      setLoading(true); // Set loading state to true when a card is clicked
       router.push(`/doctor/myPatients/patientDetails/${patientId}`);
     }
   };
@@ -59,7 +62,7 @@ const PatientListPage = () => {
       </div>
 
       {/* Patient List */}
-      <h1 className="m-4 font-normal text-xl">Treated Patients </h1>
+      <h1 className="m-4 font-normal text-xl">Treated Patients</h1>
       <div className="space-y-6">
         {paginatedPatients?.map((patient: Patient) => (
           <div
@@ -116,6 +119,13 @@ const PatientListPage = () => {
           >
             Next
           </button>
+        </div>
+      )}
+
+      {/* Loading Spinner */}
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
+          <Loading /> {/* Use the Loader component */}
         </div>
       )}
     </div>

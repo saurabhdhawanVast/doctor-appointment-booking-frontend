@@ -8,7 +8,6 @@ export function middleware(request: NextRequest) {
 
   // const role=sessionStorage.getItem('role')
   // const authToken = sessionStorage.getItem("token");
-  console.log(authToken);
   const currentPath = request.nextUrl.pathname;
 
   // Allow access to login and register pages regardless of authentication status
@@ -23,7 +22,6 @@ export function middleware(request: NextRequest) {
   }
 
   // Ensure that the user can only access paths that start with their role
-  console.log(userRole);
   const rolePathPattern = new RegExp(`^/${userRole}`);
 
   if (!rolePathPattern.test(currentPath)) {
