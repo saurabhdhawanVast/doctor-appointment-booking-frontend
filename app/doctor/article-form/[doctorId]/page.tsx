@@ -29,7 +29,7 @@ const CreateArticleForm: React.FC = () => {
   const doctorId = Array.isArray(params?.doctorId)
     ? params.doctorId[0]
     : params?.doctorId;
-
+console.log(doctorId);
   useEffect(() => {
     if (editArticle) {
       setTitle(editArticle.title);

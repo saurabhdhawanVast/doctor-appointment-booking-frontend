@@ -40,6 +40,7 @@ const doctorSchema = z.object({
     eveningEndTime: z.string().optional(),
     slotDuration: z.number().optional(),
   }),
+  slotDuration: z.number().optional(),
 });
 
 type DoctorInputs = z.infer<typeof doctorSchema>;

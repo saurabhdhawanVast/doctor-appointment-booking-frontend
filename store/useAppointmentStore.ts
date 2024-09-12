@@ -215,51 +215,7 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
     }
   },
 
-  // fetchAppointments: async (doctorId: string, initialDate?: Date) => {
-  //   try {
-  //     const response = await https.get(
-  //       `/appointments/getAppointmentsByDoctorId?doctorId=${doctorId}`
-  //     );
-  //     console.log(response);
-  //     const appointments: DateWithSlots[] = response.data;
-
-  //     let filteredAppointments: DateWithSlots[] = [];
-
-  //     if (initialDate) {
-  //       filteredAppointments = appointments.filter((item) => {
-  //         const appointmentDate = new Date(item.date);
-  //         return (
-  //           appointmentDate.getFullYear() === initialDate.getFullYear() &&
-  //           appointmentDate.getMonth() === initialDate.getMonth() &&
-  //           appointmentDate.getDate() === initialDate.getDate() &&
-  //           item.status === "completed" // Only include completed appointments
-  //         );
-  //       });
-  //     } else {
-  //       // Filter for today's date
-  //       const today = new Date();
-  //       filteredAppointments = appointments.filter((item) => {
-  //         const appointmentDate = new Date(item.date);
-  //         return (
-  //           appointmentDate.getFullYear() === today.getFullYear() &&
-  //           appointmentDate.getMonth() === today.getMonth() &&
-  //           appointmentDate.getDate() === today.getDate() &&
-  //           item.status === "completed" // Only include completed appointments
-  //         );
-  //       });
-  //     }
-
-  //     console.log("filteredAppointments", filteredAppointments);
-  //     console.log("appointments", appointments);
-  //     set({
-  //       appointments,
-  //       filteredAppointments:
-  //         filteredAppointments.length > 0 ? filteredAppointments : [],
-  //     });
-  //   } catch (error) {
-  //     console.error("Failed to fetch appointments:", error);
-  //   }
-  // },
+  
   fetchDoctorDetails: async (doctorId: string) => {
     try {
       const response = await https.get(`/doctors/getDoctorById/${doctorId}`);

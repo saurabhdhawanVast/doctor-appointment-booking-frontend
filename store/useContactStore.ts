@@ -18,7 +18,7 @@ export const useContactStore = create<ContactsState>((set) => ({
   createContact: async (Contact) => {
     try {
       const res = await axios.post("http://localhost:3000/contact", Contact);
-      toast.success("Contact added successfully");
+      toast.success("Message Sent successfully");
     } catch (error) {
       console.error("Error creating Contact:", error);
       toast.error("Error adding contact");

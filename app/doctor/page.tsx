@@ -288,7 +288,7 @@ const Doctor = () => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-[90vh]">
       {/* Sidebar for Filters */}
       <aside
         className={`fixed z-30 p-6 mt-16 top-0 left-0 h-screen w-72 bg-gray-100  border-r border-gray-200 transform ${
@@ -351,7 +351,7 @@ const Doctor = () => {
                 dayClassName={(date) => getDateClassName(date)} // Apply the highlighting
                 inline
               />
-              <div className="flex flex-col space-y-4 mt-4">
+              <div className="flex flex-col space-y-2 mt-4">
                 <div className="flex items-center space-x-2">
                   <div className="w-4 h-4 bg-green-500"></div>
                   <span className="text-gray-700">Appointments</span>
