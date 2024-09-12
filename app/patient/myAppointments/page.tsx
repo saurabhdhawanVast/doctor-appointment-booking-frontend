@@ -18,6 +18,9 @@ const MyAppointmentsList = () => {
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<
     string | null
   >(null);
+  const [ratedAppointments, setRatedAppointments] = useState<Set<string>>(
+    new Set()
+  ); // State to track rated appointments dis
   const [activeSection, setActiveSection] = useState<"upcoming" | "completed">(
     "upcoming"
   ); // State to track the active section
@@ -66,7 +69,12 @@ const MyAppointmentsList = () => {
         patient: patient._id,
       };
       await createRating(payload);
+      setRatedAppointments((prev) =>
+        new Set(prev).add(appointment._id.toString())
+      );
+      closeRatingModal();
     }
+    
   };
 
   const upcoming = upcomingAppointments.filter(
@@ -186,7 +194,10 @@ const MyAppointmentsList = () => {
               {appointment.status === "completed" && (
                 <button
                   className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition disabled:bg-blue-200"
-                  disabled={appointment.isAppointmentRated}
+                  disabled={
+                    appointment.isAppointmentRated ||
+                    ratedAppointments.has(appointment._id)
+                  }
                   onClick={() => openRatingModal(appointment._id)}
                 >
                   Rate Appointment

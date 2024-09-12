@@ -86,7 +86,8 @@ const ContactUs = () => {
               Get in Touch
             </h2>
             <p className="text-gray-600">
-              We’d love to hear from you! Fill out the form below to reach us.
+              {/* We’d love to hear from you! Fill out the form below to reach us. */}
+              We’d love to hear from you! Fill out the form below, and our team will get back to you within 24 hours.
             </p>
           </motion.div>
 
@@ -180,27 +181,7 @@ const ContactUs = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-8 bg-gray-900 text-gray-200">
-        <div className="container mx-auto px-6 md:px-12">
-          <div className="text-center">
-            <h2 className="text-2xl font-semibold text-white mb-4">
-              Reach Out Anytime!
-            </h2>
-            <p className="text-gray-400 mb-4">
-              Feel free to send us a message via the contact form above or visit
-              our{" "}
-              <a href="/aboutUs" className="text-blue-500">
-                About Us
-              </a>{" "}
-              page for more information.
-            </p>
-            <p className="text-gray-400 mt-4">
-              © 2024 DABMS. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      
     </div>
   );
 };
