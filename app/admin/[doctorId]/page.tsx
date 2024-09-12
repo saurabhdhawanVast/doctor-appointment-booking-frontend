@@ -4,10 +4,15 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import useDoctorStore from "@/store/useDoctorStoree";
 import Link from "next/link";
+import { IoArrowBackCircle } from "react-icons/io5";
+import { IoMdArrowRoundBack } from "react-icons/io";
+import { useRouter } from "next/navigation";
 
 export default function DoctorProfile() {
   const { doctorId } = useParams(); // Get the doctorId from URL parameters
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const router = useRouter();
 
   const { doctor, fetchDoctorProfile, verifyDoctor } = useDoctorStore(
     (state) => ({
@@ -32,12 +37,17 @@ export default function DoctorProfile() {
   if (!doctor) return <p>Loading...</p>;
 
   return (
-    <div className="container mx-auto py-16 mt-4">
-      <Link href="/admin" className="text-blue-500  inline-block">
-        Back to Doctor List
-      </Link>
+    <div className="mt-10 p-8 mb-1 ">
+      <div>
+        <button
+          onClick={() => router.push("/admin")}
+          className="p-2 bg-gray-200 rounded-full mr-4 mb-3"
+        >
+          <IoMdArrowRoundBack className="text-black " />
+        </button>
+      </div>
 
-      <div className="doctor-profile flex flex-col md:flex-row  p-6 rounded-xl shadow-2xl mt-10 bg-teal-50">
+      <div className="doctor-profile flex flex-col md:flex-row  p-6 rounded-xl shadow-2xl  bg-teal-50">
         {/* Doctor Details Section */}
         <div className="md:w-2/3 md:pr-6">
           <h2 className="text-3xl font-bold mb-4">{doctor.name}</h2>
@@ -52,9 +62,6 @@ export default function DoctorProfile() {
           )}
 
           <p className="text-lg mb-2">
-            <strong>Email:</strong> {doctor.email}
-          </p>
-          <p className="text-lg mb-2">
             <strong>Speciality:</strong> {doctor.speciality}
           </p>
           <p className="text-lg mb-2">
@@ -63,14 +70,16 @@ export default function DoctorProfile() {
           <p className="text-lg mb-2">
             <strong>Registration Number:</strong> {doctor.registrationNumber}
           </p>
-          <p className="text-lg mb-2">
-            <strong>Bio:</strong> {doctor.bio}
-          </p>
+
           <p className="text-lg mb-2">
             <strong>Year of Registration:</strong> {doctor.yearOfRegistration}
           </p>
           <p className="text-lg mb-2">
             <strong>State Medical Council:</strong> {doctor.stateMedicalCouncil}
+          </p>
+
+          <p className="text-lg mb-2">
+            <strong>Bio:</strong> {doctor.bio}
           </p>
 
           {/* Verify Button */}

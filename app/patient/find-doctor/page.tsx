@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, use } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, set } from "react-hook-form";
 import { Slider } from "@mui/material";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { usePatientStore } from "@/store/usePatientStore";
@@ -14,6 +14,7 @@ import { FaCalendarDays } from "react-icons/fa6";
 import { IoTodaySharp } from "react-icons/io5";
 import useRegisterDoctorStore from "@/store/useRegisterDoctorStore";
 import { MdLocationOff, MdLocationOn } from "react-icons/md";
+import Loading from "@/app/loading";
 
 interface Slot {
   time: string;
@@ -80,6 +81,9 @@ const SearchDoctorsPage = () => {
   const [isReviewModelOpen, setIsReviewModelOpen] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState("");
   // const patient = usePatientStore((state) => state.patient);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const router = useRouter();
 
   //for getting user logged in
   const user = useLoginStore((state) => state.user);
@@ -225,6 +229,20 @@ const SearchDoctorsPage = () => {
     setSelectedDoctor(doctor);
   };
 
+  const handleBookAppointment = (doctorId: any, patientId: any) => {
+    try {
+      setIsLoading(true);
+
+      router.push(
+        `/patient/book-appointment?doctorId=${doctorId}&patientId=${patientId}`
+      );
+    } catch (error) {
+      toast.error("Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleGetLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -276,8 +294,13 @@ const SearchDoctorsPage = () => {
 
   return (
     <div className="  mt-12 p-4 w-full flex-wrap">
-      {/* <label className="text-xl font-normal mb-2">Search for Doctors</label>
-      <hr className="border-gray-300 mb-2" /> */}
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
+          <div className="loader">
+            <Loading />
+          </div>{" "}
+        </div>
+      )}
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-wrap space-x-3 items-center">
           <div className="w-64 ml-4 ">
@@ -558,14 +581,26 @@ const SearchDoctorsPage = () => {
                           </span>
                         )}
                       </div>
-                      <Link
+                      {/* <Link
                         href={`/patient/book-appointment?doctorId=${doctor._id}&patientId=${patient?._id}`}
                         className="btn text-white rounded-2xl bg-teal-600 mt-2 text-xs px-2 py-1 flex flex-col items-center text-center hover:bg-teal-600 hover:text-white"
                       >
                         <span className="text-sm font-semibold">
                           Book Appointment
                         </span>
-                      </Link>
+                      </Link> */}
+
+                      <button
+                        onClick={() =>
+                          handleBookAppointment(doctor._id, patient?._id)
+                        }
+                        // href={`/patient/book-appointment?doctorId=${doctor._id}&patientId=${patient?._id}`}
+                        className="btn text-white rounded-2xl bg-teal-600 mt-2 text-xs px-2 py-1 flex flex-col items-center text-center hover:bg-teal-600 hover:text-white"
+                      >
+                        <span className="text-sm font-semibold">
+                          Book Appointment
+                        </span>
+                      </button>
                     </div>
                   </div>
                 </div>

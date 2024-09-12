@@ -211,14 +211,22 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
 
   const renderSelectedDates = () => (
     <div className="bg-gray-100 p-4 rounded-lg shadow-lg">
-      <h3 className="text-lg font-medium mb-2">Selected Dates</h3>
+      <h3 className="text-lg font-normal mb-2">Selected Dates</h3>
       <ul>
         {selectedDates.map((date, index) => (
           <li
             key={index}
             className="flex justify-between items-center p-2 border-b last:border-b-0"
           >
-            <span>{formatDateInTimeZone(date, timeZone)}</span>
+            {/* <span>{formatDateInTimeZone(date, timeZone)}</span> */}
+            <span className="text-blue-500">
+              {new Date(date).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })}
+            </span>
+
             <button
               className="text-red-500"
               onClick={() => handleDeselectDate(date)}
@@ -328,7 +336,9 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
         </div>
       )}
       <div className="w-58    border-r p-4">
-        <h2 className="text-xl font-normal text-center mb-4">Calendar</h2>
+        <h2 className="text-xl font-normal text-center mb-4">
+          Availability Calendar
+        </h2>
         <DatePicker
           selected={null} // Keep this null as we handle multiple dates
           onChange={handleDateChange}
@@ -354,7 +364,7 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
       <div className="w-full lg:w-3/4 p-4">
         {showMarkAvailable ? (
           <div className="flex-1 p-4 border border-gray-300 rounded-lg shadow-lg">
-            <h3 className="text-lg font-medium mb-2">
+            <h3 className="text-lg font-normal mb-2">
               Mark Dates as Available
             </h3>
             {renderSelectedDates()}

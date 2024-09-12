@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "react-toastify";
 import create from "zustand";
 
 interface Slot {
@@ -57,9 +58,10 @@ const useBookAppointmentStore = create<BookAppointmentState>((set) => ({
         throw new Error("Failed to book slot.");
       }
 
-      set({ bookingSuccess: "Slot booked successfully!", bookingError: null });
+
     } catch (error) {
-      set({ bookingError: "Failed to book slot.", bookingSuccess: null });
+      console.error("Error booking slot:", error);
+
     }
   },
 }));
