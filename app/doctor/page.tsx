@@ -127,6 +127,7 @@ const Doctor = () => {
   };
 
   const formatTime = (time: string): string => {
+    console.log(time);
     const [hourString, minute] = time.split(":");
     let hour = parseInt(hourString, 10);
     const isPM = hour >= 12;
@@ -307,6 +308,7 @@ const Doctor = () => {
           }`}
           onClick={() => {
             const today = new Date(); // Get today's date
+            today.setDate(today.getDate()); // Set today's date
             setFilter("today");
             setSelectedDate(today);
             // Reset selected date

@@ -704,6 +704,13 @@ const Form_Patient = () => {
                 <p className="mt-1 text-sm leading-6 text-gray-600">
                   Thank you Please Submit the form.
                 </p>
+                <div className=" flex justify-center items-center">
+                  <img
+                    src="/images/Thankyou.png"
+                    alt="Doctor"
+                    className="w-1/4"
+                  />
+                </div>
               </>
             )}
           </form>
