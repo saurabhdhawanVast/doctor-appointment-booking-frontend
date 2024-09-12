@@ -20,7 +20,7 @@ type Inputs = z.infer<typeof FormDataSchemaDoctor>;
 const steps = [
   {
     id: "Step 1",
-    name: "Personal Information",
+    name: "Personal Details",
     fields: [
       "firstName",
       "lastName",
@@ -392,29 +392,32 @@ export default function Form_Doctor() {
         </nav>
 
         {/* Form div */}
-        <div className="bg-blue-50 p-5 rounded-2xl w-94 ">
+        <div className="bg-blue-50   rounded-2xl w-94 mt-6">
           {/* Form */}
-          <form className="mt-5 py-5" onSubmit={handleSubmit(processForm)}>
+          <form className="p-5" onSubmit={handleSubmit(processForm)}>
             {currentStep === 0 && (
               <motion.div
                 initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
               >
-                <h2 className="text-base font-semibold leading-7 text-gray-900">
-                  Resitration Details
-                </h2>
-                <p className="mt-1 text-sm leading-6 text-gray-600">
-                  Provide your registration details.
-                </p>
+                <div>
+                  <h2 className="text-base font-semibold leading-7 text-gray-900">
+                    Personal Details
+                  </h2>
 
-                <div className="mt-5 grid grid-cols-3 gap-x-6 gap-y-8 sm:grid-cols-9">
-                  <div className="sm:col-span-3">
+                  <p className="mt-1 text-sm leading-6 text-gray-600">
+                    Provide your Personal details.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap mt-2 ">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="firstName"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      First Name
+                      First Name<span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <input
@@ -432,12 +435,12 @@ export default function Form_Doctor() {
                     </div>
                   </div>
 
-                  <div className="sm:col-span-3">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="lastName"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Last Name
+                      Last Name<span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <input
@@ -454,14 +457,14 @@ export default function Form_Doctor() {
                       )}
                     </div>
                   </div>
-                  <div></div>
+                  <div className="w-full md:w-1/3 p-2"></div>
 
-                  <div className="sm:col-span-3">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="email"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Email
+                      Email<span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <input
@@ -481,12 +484,12 @@ export default function Form_Doctor() {
 
                   {/* Gender */}
 
-                  <div className="sm:col-span-3">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="gender"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Gender
+                      Gender<span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <select
@@ -511,7 +514,7 @@ export default function Form_Doctor() {
                   </div>
 
                   {/* Profile*/}
-                  <div className="sm:col-span-3">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="profilePic"
                       className="block text-sm font-medium leading-6 text-gray-900"
@@ -536,12 +539,12 @@ export default function Form_Doctor() {
 
                   {/* Password */}
 
-                  <div className="sm:col-span-3">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="password"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Password
+                      Password<span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <input
@@ -561,12 +564,12 @@ export default function Form_Doctor() {
 
                   {/*Confirm  Password */}
 
-                  <div className="sm:col-span-3">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="confirmPassword"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Confirm Password
+                      Confirm Password<span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <input
@@ -600,20 +603,20 @@ export default function Form_Doctor() {
                   Add your qualification details
                 </p>
 
-                <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                  <div className="sm:col-span-2">
+                <div className="flex flex-wrap mt-2">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="speciality"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      speciality
+                      Speciality<span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <select
                         id="speciality"
                         {...register("speciality")}
                         autoComplete="speciality"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 "
                       >
                         <option value="">Select Speciality</option>
                         {doctorSpecialties.map((speciality) => (
@@ -630,19 +633,19 @@ export default function Form_Doctor() {
                     </div>
                   </div>
                   {/* Qualification */}
-                  <div className="sm:col-span-2">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="qualification"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Qualification
+                      Qualification<span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <select
                         id="qualification"
                         {...register("qualification")}
                         autoComplete="qualification"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 "
                       >
                         <option value="">Select Qualification</option>
                         {doctorQualifications.map((qualification) => (
@@ -659,12 +662,13 @@ export default function Form_Doctor() {
                     </div>
                   </div>
                   {/* RegistrationNumber */}
-                  <div className="sm:col-span-2">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="registrationNumber"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
                       Registration Number
+                      <span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <input
@@ -672,7 +676,7 @@ export default function Form_Doctor() {
                         type="text"
                         {...register("registrationNumber")}
                         autoComplete="registrationNumber"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600"
                       />
 
                       {errors.registrationNumber?.message && (
@@ -683,19 +687,20 @@ export default function Form_Doctor() {
                     </div>
                   </div>
                   {/* Year of Registration */}
-                  <div className="sm:col-span-2">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="yearOfRegistration"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
                       Year of Registration
+                      <span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <select
                         id="yearOfRegistration"
                         {...register("yearOfRegistration")}
                         autoComplete="yearOfRegistration"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 "
                       >
                         <option value="">Select Year of Registration</option>
                         {years.map((year) => (
@@ -712,19 +717,20 @@ export default function Form_Doctor() {
                     </div>
                   </div>
                   {/* StateMedicalCouncil */}
-                  <div className="sm:col-span-2">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="stateMedicalCouncil"
                       className="block text-sm font-medium leading-6 text-gray-900 "
                     >
                       State Medical Council
+                      <span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <select
                         id="stateMedicalCouncil"
                         {...register("stateMedicalCouncil")}
                         autoComplete="stateMedicalCouncil"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 "
                       >
                         <option value="">State Medical Council</option>
                         {stateMedicalCouncilsList.map((stateCouncil) => (
@@ -740,12 +746,13 @@ export default function Form_Doctor() {
                       )}
                     </div>
                   </div>
-                  <div className="sm:col-span-2">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="document"
                       className="block text-sm font-medium leading-6 text-gray-900 w-fit "
                     >
                       Upload Document (.jpg, .jpeg, and .png)
+                      <span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <input
@@ -753,7 +760,7 @@ export default function Form_Doctor() {
                         type="file"
                         {...register("document")}
                         accept=".jpg,.jpeg,.png"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 "
                       ></input>
                       {errors.document?.message && (
                         <p className="mt-2 text-sm text-red-400">
@@ -764,19 +771,19 @@ export default function Form_Doctor() {
                   </div>
                   {/* Bio */}
 
-                  <div className=" sm:col-span-2">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="bio"
                       className="block text-sm font-medium leading-6 text-gray-600"
                     >
-                      Bio
+                      Bio<span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <textarea
                         id="bio"
                         {...register("bio")}
                         autoComplete="bio"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 "
                       />
                       {errors.bio?.message && (
                         <p className="mt-2 text-sm text-red-400">
@@ -802,13 +809,13 @@ export default function Form_Doctor() {
                   Add your Clinic Address
                 </p>
                 {/* Address */}
-                <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                  <div className="sm:col-span-2">
+                <div className="flex flex-wrap mt-2">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="clinicName"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Clinic Name
+                      Clinic Name<span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <input
@@ -816,7 +823,7 @@ export default function Form_Doctor() {
                         type="text"
                         {...register("clinicName")}
                         autoComplete="clinicName"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 "
                       />
                       {errors.clinicName?.message && (
                         <p className="mt-2 text-sm text-red-400">
@@ -826,12 +833,12 @@ export default function Form_Doctor() {
                     </div>
                   </div>
 
-                  <div className="col-span-2">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="clinicAddress"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Clinic Address
+                      Clinic Address<span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <input
@@ -839,7 +846,7 @@ export default function Form_Doctor() {
                         id="clinicAddress"
                         {...register("clinicAddress")}
                         autoComplete="clinicAddress"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 "
                       />
                       {errors.clinicAddress?.message && (
                         <p className="mt-2 text-sm text-red-400">
@@ -851,12 +858,13 @@ export default function Form_Doctor() {
 
                   {/* contactNumber */}
 
-                  <div className="sm:col-span-2">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="contactNumber"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
                       Clinic Contact Number
+                      <span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <input
@@ -875,12 +883,12 @@ export default function Form_Doctor() {
                   </div>
 
                   {/* State */}
-                  <div className="sm:col-span-2">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="state"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      State
+                      State<span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <select
@@ -921,12 +929,12 @@ export default function Form_Doctor() {
                   </div>
 
                   {/* City */}
-                  <div className="sm:col-span-2 ">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="city"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      City
+                      City <span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <select
@@ -951,12 +959,12 @@ export default function Form_Doctor() {
 
                   {/* Zip */}
 
-                  <div className="sm:col-span-2">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="pinCode"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Zip Code
+                      Zip Code <span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <input
@@ -974,7 +982,7 @@ export default function Form_Doctor() {
                     </div>
                   </div>
 
-                  <div className="sm:col-span-2 ">
+                  <div className="w-full md:w-1/3 p-2">
                     <button
                       type="button"
                       onClick={setLocation}
@@ -1006,14 +1014,14 @@ export default function Form_Doctor() {
                   Please Add Clinic Timing
                 </p>
 
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div className="flex flex-wrap mt-2">
                   {/* Morning Timings */}
-                  <div className="col-span-1 sm:col-span-2">
+                  <div className="w-full  p-2">
                     <h3 className="text-sm font-semibold leading-6 text-gray-900">
                       Morning
                     </h3>
-                    <div className="mt-2 flex items-center space-x-4">
-                      <div className="w-1/3">
+                    <div className="flex flex-wrap mt-2">
+                      <div className="w-full md:w-1/3 p-2">
                         <label
                           htmlFor="morningStartTime"
                           className="block text-sm font-medium leading-6 text-gray-900"
@@ -1034,7 +1042,7 @@ export default function Form_Doctor() {
                           </p>
                         )}
                       </div>
-                      <div className="w-1/3">
+                      <div className="w-full md:w-1/3 p-2">
                         <label
                           htmlFor="morningEndTime"
                           className="block text-sm font-medium leading-6 text-gray-900"
@@ -1059,12 +1067,12 @@ export default function Form_Doctor() {
                   </div>
 
                   {/* Evening Timings */}
-                  <div className="col-span-1 sm:col-span-2">
+                  <div className="w-full  p-2">
                     <h3 className="text-sm font-semibold leading-6 text-gray-900">
                       Evening
                     </h3>
-                    <div className="mt-2 flex items-center space-x-4">
-                      <div className="w-1/3">
+                    <div className="flex flex-wrap mt-2">
+                      <div className="w-full md:w-1/3 p-2">
                         <label
                           htmlFor="eveningStartTime"
                           className="block text-sm font-medium leading-6 text-gray-900"
@@ -1085,7 +1093,7 @@ export default function Form_Doctor() {
                           </p>
                         )}
                       </div>
-                      <div className="w-1/3">
+                      <div className="w-full md:w-1/3 p-2">
                         <label
                           htmlFor="eveningEndTime"
                           className="block text-sm font-medium leading-6 text-gray-900"

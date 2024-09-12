@@ -154,7 +154,7 @@ const AppointmentsPage = () => {
       "en-GB",
       {
         day: "2-digit",
-        month: "2-digit",
+        month: "short",
         year: "numeric",
       }
     );

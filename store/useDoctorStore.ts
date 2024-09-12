@@ -2,6 +2,7 @@ import { create } from "zustand";
 import axios from "axios";
 
 export interface DoctorStoreState {
+  // isReviewModelOpen: any;
   doctors: Doctor[];
   doctor: Doctor;
   fetchDoctors: () => Promise<void>;

@@ -13,9 +13,13 @@ import featureImg from "../public/images/feature-img.png";
 import faqImg from "../public/images/faq-img.png";
 import videoIcon from "../public/images/video-icon.png";
 import avatarIcon from "../public/images/avatar-icon.png";
+import ReviewList from "./components/reviewModel";
+import Typewriter from "typewriter-effect";
 
 export default function Home() {
   const [doctors, setDoctors] = useState<any[]>([]);
+  const [isReviewModelOpen, setIsReviewModelOpen] = useState(false);
+  const [selectedDoctor, setSelectedDoctor] = useState("");
   const fetchDoctors = useDoctorStore((state) => state.fetchDoctors);
 
   useEffect(() => {
@@ -49,6 +53,14 @@ export default function Home() {
     }
     return stars;
   };
+  const handleReviewModelClose = () => {
+    setIsReviewModelOpen(false);
+    setSelectedDoctor("");
+  };
+  const handleReviewModelOpen = (doctor: any) => {
+    setIsReviewModelOpen(true);
+    setSelectedDoctor(doctor);
+  };
   return (
     <>
       {/* Header Section */}
@@ -56,10 +68,26 @@ export default function Home() {
       {/* Hero Section */}
       <section className="hero bg-blue-500 text-white text-center py-24">
         <div className="container mx-auto">
-          <h1 className="text-4xl font-bold mb-4">
+          <div className="container mx-auto text-center">
+            {/* <h1 className="text-9xl font-bold">DABS</h1> */}
+            <label className="block text-4xl font-bold">
+              <Typewriter
+                options={{
+                  // strings: ["Doctors", "Appointment", "Booking", "System"],
+                  strings: ["Doctors Appointment Booking System"],
+                  autoStart: true,
+                  loop: true,
+                  delay: 200,
+                  cursor: "|",
+                }}
+              />
+            </label>
+          </div>
+
+          <h1 className="text-4xl font-bold mt-6 mb-4">
             We Help You Find the Best Doctors
           </h1>
-          <p className="text-xl mb-6">
+          <p className="text-xl ">
             Easily book your appointments and get the best healthcare services.
           </p>
         </div>
@@ -180,11 +208,16 @@ export default function Home() {
                         View Profile
                       </Link>
                     </div>
-                    <div className="flex mt-2">
-                      {renderStars(doctor.avgRating)}
-                      {/* <span className="ml-2 text-gray-600">
-                        {doctor.ratings.toFixed(1)} / 5
-                      </span> */}
+                    <div>
+                      <div className="flex mt-2">
+                        {renderStars(doctor.avgRating)}
+                      </div>
+                      <div
+                        className="text-center text-sm underline hover:text-blue-500 cursor-pointer"
+                        onClick={() => handleReviewModelOpen(doctor._id)}
+                      >
+                        Reviews
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -350,6 +383,11 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <ReviewList
+        isOpen={isReviewModelOpen}
+        onClose={handleReviewModelClose}
+        doctorId={selectedDoctor}
+      />
     </>
   );
 }

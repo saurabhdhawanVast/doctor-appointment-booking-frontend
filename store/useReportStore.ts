@@ -1,11 +1,13 @@
 import create from "zustand";
 import axios from "axios";
-
+import { toast } from "react-toastify";
 interface CreateReport {
   reportName: string;
   uploadReport: string;
   type: string;
   date: Date;
+  doctor?: string;
+  appointmentDate?: Date;
 }
 
 interface Report {
@@ -13,6 +15,8 @@ interface Report {
   reportName: string;
   uploadReport: string;
   type: string;
+  doctor?: { _id: string; name: string };
+  appointmentDate?: Date;
   date: Date;
   patient: { _id: string; name: string };
   createdAt: string;
@@ -60,8 +64,10 @@ export const useReportStore = create<ReportsState>((set) => ({
   createReport: async (Report) => {
     try {
       await axios.post("http://localhost:3000/reports", Report);
+      toast.success("Report added successfully");
     } catch (error) {
       console.error("Error creating Report:", error);
+      toast.error("Error adding report");
     }
   },
 }));

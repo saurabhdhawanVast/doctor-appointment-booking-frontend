@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import useDoctorStore from "@/store/useDoctorStoree";
+import { FaBars, FaSearch, FaTimes } from "react-icons/fa"; // Importing FontAwesome icons
 
 export default function DoctorList() {
   const { doctors, fetchDoctors, currentPage, totalPages } = useDoctorStore(
@@ -46,50 +47,37 @@ export default function DoctorList() {
       <div
         className={`transition-transform duration-300  ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed top-0 left-0 h-full  border-r border-gray-300 w-52 p-4 mt-16`}
+        } fixed top-0 left-0 h-full  border-r border-gray-300 w-64 p-4 mt-16`}
       >
-        <button
-          onClick={() => setSidebarOpen(false)}
-          className="absolute top-4 right-4 p-2  rounded-full"
-        >
-          <span className="text-gray-600">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="size-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18 18 6M6 6l12 12"
-              />
-            </svg>
-          </span>
-        </button>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl">Filters</h2>
+          {/* Close Sidebar Icon */}
+          <button onClick={() => setSidebarOpen(false)}>
+            <FaTimes className="text-black" />
+          </button>
+        </div>
 
-        <h2 className="text-lg font-semibold mb-4">Filters</h2>
         <button
           onClick={() => handleFilterChange("all")}
-          className={`block p-3 rounded-lg border mb-2 w-full text-center ${
+          className={`w-full text-left py-2 px-4 rounded ${
             filter === "all" ? "bg-teal-600 text-white" : "bg-gray-200"
           }`}
         >
           All
         </button>
+
         <button
           onClick={() => handleFilterChange("verified")}
-          className={`block p-3 rounded-lg border mb-2 w-full text-center ${
+          className={`w-full text-left py-2 px-4 mt-4 rounded ${
             filter === "verified" ? "bg-teal-600 text-white" : "bg-gray-200"
           }`}
         >
           Verified
         </button>
+
         <button
           onClick={() => handleFilterChange("unverified")}
-          className={`block p-3 rounded-lg border mb-2 w-full text-center ${
+          className={`w-full text-left py-2 px-4 mt-4 rounded ${
             filter === "unverified" ? "bg-teal-600 text-white" : "bg-gray-200"
           }`}
         >
@@ -100,7 +88,7 @@ export default function DoctorList() {
       {/* Main content */}
       <div
         className={`flex-1 transition-all duration-300 ${
-          sidebarOpen ? "ml-52" : "ml-0"
+          sidebarOpen ? "ml-64" : "ml-0"
         }`}
       >
         <div className="flex items-center p-2  border-b border-gray-200 ">
@@ -111,36 +99,23 @@ export default function DoctorList() {
                 onClick={() => setSidebarOpen(true)}
                 className="p-2 bg-gray-200 rounded-full mr-4"
               >
-                <span className="text-gray-600">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="size-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5"
-                    />
-                  </svg>
-                </span>
+                <FaBars className="text-black " />
               </button>
-              <label>Filters</label>
             </div>
           )}
 
           {/* Search Bar */}
           <div className="flex-1 flex justify-end">
-            <input
-              type="text"
-              placeholder="Search by name..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="p-2 border rounded-lg w-full max-w-xs"
-            />
+            <div className="relative w-full max-w-xs">
+              <input
+                type="text"
+                placeholder="Search by name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="p-2 pl-10 border rounded-lg w-full"
+              />
+              <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+            </div>
           </div>
         </div>
 

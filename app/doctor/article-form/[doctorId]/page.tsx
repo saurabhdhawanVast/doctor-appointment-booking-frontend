@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "react-toastify";
@@ -21,11 +21,30 @@ const CreateArticleForm: React.FC = () => {
   const router = useRouter();
   const params = useParams();
   const createArticle = useArticleStore((state) => state.createArticle);
+  const editArticle = useArticleStore((state) => state.editArticle);
+  const setEditArticle = useArticleStore((state) => state.setEditArticle);
+  const updateArticle = useArticleStore((state) => state.updateArticle);
 
   const doctorId = Array.isArray(params?.doctorId)
     ? params.doctorId[0]
     : params?.doctorId;
 
+  useEffect(() => {
+    if (editArticle) {
+      setTitle(editArticle.title);
+      setContent(editArticle.content);
+      setCategory(editArticle.category);
+      setSubCategory(editArticle.subCategory);
+      setImagePreview(editArticle.image);
+      setImage(editArticle.image);
+    } else {
+      setTitle("");
+      setContent("");
+      setCategory("");
+      setSubCategory("");
+      setImagePreview(null);
+    }
+  }, [editArticle]);
   const categories = [
     {
       name: "Healthy Hair",
@@ -161,16 +180,31 @@ const CreateArticleForm: React.FC = () => {
       throw new Error("Please select an image");
     }
     try {
-      await createArticle({
-        title,
-        content,
-        category,
-        image,
-        subCategory,
-        doctorId,
-      });
-      toast.success("Article Created Successfully!");
-      setRedirect(true);
+      if (!editArticle) {
+        await createArticle({
+          title,
+          content,
+          category,
+          image,
+          subCategory,
+          doctorId,
+        });
+        setRedirect(true);
+        toast.success("Article Created Successfully!");
+      } else {
+        await updateArticle({
+          _id: editArticle._id,
+          title,
+          content,
+          category,
+          image,
+          subCategory,
+          doctorId,
+        });
+        setEditArticle(null);
+        toast.success("Article Updated Successfully!");
+        router.push("/doctor/myArticles");
+      }
     } catch (error) {
       console.error("Error creating article:", error);
       toast.error("Error creating Article");
@@ -189,7 +223,7 @@ const CreateArticleForm: React.FC = () => {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center py-10 px-4">
       <div className="bg-white shadow-lg rounded-lg p-8 max-w-4xl w-full">
         <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
-          Create Article
+          {editArticle ? "Update" : "Create"} Article
         </h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-6">
@@ -282,7 +316,6 @@ const CreateArticleForm: React.FC = () => {
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              required
               className="shadow-sm border rounded-lg w-full py-3 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {imagePreview && (
@@ -298,7 +331,7 @@ const CreateArticleForm: React.FC = () => {
             type="submit"
             className="bg-blue-500 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
-            Create Article
+            {editArticle ? "Update" : "Create"} Article
           </button>
         </form>
       </div>

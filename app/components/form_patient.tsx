@@ -19,7 +19,7 @@ type Inputs = z.infer<typeof FormDataSchemaPatient>;
 const steps = [
   {
     id: "Step 1",
-    name: "Personal Information",
+    name: "Personal Details",
     fields: [
       "firstName",
       "lastName",
@@ -33,7 +33,7 @@ const steps = [
   },
   {
     id: "Step 2",
-    name: "Address",
+    name: "Address and Contact Details",
     fields: ["address", "contactNumber", "city", "state", "pinCode"],
   },
 
@@ -297,9 +297,9 @@ const Form_Patient = () => {
         </nav>
 
         {/* Form div */}
-        <div className="bg-blue-50 p-5 rounded-2xl w-94 ">
+        <div className="bg-teal-100   rounded-2xl w-94 mt-6">
           {/* Form */}
-          <form className="mt-5 py-5" onSubmit={handleSubmit(processForm)}>
+          <form className="p-5" onSubmit={handleSubmit(processForm)}>
             {currentStep === 0 && (
               <motion.div
                 initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
@@ -307,20 +307,21 @@ const Form_Patient = () => {
                 transition={{ duration: 0.3, ease: "easeInOut" }}
               >
                 <h2 className="text-base font-semibold leading-7 text-gray-900">
-                  Resitration Details
+                  Personal Details
                 </h2>
                 <p className="mt-1 text-sm leading-6 text-gray-600">
-                  Provide your registration details.
+                  Provide your personal details.
                 </p>
 
-                <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                  <div className="sm:col-span-3">
+                <div className="flex flex-wrap mt-2 ">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="firstName"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      First Name
+                      First Name<span className="text-red-500"> *</span>
                     </label>
+
                     <div className="mt-2">
                       <input
                         type="text"
@@ -337,12 +338,12 @@ const Form_Patient = () => {
                     </div>
                   </div>
 
-                  <div className="sm:col-span-3">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="lastName"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Last Name
+                      Last Name<span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <input
@@ -360,61 +361,14 @@ const Form_Patient = () => {
                     </div>
                   </div>
 
-                  <div className="sm:col-span-4">
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                    >
-                      Email
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        id="email"
-                        type="email"
-                        {...register("email")}
-                        autoComplete="email"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                      />
-                      {errors.email?.message && (
-                        <p className="mt-2 text-sm text-red-400">
-                          {errors.email.message}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Profile*/}
-                  <div className="sm:col-span-4">
-                    <label
-                      htmlFor="profilePic"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                    >
-                      Upload Profile Picture (.jpg, .jpeg, and .png)
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        id="profilePic"
-                        type="file"
-                        {...register("profilePic")}
-                        accept=".jpg,.jpeg,.png"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                      ></input>
-                      {errors.profilePic?.message && (
-                        <p className="mt-2 text-sm text-red-400">
-                          {errors.profilePic.message as React.ReactNode}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
                   {/* Gender */}
 
-                  <div className="sm:col-span-1">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="gender"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Gender
+                      Gender<span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <select
@@ -437,13 +391,62 @@ const Form_Patient = () => {
                       )}
                     </div>
                   </div>
+
+                  {/* Email */}
+                  <div className="w-full md:w-1/3 p-2">
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Email<span className="text-red-500"> *</span>
+                    </label>
+                    <div className="mt-2">
+                      <input
+                        id="email"
+                        type="email"
+                        {...register("email")}
+                        autoComplete="email"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                      />
+                      {errors.email?.message && (
+                        <p className="mt-2 text-sm text-red-400">
+                          {errors.email.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Profile*/}
+                  <div className="w-full md:w-1/3 p-2">
+                    <label
+                      htmlFor="profilePic"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Upload Profile Picture (.jpg, .jpeg, and .png)
+                    </label>
+                    <div className="mt-2">
+                      <input
+                        id="profilePic"
+                        type="file"
+                        {...register("profilePic")}
+                        accept=".jpg,.jpeg,.png"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                      ></input>
+                      {errors.profilePic?.message && (
+                        <p className="mt-2 text-sm text-red-400">
+                          {errors.profilePic.message as React.ReactNode}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
                   {/* Blood Group */}
-                  <div className="sm:col-span-2">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="bloodGroup"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Blood Group
+                      Blood Group<span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <select
@@ -473,12 +476,12 @@ const Form_Patient = () => {
                   </div>
                   {/* Password */}
 
-                  <div className="sm:col-span-3">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="password"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Password
+                      Password<span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <input
@@ -498,12 +501,12 @@ const Form_Patient = () => {
 
                   {/*Confirm  Password */}
 
-                  <div className="sm:col-span-2">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="confirmPassword"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Confirm Password
+                      Confirm Password<span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <input
@@ -530,20 +533,20 @@ const Form_Patient = () => {
                 transition={{ duration: 0.3, ease: "easeInOut" }}
               >
                 <h2 className="text-base font-semibold leading-7 text-gray-900">
-                  Address
+                  Address and Contact Details
                 </h2>
                 <p className="mt-1 text-sm leading-6 text-gray-600">
-                  Add your Address
+                  Add your Address and Contact Details
                 </p>
                 {/* Address */}
 
-                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                  <div className="col-span-full">
+                <div className="flex flex-wrap mt-2 ">
+                  <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="address"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Address
+                      Address<span className="text-red-500"> *</span>
                     </label>
                     <div className="mt-2">
                       <input
@@ -560,130 +563,134 @@ const Form_Patient = () => {
                       )}
                     </div>
                   </div>
-                </div>
 
-                {/* contactNumber */}
+                  {/* contactNumber */}
 
-                <div className="sm:col-span-2">
-                  <label
-                    htmlFor="contactNumber"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Contact Number
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      type="number"
-                      id="contactNumber"
-                      {...register("contactNumber")}
-                      autoComplete="contactNumber"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                    />
-                    {errors.contactNumber?.message && (
-                      <p className="mt-2 text-sm text-red-400">
-                        {errors.contactNumber.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* State */}
-
-                {/* State */}
-                <div className="sm:col-span-2">
-                  <label
-                    htmlFor="state"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    State
-                  </label>
-                  <div className="mt-2">
-                    <select
-                      id="state"
-                      {...register("state", {
-                        onChange: (e) => {
-                          setSelectedState(e.target.value);
-                        },
-                      })}
-                      value={
-                        selectedState
-                          ? states.find((state) => state.iso2 === selectedState)
-                              ?.name
-                          : ""
-                      }
-                      onChange={(e) => {
-                        const selectedStateObj = states.find(
-                          (state) => state.name === e.target.value
-                        );
-                        setSelectedState(selectedStateObj?.iso2 || "");
-                      }}
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                  <div className="w-full md:w-1/3 p-2">
+                    <label
+                      htmlFor="contactNumber"
+                      className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      <option value="">Select a state</option>
-                      {states.map((state) => (
-                        <option key={state.name} value={state.name}>
-                          {state.name}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.state?.message && (
-                      <p className="mt-2 text-sm text-red-400">
-                        {errors.state.message}
-                      </p>
-                    )}
+                      Contact Number<span className="text-red-500"> *</span>
+                    </label>
+                    <div className="mt-2">
+                      <input
+                        type="number"
+                        id="contactNumber"
+                        {...register("contactNumber")}
+                        autoComplete="contactNumber"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                      />
+                      {errors.contactNumber?.message && (
+                        <p className="mt-2 text-sm text-red-400">
+                          {errors.contactNumber.message}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
-                {/* City */}
-                <div className="sm:col-span-2 sm:col-start-1">
-                  <label
-                    htmlFor="city"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    City
-                  </label>
-                  <div className="mt-2">
-                    <select
-                      id="city"
-                      {...register("city")}
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+
+                  <div className="w-full md:w-1/3 p-2"></div>
+
+                  {/* State */}
+
+                  {/* State */}
+                  <div className="w-full md:w-1/3 p-2">
+                    <label
+                      htmlFor="state"
+                      className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      <option value="">Select a city</option>
-                      {cities.map((city) => (
-                        <option key={city} value={city}>
-                          {city}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.city?.message && (
-                      <p className="mt-2 text-sm text-red-400">
-                        {errors.city.message}
-                      </p>
-                    )}
+                      State<span className="text-red-500"> *</span>
+                    </label>
+                    <div className="mt-2">
+                      <select
+                        id="state"
+                        {...register("state", {
+                          onChange: (e) => {
+                            setSelectedState(e.target.value);
+                          },
+                        })}
+                        value={
+                          selectedState
+                            ? states.find(
+                                (state) => state.iso2 === selectedState
+                              )?.name
+                            : ""
+                        }
+                        onChange={(e) => {
+                          const selectedStateObj = states.find(
+                            (state) => state.name === e.target.value
+                          );
+                          setSelectedState(selectedStateObj?.iso2 || "");
+                        }}
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                      >
+                        <option value="">Select a state</option>
+                        {states.map((state) => (
+                          <option key={state.name} value={state.name}>
+                            {state.name}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.state?.message && (
+                        <p className="mt-2 text-sm text-red-400">
+                          {errors.state.message}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
+                  {/* City */}
+                  <div className="w-full md:w-1/3 p-2">
+                    <label
+                      htmlFor="city"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      City<span className="text-red-500"> *</span>
+                    </label>
+                    <div className="mt-2">
+                      <select
+                        id="city"
+                        {...register("city")}
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                      >
+                        <option value="">Select a city</option>
+                        {cities.map((city) => (
+                          <option key={city} value={city}>
+                            {city}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.city?.message && (
+                        <p className="mt-2 text-sm text-red-400">
+                          {errors.city.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
 
-                {/* Zip */}
+                  <div className="w-full md:w-1/3 p-2 h-10"></div>
+                  {/* Zip */}
 
-                <div className="sm:col-span-2">
-                  <label
-                    htmlFor="pinCode"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Zip Code
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      type="number"
-                      id="pinCode"
-                      {...register("pinCode", { valueAsNumber: true })}
-                      autoComplete="pinCode"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                    />
-                    {errors.pinCode?.message && (
-                      <p className="mt-2 text-sm text-red-400">
-                        {errors.pinCode.message}
-                      </p>
-                    )}
+                  <div className="w-full md:w-1/3 p-2">
+                    <label
+                      htmlFor="pinCode"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Zip Code<span className="text-red-500"> *</span>
+                    </label>
+                    <div className="mt-2">
+                      <input
+                        type="number"
+                        id="pinCode"
+                        {...register("pinCode", { valueAsNumber: true })}
+                        autoComplete="pinCode"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                      />
+                      {errors.pinCode?.message && (
+                        <p className="mt-2 text-sm text-red-400">
+                          {errors.pinCode.message}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
               </motion.div>

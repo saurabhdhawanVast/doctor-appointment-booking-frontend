@@ -50,11 +50,13 @@ export const FormDataSchemaPatient = z
     city: z.string().min(1, "City is required"),
     state: z.string().min(1, "State is required"),
     pinCode: z
-      .number()
-      .int() // Ensure it is an integer
+      .number({
+        invalid_type_error: "Pin code is required", // Custom error when no value is provided
+      })
+      .int("Ensure it is an integer") // Ensure it is an integer
       .min(100000, "Zip code must be at least 6 digits") // Minimum 6-digit number
       .max(999999, "Zip code can be at most 6 digits") // Maximum 6-digit number
-      .transform((value) => Number(value)),
+      .transform((value) => Number(value)), // Transform input to number
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",

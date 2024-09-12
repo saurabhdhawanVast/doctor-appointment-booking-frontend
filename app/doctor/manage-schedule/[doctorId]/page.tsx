@@ -281,7 +281,7 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
             {/* {formatDateInTimeZone(selectedDates[0], timeZone)} */}
             {selectedDates[0].toLocaleDateString("en-GB", {
               day: "2-digit",
-              month: "long", // 'short' for abbreviated month names
+              month: "short", // 'short' for abbreviated month names
               year: "numeric",
             })}
           </h3>
@@ -327,8 +327,8 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
           {/* Customize your loader */}
         </div>
       )}
-      <div className="w-full   lg:w-1/6 border-r p-4">
-        <h2 className="text-xl font-semibold mb-4">Calendar</h2>
+      <div className="w-58    border-r p-4">
+        <h2 className="text-xl font-normal text-center mb-4">Calendar</h2>
         <DatePicker
           selected={null} // Keep this null as we handle multiple dates
           onChange={handleDateChange}

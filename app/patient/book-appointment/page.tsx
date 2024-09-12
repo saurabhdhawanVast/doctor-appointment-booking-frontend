@@ -48,7 +48,7 @@ const BookAppointmentPage = () => {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [slots, setSlots] = useState<any[]>([]);
 
   useEffect(() => {
@@ -125,7 +125,7 @@ const BookAppointmentPage = () => {
   const highlightDates = (date: Date) => {
     return isDateAvailable(date)
       ? "bg-green-500 text-white"
-      : "bg-gray-200 text-gray-400";
+      : "bg-[#f55d5d] text-black";
   };
 
   const handleBookSlot = (slotId: string) => {
@@ -235,16 +235,26 @@ const BookAppointmentPage = () => {
             dayClassName={(date) => highlightDates(date)}
             className="border border-gray-300 rounded-lg shadow-sm p-2 w-full"
             placeholderText="Select a date"
-            dateFormat="MMMM d, yyyy"
+            dateFormat="d MMM yyyy"
             minDate={new Date()} // Optional: to prevent selecting past dates
           />
+          <div className="flex space-x-4 mt-4">
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 bg-green-400"></div>
+              <span className="text-gray-700">Available</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 bg-[#f55d5d]"></div>
+              <span className="text-gray-700">Not Available</span>
+            </div>
+          </div>
         </div>
         <div className="bg-white rounded-lg shadow-md p-6 h-80 overflow-y-auto">
           {selectedDate && (
             <>
               <h2 className="text-xl font-semibold text-gray-700 mb-4">
                 Available Slots for{" "}
-                {format(toZonedTime(selectedDate, timeZone), "MMMM d, yyyy", {
+                {format(toZonedTime(selectedDate, timeZone), "d MMM yyyy", {
                   timeZone,
                 })}
               </h2>
