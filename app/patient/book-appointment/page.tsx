@@ -131,7 +131,7 @@ const BookAppointmentPage = () => {
     } else {
       setSlots([]);
     }
-  }, [selectedDate, availableDates]);
+  }, [selectedDate, availableDates, setSlots, timeZone]);
 
   useEffect(() => {
     if (bookingSuccess) {
@@ -153,6 +153,7 @@ const BookAppointmentPage = () => {
             slot.id === selectedSlotId ? { ...slot, status: "booked" } : slot
           )
         );
+        await fetchAvailableDates(doctorId);
         toast.success("Slot booked successfully!");
       } catch (err) {
         toast.error("Failed to book slot.");
@@ -304,8 +305,9 @@ const BookAppointmentPage = () => {
                       console.log("today date", formattedTodayDate);
                       console.log(typeof formattedTodayDate);
 
-                      let isAvailable = false;
+                      // const isAvailable = slot.status === "available";
 
+                      let isAvailable;
                       if (selectedDate === formattedTodayDate) {
                         isAvailable =
                           slot.status === "available" &&
@@ -321,7 +323,7 @@ const BookAppointmentPage = () => {
                           key={slot.id}
                           onClick={() => handleBookSlot(slot.id)}
                           disabled={!isAvailable}
-                          className={`w-28 rounded-lg pt-2 text-center ${
+                          className={`w-28 rounded-lg pt-2 text-center  ${
                             isAvailable
                               ? "bg-green-500 cursor-pointer"
                               : "bg-gray-300 cursor-not-allowed"
