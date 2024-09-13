@@ -172,17 +172,84 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
       console.error("Error fetching appiontments:", error);
     }
   },
+  // fetchAppointments: async (doctorId: string, initialDate?: Date) => {
+  //   try {
+  //     const response = await https.get(
+  //       `/appointments/getAppointmentsByDoctorId?doctorId=${doctorId}`
+  //     );
+  //     console.log("response.data", response.data);
+  //     const appointments: DateWithSlots[] = response.data;
+
+  //     let filteredAppointments: DateWithSlots[] = [];
+
+  //     if (initialDate) {
+  //       filteredAppointments = appointments.filter((item) => {
+  //         const appointmentDate = new Date(item.date);
+  //         return (
+  //           appointmentDate.getFullYear() === initialDate.getFullYear() &&
+  //           appointmentDate.getMonth() === initialDate.getMonth() &&
+  //           appointmentDate.getDate() === initialDate.getDate()
+  //         );
+  //       });
+  //     } else {
+  //       // Filter for today's date
+  //       const today = new Date();
+  //       filteredAppointments = appointments.filter((item) => {
+  //         const appointmentDate = new Date(item.date);
+  //         return (
+  //           appointmentDate.getFullYear() === today.getFullYear() &&
+  //           appointmentDate.getMonth() === today.getMonth() &&
+  //           appointmentDate.getDate() === today.getDate()
+  //         );
+  //       });
+  //     }
+  //     // console.log("filteredAppointments", filteredAppointments);
+  //     // console.log("appointments", appointments);
+  //     console.log("Appointments are : ", appointments);
+
+  //     set({
+  //       appointments,
+  //       filteredAppointments:
+  //         filteredAppointments.length > 0 ? filteredAppointments : [],
+  //     });
+  //   } catch (error) {
+  //     console.error("Failed to fetch appointments:", error);
+  //   }
+  // },
   fetchAppointments: async (doctorId: string, initialDate?: Date) => {
     try {
       const response = await https.get(
         `/appointments/getAppointmentsByDoctorId?doctorId=${doctorId}`
       );
       console.log("response.data", response.data);
-      const appointments: DateWithSlots[] = response.data;
+
+      let appointments: DateWithSlots[] = response.data;
+
+      // Sort the main appointments array by time
+      appointments = appointments.map((appointmentDay) => {
+        const sortedAppointmentsBooked = appointmentDay.appointmentsBooked.sort(
+          (a, b) => {
+            const timeA = a.time.split(":").map(Number);
+            const timeB = b.time.split(":").map(Number);
+
+            // Compare hours first, and if equal, compare minutes
+            if (timeA[0] !== timeB[0]) {
+              return timeA[0] - timeB[0];
+            } else {
+              return timeA[1] - timeB[1];
+            }
+          }
+        );
+        return {
+          ...appointmentDay,
+          appointmentsBooked: sortedAppointmentsBooked,
+        };
+      });
 
       let filteredAppointments: DateWithSlots[] = [];
 
       if (initialDate) {
+        // Filter appointments based on the provided initialDate
         filteredAppointments = appointments.filter((item) => {
           const appointmentDate = new Date(item.date);
           return (
@@ -192,7 +259,7 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
           );
         });
       } else {
-        // Filter for today's date
+        // Filter appointments for today's date
         const today = new Date();
         filteredAppointments = appointments.filter((item) => {
           const appointmentDate = new Date(item.date);
@@ -203,8 +270,31 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
           );
         });
       }
-      // console.log("filteredAppointments", filteredAppointments);
-      // console.log("appointments", appointments);
+
+      // Sort the filteredAppointments array by time
+      filteredAppointments = filteredAppointments.map((appointmentDay) => {
+        const sortedAppointmentsBooked = appointmentDay.appointmentsBooked.sort(
+          (a, b) => {
+            const timeA = a.time.split(":").map(Number);
+            const timeB = b.time.split(":").map(Number);
+
+            // Compare hours first, and if equal, compare minutes
+            if (timeA[0] !== timeB[0]) {
+              return timeA[0] - timeB[0];
+            } else {
+              return timeA[1] - timeB[1];
+            }
+          }
+        );
+        return {
+          ...appointmentDay,
+          appointmentsBooked: sortedAppointmentsBooked,
+        };
+      });
+
+      console.log("Sorted appointments:", appointments);
+      console.log("Filtered and sorted appointments:", filteredAppointments);
+
       set({
         appointments,
         filteredAppointments:
@@ -215,7 +305,6 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
     }
   },
 
-  
   fetchDoctorDetails: async (doctorId: string) => {
     try {
       const response = await https.get(`/doctors/getDoctorById/${doctorId}`);

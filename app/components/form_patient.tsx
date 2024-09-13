@@ -115,8 +115,13 @@ const Form_Patient = () => {
           });
       }
       //remove Confirm password field
-      const { confirmPassword, firstName, lastName, ...dataWithoutPassword } =
-        data;
+      const {
+        confirmPassword,
+        firstName,
+        lastName,
+        contactNumber,
+        ...dataWithoutPassword
+      } = data;
 
       //add role and coordinates.
       const formData = {
@@ -124,14 +129,14 @@ const Form_Patient = () => {
         ...dataWithoutPassword,
         role: "patient",
         profilePic: url[0] || "/images/avatar.png",
+        contactNumber: "+91" + data.contactNumber,
       };
 
       console.log("formData Before Sending", formData);
 
       await signup(formData);
-
-      toast.success("Form submitted successfully.");
       router.push("/login");
+      toast.success("Form submitted successfully.");
     } catch (error) {
       toast.error("There was an error processing the form.");
       console.log(error);

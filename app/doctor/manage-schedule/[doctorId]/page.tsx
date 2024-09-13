@@ -7,11 +7,15 @@ import { AnimatePresence, motion } from "framer-motion";
 import { format } from "date-fns-tz";
 import { toast } from "react-toastify";
 import Loading from "../../../loading";
+import { FcCancel, FcCheckmark } from "react-icons/fc";
+import { SiNike } from "react-icons/si";
+import { MdEventAvailable } from "react-icons/md";
+import { FaCheck } from "react-icons/fa";
 
 const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
   params,
 }) => {
-  const [selectedDates, setSelectedDates] = useState<Date[]>([]);
+  const [selectedDates, setSelectedDates] = useState<Date[]>([new Date()]);
   const [slots, setSlots] = useState<any[]>([]);
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const [slotToCancel, setSlotToCancel] = useState<string | null>(null);
@@ -279,20 +283,42 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
     return `${hour}:${minute} ${isPM ? "PM" : "AM"}`;
   };
   const renderSlotManagement = () => (
-    <div className="w-full p-4">
+    <div className="w-[99%] p-4 ">
       {selectedDates.length === 0 ? (
         <p>Select date to mark available or to manage schedule.</p>
       ) : (
         <>
-          <h3 className="text-xl font-normal mb-4">
-            Manage Slots for{" "}
-            {/* {formatDateInTimeZone(selectedDates[0], timeZone)} */}
-            {selectedDates[0].toLocaleDateString("en-GB", {
-              day: "2-digit",
-              month: "short", // 'short' for abbreviated month names
-              year: "numeric",
-            })}
-          </h3>
+          <div className="flex flex-wrap justify-between items-center   mb-4">
+            <div>
+              <h3 className="text-xl font-normal ">
+                Manage Slots for{" "}
+                {/* {formatDateInTimeZone(selectedDates[0], timeZone)} */}
+                {selectedDates[0].toLocaleDateString("en-GB", {
+                  day: "2-digit",
+                  month: "short", // 'short' for abbreviated month names
+                  year: "numeric",
+                })}
+              </h3>
+            </div>
+
+            <div className="flex flex-wrap items-center space-x-2">
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-green-400"></div>
+                <span className="text-gray-700">Available</span>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-blue-500"></div>
+                <span className="text-gray-700">Booked</span>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-gray-300"></div>
+                <span className="text-gray-700">Cancelled</span>
+              </div>
+            </div>
+          </div>
+
           <button
             className="bg-red-500 text-white px-4 py-2 mb-4 rounded"
             onClick={handleCancelAllSlots}
@@ -300,7 +326,7 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
             Cancel All Slots
           </button>
           <div>
-            {slots.map((slot) => (
+            {/* {slots.map((slot) => (
               <div
                 key={slot.id}
                 className="border p-4 my-2 flex justify-between items-center hover:bg-gray-100 transition duration-200"
@@ -318,7 +344,106 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
                   </button>
                 )}
               </div>
-            ))}
+            ))} */}
+            <ul className="flex flex-wrap gap-4">
+              {slots.map((slot) => (
+                <button
+                  key={slot.id}
+                  onClick={() => handleCancelSlot(slot.id)}
+                  disabled={slot.status === "cancelled"}
+                  className={`w-28 rounded-lg pt-2 text-center ${
+                    slot.status === "available" && "bg-green-500 cursor-pointer"
+                  }
+                    ${
+                      slot.status === "booked" && "bg-blue-500 cursor-pointer"
+                    }  
+                    ${
+                      slot.status === "cancelled" &&
+                      "bg-gray-300 cursor-not-allowed"
+                    }`}
+                >
+                  <li>
+                    <div className="flex justify-center mb-2">
+                      <div>
+                        <span className="flex items-center">
+                          <div className="mr-1">
+                            {slot.status === "cancelled" && <FcCancel />}
+                          </div>
+
+                          <div className="mr-1 ">
+                            {slot.status === "available" && <FaCheck />}
+                          </div>
+
+                          <div className="mr-1">
+                            {slot.status === "booked" && <MdEventAvailable />}
+                          </div>
+                          {formatTime(slot.time)}
+                        </span>
+                      </div>
+                    </div>
+                  </li>
+                </button>
+              ))}
+            </ul>
+            {/* <ul className="flex flex-wrap gap-4">
+              {slots.length > 0 ? (
+                slots.map((slot) => {
+                  const slotTime = slot.time;
+                  const todayDate = new Date();
+                  const currentTime = new Date().toLocaleTimeString("en-GB", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                  });
+
+                  // Assuming you have a function formattedDate that formats the date
+                  const formattedTodayDate = formattedDate(todayDate);
+
+                  // If selected date equals today's date, check if slot time is in the future
+
+                  console.log("selected date", selectedDate);
+                  console.log("today date", formattedTodayDate);
+                  console.log(typeof formattedTodayDate);
+
+                  // const isAvailable = slot.status === "available";
+
+                  let isAvailable;
+                  if (selectedDate === formattedTodayDate) {
+                    isAvailable =
+                      slot.status === "available" && currentTime <= slotTime;
+                  } else {
+                    // Otherwise, it's just based on the slot availability
+                    isAvailable = slot.status === "available";
+                  }
+                  console.log("is available", isAvailable);
+
+                  return (
+                    <button
+                      key={slot.id}
+                      onClick={() => handleBookSlot(slot.id)}
+                      disabled={!isAvailable}
+                      className={`w-28 rounded-lg pt-2 text-center ${
+                        isAvailable
+                          ? "bg-green-500 cursor-pointer"
+                          : "bg-gray-300 cursor-not-allowed"
+                      }`}
+                    >
+                      <li>
+                        <div className="flex justify-center mb-2">
+                          <div>
+                            <span>{formatTime(slot.time)}</span>
+                          </div>
+                        </div>
+                      </li>
+                    </button>
+                  );
+                })
+              ) : (
+                <p className="text-center text-gray-500 w-full">
+                  No available slots on this date.
+                </p>
+              )}
+            </ul> */}
           </div>
         </>
       )}
@@ -326,7 +451,7 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
   );
 
   return (
-    <div className="flex flex-col lg:flex-row mt-16">
+    <div className="flex flex-col lg:flex-row mt-16  min-h-[300px] lg:min-h-[400px]">
       {isLoading && (
         <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
           <div className="loader">
