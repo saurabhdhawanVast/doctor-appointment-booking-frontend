@@ -243,7 +243,7 @@ const ArticlesList = () => {
   }
 
   const handleArticleClick = async (id: string) => {
-    router.push(`/patient/article/${id}`);
+    router.push(`/doctor/article/${id}`);
   };
 
   const indexOfLastArticle = currentPage * articlesPerPage;
