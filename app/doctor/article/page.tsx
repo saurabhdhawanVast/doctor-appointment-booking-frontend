@@ -255,10 +255,10 @@ const ArticlesList = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      <div className="py-4 mt-16">
+      <div className="py-2 mt-16">
         {/* Search Bar and Buttons */}
-        <div className="relative flex justify-between items-center px-6 border-b">
-          <div className="flex space-x-2">
+        <div className="relative flex flex-wrap justify-between items-center px-6 border-b">
+          <div className="flex flex-wrap items-center space-x-2">
             <button
               onClick={() => router.push(`/doctor/article-form/${doctorId}`)}
               className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-semibold transition duration-300"
@@ -273,7 +273,7 @@ const ArticlesList = () => {
             </button>
           </div>
           {/* Search Bar */}
-          <div className="relative w-full max-w-md">
+          <div className="relative w-full max-w-md mt-2 mr-2">
             <input
               type="text"
               value={searchQuery}
@@ -445,7 +445,7 @@ const ArticlesList = () => {
           )}
 
           {/* Categories Section */}
-          <div className="px-6 w-2/5 border rounded-md">
+          <div className="px-6 w-1/4 border flex flex-col flex-wrap rounded-md">
             <h2 className="text-center mt-3 border-b pb-1 text-xl border-black mb-6">
               Our Categories...
             </h2>

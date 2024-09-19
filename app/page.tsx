@@ -63,13 +63,15 @@ export default function Home() {
   };
   return (
     <>
-      {/* Header Section */}
-
-      {/* Hero Section */}
-      <section className="hero bg-blue-500 text-white text-center py-24">
-        <div className="container mx-auto">
-          <div className="container mx-auto text-center">
-            {/* <h1 className="text-9xl font-bold">DABS</h1> */}
+      <section className="hero relative bg-blue-500 text-white text-center h-[130vh] ">
+        {/* <div className="container mb-20"> */}
+        <motion.div
+          className="container mb-20 p-6 "
+          initial={{ scale: 1 }}
+          whileInView={{ scale: 1.05 }}
+          transition={{ duration: 0.7 }}
+        >
+          <div className="container  text-center">
             <label className="block text-4xl font-bold">
               <Typewriter
                 options={{
@@ -90,14 +92,15 @@ export default function Home() {
           <p className="text-xl ">
             Easily book your appointments and get the best healthcare services.
           </p>
-        </div>
+        </motion.div>
+
+        {/* <section className="features py-16 absolute top-[70%] "> */}
       </section>
 
-      {/* Features Section */}
-      <section className="features py-16">
-        <div className="container mx-auto text-center">
+      <section className="features p-16 sm:relative sm:top-0 md:absolute md:top-[90%]">
+        <div className="container mx-auto text-center md:text-white">
           <h2 className="text-3xl font-bold mb-8">Why Choose Us?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-9">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-9 text-black">
             {[
               {
                 title: "Easy Appointment Scheduling",
@@ -117,7 +120,7 @@ export default function Home() {
             ].map((feature, index) => (
               <motion.div
                 key={index}
-                className="feature-card p-6 bg-slate-200 border rounded-lg shadow-2xl drop-shadow-2xl"
+                className="feature-card p-6 bg-white border rounded-lg shadow-2xl drop-shadow-2xl"
                 initial={{ scale: 1 }}
                 whileInView={{ scale: 1.05 }}
                 transition={{ duration: 0.7 }}
@@ -137,10 +140,10 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section className="how-it-works bg-gray-100 py-16">
-        <div className="container mx-auto text-center">
+      <section className="py-16 md:mt-16">
+        <div className="container mx-auto text-center ">
           <h2 className="text-3xl font-bold mb-8">How It Works</h2>
-          <div className="flex flex-col md:flex-row gap-6 justify-center">
+          <div className="flex flex-col md:flex-row gap-9 justify-center">
             {[
               {
                 step: 1,
@@ -160,7 +163,7 @@ export default function Home() {
             ].map((step, index) => (
               <motion.div
                 key={index}
-                className="step-card p-6 border rounded-lg bg-slate-200 shadow-2xl drop-shadow-2xl"
+                className="step-card p-6 border rounded-lg  shadow-2xl drop-shadow-2xl sm:w-full md:w-1/3"
                 initial={{ scale: 1 }}
                 whileInView={{ scale: 1.05 }}
                 transition={{ duration: 0.7 }}
@@ -265,7 +268,7 @@ export default function Home() {
       </section>
 
       {/* Feature Section */}
-      <section className="feature py-16">
+      {/* <section className="feature py-16">
         <div className="container mx-auto flex flex-col lg:flex-row items-center justify-between">
           <div className="lg:w-1/2">
             <h2 className="text-3xl font-bold mb-4">
@@ -328,7 +331,7 @@ export default function Home() {
             </motion.div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* FAQ Section */}
       <section className="faq py-16">
