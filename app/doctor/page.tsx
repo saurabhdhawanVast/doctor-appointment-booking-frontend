@@ -10,6 +10,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { date, set } from "zod";
 import { toDate } from "date-fns-tz";
+import { IoPlayBack, IoPlayForward } from "react-icons/io5";
 interface Patient {
   name: string;
   profilePic?: string;
@@ -127,6 +128,7 @@ const Doctor = () => {
   };
 
   const formatTime = (time: string): string => {
+    console.log(time);
     const [hourString, minute] = time.split(":");
     let hour = parseInt(hourString, 10);
     const isPM = hour >= 12;
@@ -164,18 +166,98 @@ const Doctor = () => {
 
   const totalPages = Math.ceil(getFilteredAppointments().length / itemsPerPage);
 
+  // const renderSlots = (slots: any) => {
+  //   if (!slots || slots.length === 0) {
+  //     return <p className="text-gray-500">No slots available.</p>;
+  //   }
+
+  //   return slots.map((slot: any) => (
+  //     <motion.div
+  //       key={slot.slotId}
+  //       className="bg-slate-100 p-2 flex
+  //       flex-wrap border items-center justify-between border-gray-200
+  //       rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out mb-4 relative"
+  //       whileHover={{ scale: 1.01 }}
+  //       style={{ height: "auto" }} // Adjust the height here if needed
+  //     >
+  //       <div className="flex items-center space-x-4">
+  //         <div className="w-14 h-14 flex-shrink-0">
+  //           <img
+  //             src={slot.patient?.profilePic || "/default-profile.png"}
+  //             alt={slot.patient?.name || "Profile Picture"}
+  //             className="w-full h-full object-cover rounded-full border border-gray-300"
+  //           />
+  //         </div>
+  //         <div className="flex-1 space-y-1 ">
+  //           <div className="text-md text-blue-600 font-normal">
+  //             {slot.patient?.name || "No appointment"}
+  //           </div>
+  //           {slot.patient && (
+  //             <div className="text-sm text-gray-500">
+  //               <div>
+  //                 Contact Number :{" "}
+  //                 {slot.patient?.contactNumber || "No contact info"}
+  //               </div>
+  //             </div>
+  //           )}
+  //         </div>
+  //       </div>
+
+  //       {/* ------------------------Time Button------------------- */}
+  //       <div className="p-2 rounded-lg flex flex-wrap items-center gap-2 flex-end">
+  //         <div className="text-md text-gray-600 ml-4 mr-4">
+  //           {formatTime(slot.time)}
+  //         </div>
+  //         <div className="divider divider-horizontal"></div>
+
+  //         {slot.patient && (
+  //           <div>
+  //             <button
+  //               className="px-4 py-2 bg-teal-600 text-white rounded  transition duration-300"
+  //               onClick={() => {
+  //                 console.log("selectedDate: ", selectedDate?.toISOString());
+  //                 console.log("appointmentDate: ", appointmentDate);
+  //                 if (selectedDate) {
+  //                   handleAddPrescription(
+  //                     slot.patient,
+  //                     selectedDate.toISOString(),
+
+  //                     slot.slotId
+  //                   );
+  //                 } else {
+  //                   // Handle case where selectedDate is null
+  //                   console.error("Selected date is not set");
+  //                 }
+  //               }}
+  //             >
+  //               Prescribe
+  //             </button>
+  //           </div>
+  //         )}
+  //       </div>
+  //     </motion.div>
+  //   ));
+  // };
   const renderSlots = (slots: any) => {
     if (!slots || slots.length === 0) {
       return <p className="text-gray-500">No slots available.</p>;
     }
-    return slots.map((slot: any) => (
+
+    // Filter out slots without time and sort by time in ascending order
+    const filteredAndSortedSlots = slots
+      .filter((slot: any) => slot.time) // Only include slots where time is present
+      .sort(
+        (a: any, b: any) =>
+          new Date(a.time).getTime() - new Date(b.time).getTime()
+      ); // Sort in ascending order by time
+
+    return filteredAndSortedSlots.map((slot: any) => (
       <motion.div
         key={slot.slotId}
-        className="bg-slate-100 p-2 flex 
-        flex-wrap border items-center justify-between border-gray-200 
-        rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out mb-4 relative"
+        className="bg-slate-100 p-2 flex flex-wrap border items-center justify-between border-gray-200 
+      rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out mb-4 relative"
         whileHover={{ scale: 1.01 }}
-        style={{ height: "auto" }} // Adjust the height here if needed
+        style={{ height: "auto" }}
       >
         <div className="flex items-center space-x-4">
           <div className="w-14 h-14 flex-shrink-0">
@@ -192,7 +274,7 @@ const Doctor = () => {
             {slot.patient && (
               <div className="text-sm text-gray-500">
                 <div>
-                  Contact Number :{" "}
+                  Contact Number:{" "}
                   {slot.patient?.contactNumber || "No contact info"}
                 </div>
               </div>
@@ -210,7 +292,7 @@ const Doctor = () => {
           {slot.patient && (
             <div>
               <button
-                className="px-4 py-2 bg-teal-600 text-white rounded  transition duration-300"
+                className="px-4 py-2 bg-teal-600 text-white rounded transition duration-300"
                 onClick={() => {
                   console.log("selectedDate: ", selectedDate?.toISOString());
                   console.log("appointmentDate: ", appointmentDate);
@@ -218,11 +300,9 @@ const Doctor = () => {
                     handleAddPrescription(
                       slot.patient,
                       selectedDate.toISOString(),
-
                       slot.slotId
                     );
                   } else {
-                    // Handle case where selectedDate is null
                     console.error("Selected date is not set");
                   }
                 }}
@@ -258,9 +338,9 @@ const Doctor = () => {
 
   const renderPaginationControls = () => {
     return (
-      <div className="flex justify-center mt-4 space-x-2">
+      <div className="flex justify-center mt-2 space-x-2 ">
         <button
-          className={`px-4 py-2 rounded ${
+          className={`px-2 py-2 rounded ${
             currentPage === 1
               ? "bg-gray-300 cursor-not-allowed"
               : "bg-teal-500 text-white"
@@ -268,11 +348,11 @@ const Doctor = () => {
           onClick={() => setCurrentPage(currentPage - 1)}
           disabled={currentPage === 1}
         >
-          Previous
+          <IoPlayBack className="w-4 h-4" />
         </button>
         <span className="self-center">{`Page ${currentPage} of ${totalPages}`}</span>
         <button
-          className={`px-4 py-2 rounded ${
+          className={`px-2 py-2 rounded ${
             currentPage === totalPages
               ? "bg-gray-300 cursor-not-allowed"
               : "bg-teal-500 text-white"
@@ -280,17 +360,17 @@ const Doctor = () => {
           onClick={() => setCurrentPage(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
-          Next
+          <IoPlayForward className="w-4 h-4" />
         </button>
       </div>
     );
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-[99vh] mb-3 ">
       {/* Sidebar for Filters */}
       <aside
-        className={`fixed z-30 p-6 mt-16 top-0 left-0 h-screen w-72 bg-gray-100  border-r border-gray-200 transform ${
+        className={`fixed z-30 p-6 mt-16 top-0 left-0 w-72 bg-gray-100  border-r border-gray-200 transform ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } md:relative md:translate-x-0 transition-transform duration-300`}
       >
@@ -307,6 +387,7 @@ const Doctor = () => {
           }`}
           onClick={() => {
             const today = new Date(); // Get today's date
+            today.setDate(today.getDate()); // Set today's date
             setFilter("today");
             setSelectedDate(today);
             // Reset selected date
@@ -349,7 +430,7 @@ const Doctor = () => {
                 dayClassName={(date) => getDateClassName(date)} // Apply the highlighting
                 inline
               />
-              <div className="flex flex-col space-y-4 mt-4">
+              <div className="flex flex-col space-y-2 mt-4">
                 <div className="flex items-center space-x-2">
                   <div className="w-4 h-4 bg-green-500"></div>
                   <span className="text-gray-700">Appointments</span>

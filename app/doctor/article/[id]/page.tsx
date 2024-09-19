@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
 import { useArticleStore } from "@/store/useArticleStore";
-
+import { IoMdArrowRoundBack } from "react-icons/io";
+import { useRouter } from "next/navigation";
 interface ArticlePageProps {
   params: {
     id: string;
@@ -27,6 +28,7 @@ const ArticlePage = ({ params }: ArticlePageProps) => {
   const [error, setError] = useState<string | null>(null);
   const article = useArticleStore((state) => state.article);
   const getArticle = useArticleStore((state) => state.getArticle);
+  const router = useRouter();
 
   useEffect(() => {
     if (id) {
@@ -67,7 +69,15 @@ const ArticlePage = ({ params }: ArticlePageProps) => {
   }
 
   return (
-    <div className="mt-16">
+    <div className="mt-16 relative">
+      <div className="absolute left-4 z-10 top-4">
+        <button
+          onClick={() => router.back()}
+          className="p-3 bg-gray-200 hover:bg-gray-300 rounded-full shadow-lg flex items-center justify-center"
+        >
+          <IoMdArrowRoundBack className="text-black text-xl" />
+        </button>
+      </div>
       <Head>
         <title>{article.title}</title>
         <meta name="description" content={article.title} />

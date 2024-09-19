@@ -4,10 +4,15 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import useDoctorStore from "@/store/useDoctorStoree";
 import Link from "next/link";
+import { IoArrowBackCircle } from "react-icons/io5";
+import { IoMdArrowRoundBack } from "react-icons/io";
+import { useRouter } from "next/navigation";
 
 export default function DoctorProfile() {
   const { doctorId } = useParams(); // Get the doctorId from URL parameters
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const router = useRouter();
 
   const { doctor, fetchDoctorProfile, verifyDoctor } = useDoctorStore(
     (state) => ({
@@ -29,29 +34,20 @@ export default function DoctorProfile() {
     }
   };
 
-  const openConfirmModal = () => {
-    const modal = document.getElementById("verify_modal") as HTMLDialogElement;
-    if (modal) {
-      modal.showModal();
-    }
-  };
-
-  const closeConfirmModal = () => {
-    const modal = document.getElementById("verify_modal") as HTMLDialogElement;
-    if (modal) {
-      modal.close();
-    }
-  };
-
   if (!doctor) return <p>Loading...</p>;
 
   return (
-    <div className="container mx-auto py-16 mt-4">
-      <Link href="/admin" className="text-blue-500 inline-block">
-        Back to Doctor List
-      </Link>
+    <div className="mt-10 p-8 mb-1 ">
+      <div>
+        <button
+          onClick={() => router.push("/admin")}
+          className="p-2 bg-gray-200 rounded-full mr-4 mb-3"
+        >
+          <IoMdArrowRoundBack className="text-black " />
+        </button>
+      </div>
 
-      <div className="doctor-profile flex flex-col md:flex-row p-6 rounded-xl shadow-2xl mt-10 bg-teal-50">
+      <div className="doctor-profile flex flex-col md:flex-row  p-6 rounded-xl shadow-2xl  bg-teal-50">
         {/* Doctor Details Section */}
         <div className="md:w-2/3 md:pr-6">
           <h2 className="text-3xl font-bold mb-4">{doctor.name}</h2>
@@ -74,9 +70,7 @@ export default function DoctorProfile() {
           <p className="text-lg mb-2">
             <strong>Registration Number:</strong> {doctor.registrationNumber}
           </p>
-          <p className="text-lg mb-2">
-            <strong>Bio:</strong> {doctor.bio}
-          </p>
+
           <p className="text-lg mb-2">
             <strong>Year of Registration:</strong> {doctor.yearOfRegistration}
           </p>
@@ -84,10 +78,14 @@ export default function DoctorProfile() {
             <strong>State Medical Council:</strong> {doctor.stateMedicalCouncil}
           </p>
 
+          <p className="text-lg mb-2">
+            <strong>Bio:</strong> {doctor.bio}
+          </p>
+
           {/* Verify Button */}
           <button
-            onClick={openConfirmModal}
-            className="btn text-white bg-green-600 hover:bg-green-700 hover: mt-4"
+            onClick={handleVerify}
+            className="btn btn-primary mt-4 "
             disabled={doctor.isVerified} // Disable if already verified
           >
             {doctor.isVerified ? "Verified" : "Verify Doctor"}
@@ -106,7 +104,7 @@ export default function DoctorProfile() {
 
             <button
               onClick={() => setIsModalOpen(true)}
-              className="btn bg-teal-600 mt-4"
+              className="btn bg-teal-600  mt-4"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -145,30 +143,6 @@ export default function DoctorProfile() {
           </div>
         </div>
       )}
-
-      {/* Confirmation Modal */}
-      <dialog id="verify_modal" className="modal">
-        <div className="modal-box">
-          <h3 className="font-bold text-lg">Verify Doctor</h3>
-          <p className="py-4">Are you sure you want to verify this doctor?</p>
-          <div className="modal-action">
-            {/* Confirm verification */}
-            <button
-              className="btn bg-green-600 text-white hover:bg-green-700 "
-              onClick={() => {
-                handleVerify();
-                closeConfirmModal();
-              }}
-            >
-              Yes, Verify
-            </button>
-            {/* Cancel and close modal */}
-            <button className="btn" onClick={closeConfirmModal}>
-              Cancel
-            </button>
-          </div>
-        </div>
-      </dialog>
     </div>
   );
 }

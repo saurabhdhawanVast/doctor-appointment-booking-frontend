@@ -15,32 +15,70 @@ const config = {
   ckey: "NHhvOEcyWk50N2Vna3VFTE00bFp3MjFKR0ZEOUhkZlg4RTk1MlJlaA==",
 };
 
-const doctorSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  gender: z.string().min(1, "Gender is required"),
-  profilePic: z.string().url("Profile picture URL is invalid"),
-  speciality: z.string().min(1, "Speciality is required"),
-  qualification: z.string().min(1, "Qualification is required"),
-  registrationNumber: z.string().min(1, "Registration number is required"),
-  yearOfRegistration: z.string().min(1, "Year of registration is required"),
-  stateMedicalCouncil: z.string().min(1, "State Medical Council is required"),
-  bio: z.string().min(1, "Bio is required"),
-  document: z.string().url("Document URL is invalid"),
-  contactNumber: z
-    .string()
-    .min(10, "Contact number must be at least 10 digits long"),
-  clinicDetails: z.object({
-    clinicName: z.string().optional(),
-    clinicAddress: z.string().optional(),
-    city: z.string().optional(),
-    state: z.string().optional(),
-    morningStartTime: z.string().optional(),
-    morningEndTime: z.string().optional(),
-    eveningStartTime: z.string().optional(),
-    eveningEndTime: z.string().optional(),
+const doctorSchema = z
+  .object({
+    name: z.string().min(1, "Name is required"),
+    gender: z.string().min(1, "Gender is required"),
+    profilePic: z.string().url("Profile picture URL is invalid"),
+    speciality: z.string().min(1, "Speciality is required"),
+    qualification: z.string().min(1, "Qualification is required"),
+    registrationNumber: z.string().min(1, "Registration number is required"),
+    yearOfRegistration: z.string().min(1, "Year of registration is required"),
+    stateMedicalCouncil: z.string().min(1, "State Medical Council is required"),
+    bio: z.string().min(1, "Bio is required"),
+    document: z.string().url("Document URL is invalid"),
+    contactNumber: z
+      .string()
+      .min(10, "Contact number must be at least 10 digits long"),
+    clinicDetails: z.object({
+      clinicName: z.string().optional(),
+      clinicAddress: z.string().optional(),
+      city: z.string().optional(),
+      state: z.string().optional(),
+      morningStartTime: z.string().optional(),
+      morningEndTime: z.string().optional(),
+      eveningStartTime: z.string().optional(),
+      eveningEndTime: z.string().optional(),
+      slotDuration: z.number().optional(),
+    }),
     slotDuration: z.number().optional(),
-  }),
-});
+  })
+  // Validate morning time
+  .refine(
+    (data) => {
+      const morningStart = data.clinicDetails?.morningStartTime;
+      const morningEnd = data.clinicDetails?.morningEndTime;
+
+      if (morningStart && morningEnd) {
+        const morningStartTime = new Date(`1970-01-01T${morningStart}`);
+        const morningEndTime = new Date(`1970-01-01T${morningEnd}`);
+        return morningStartTime < morningEndTime;
+      }
+      return true;
+    },
+    {
+      message: "Morning start time must be earlier than morning end time",
+      path: ["clinicDetails", "morningStartTime"], // Specific path for morning time validation
+    }
+  )
+  // Validate evening time
+  .refine(
+    (data) => {
+      const eveningStart = data.clinicDetails?.eveningStartTime;
+      const eveningEnd = data.clinicDetails?.eveningEndTime;
+
+      if (eveningStart && eveningEnd) {
+        const eveningStartTime = new Date(`1970-01-01T${eveningStart}`);
+        const eveningEndTime = new Date(`1970-01-01T${eveningEnd}`);
+        return eveningStartTime < eveningEndTime;
+      }
+      return true;
+    },
+    {
+      message: "Evening start time must be earlier than evening end time",
+      path: ["clinicDetails", "eveningStartTime"], // Specific path for evening time validation
+    }
+  );
 
 type DoctorInputs = z.infer<typeof doctorSchema>;
 

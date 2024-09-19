@@ -14,6 +14,7 @@ import useRegisterDoctorStore from "@/store/useRegisterDoctorStore";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import Loading from "../loading";
+import { MdLocationOff, MdLocationOn } from "react-icons/md";
 
 type Inputs = z.infer<typeof FormDataSchemaDoctor>;
 
@@ -117,13 +118,21 @@ export default function Form_Doctor() {
   const [selectedState, setSelectedState] = useState<string>("");
   const url: string[] = [];
 
-  //getlocation
   const setLocation = () => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      setLatitude(position.coords.latitude);
-      setLongitude(position.coords.longitude);
-      toast.success("Location set successfully");
-    });
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLatitude(position.coords.latitude);
+        setLongitude(position.coords.longitude);
+        toast.success("Location set successfully");
+      },
+      (error) => {
+        if (error.code === error.PERMISSION_DENIED) {
+          toast.error("Please enable location access from your browser.");
+        } else {
+          toast.error("Unable to retrieve location.");
+        }
+      }
+    );
   };
 
   // Remove duplicates Cities
@@ -408,6 +417,11 @@ export default function Form_Doctor() {
 
                   <p className="mt-1 text-sm leading-6 text-gray-600">
                     Provide your Personal details.
+                    <span className="text-red-500 ml-4 text-xs">
+                      <span className="text-black mr-1 text-sm">(</span>* Please
+                      fill this form when you are at your Clinic location
+                      <span className="text-black ml-1 text-sm">)</span>
+                    </span>
                   </p>
                 </div>
 
@@ -807,6 +821,11 @@ export default function Form_Doctor() {
                 </h2>
                 <p className="mt-1 text-sm leading-6 text-gray-600">
                   Add your Clinic Address
+                  <span className="text-red-500 ml-4 text-xs">
+                    <span className="text-black mr-1 text-sm">(</span>* Please
+                    fill this form when you are at your Clinic location
+                    <span className="text-black ml-1 text-sm">)</span>
+                  </span>
                 </p>
                 {/* Address */}
                 <div className="flex flex-wrap mt-2">
@@ -986,19 +1005,14 @@ export default function Form_Doctor() {
                     <button
                       type="button"
                       onClick={setLocation}
-                      className="btn-ghost btn bg-teal-600 hover:bg-teal-600"
+                      className="flex p-2 rounded-lg bg-teal-600 hover:bg-teal-600"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="24px"
-                        viewBox="0 -960 960 960"
-                        width="24px"
-                        fill="#000000"
-                        className="w-6 h-6"
-                      >
-                        <path d="M480-80q-106 0-173-33.5T240-200q0-24 14.5-44.5T295-280l63 59q-9 4-19.5 9T322-200q13 16 60 28t98 12q51 0 98.5-12t60.5-28q-7-8-18-13t-21-9l62-60q28 16 43 36.5t15 45.5q0 53-67 86.5T480-80Zm1-220q99-73 149-146.5T680-594q0-102-65-154t-135-52q-70 0-135 52t-65 154q0 67 49 139.5T481-300Zm-1 100Q339-304 269.5-402T200-594q0-71 25.5-124.5T291-808q40-36 90-54t99-18q49 0 99 18t90 54q40 36 65.5 89.5T760-594q0 94-69.5 192T480-200Zm0-320q33 0 56.5-23.5T560-600q0-33-23.5-56.5T480-680q-33 0-56.5 23.5T400-600q0 33 23.5 56.5T480-520Zm0-80Z" />
-                      </svg>
-                      Set Your Clinic Location
+                      {latitude && longitude ? (
+                        <MdLocationOn className="w-6 h-6" />
+                      ) : (
+                        <MdLocationOff className="w-6 h-6" />
+                      )}
+                      Set Location
                     </button>
                   </div>
                 </div>
@@ -1128,6 +1142,14 @@ export default function Form_Doctor() {
                 <p className="mt-1 text-sm leading-6 text-gray-600">
                   Thank you Please Submit the form.
                 </p>
+
+                <div className=" flex justify-center items-center">
+                  <img
+                    src="/images/Thankyou.png"
+                    alt="Doctor"
+                    className="w-1/4"
+                  />
+                </div>
               </>
             )}
           </form>

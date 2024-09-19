@@ -7,18 +7,29 @@ import { useRouter } from "next/navigation";
 import { FaSearch } from "react-icons/fa"; // Import search icon from react-icons
 
 import useRegisterDoctorStore from "@/store/useRegisterDoctorStore";
+import { toast } from "react-toastify";
+import { set } from "react-hook-form";
+import Loading from "../loading";
 
 const Doctor = () => {
   const router = useRouter();
 
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
   const doctorSpecialties = useRegisterDoctorStore(
     (state) => state.doctorSpecialties
   );
 
   const handleSearch = () => {
-    if (selectedSpecialty) {
-      router.push(`/patient/find-doctor?specialty=${selectedSpecialty}`);
+    try {
+      if (selectedSpecialty) {
+        setIsLoading(true);
+        router.push(`/patient/find-doctor?specialty=${selectedSpecialty}`);
+      }
+    } catch (err) {
+      toast.error("Error Occurred");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -36,6 +47,13 @@ const Doctor = () => {
     // <div className="relative w-[100%] h-[100%] mt-16 overflow-hidden object-fit">
     <div className="relative w-[99.9vw] h-[89vh] mt-16 overflow-hidden ">
       {/* Image Slider */}
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
+          <div className="loader">
+            <Loading />
+          </div>{" "}
+        </div>
+      )}
 
       <Slider {...settings} className="w-full h-full ">
         <img
@@ -65,7 +83,7 @@ const Doctor = () => {
             value={selectedSpecialty}
             onChange={(e) => setSelectedSpecialty(e.target.value)}
           >
-            <option value="">Select doctor by Specialty</option>
+            <option value="">Select doctor by speciality</option>
             {doctorSpecialties.map((specialty, index) => (
               <option key={index} value={specialty}>
                 {specialty}
