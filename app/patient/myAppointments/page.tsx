@@ -20,17 +20,18 @@ const MyAppointmentsList = () => {
   >(null);
   const [ratedAppointments, setRatedAppointments] = useState<Set<string>>(
     new Set()
-  ); // State to track rated appointments dis
+  );
   const [activeSection, setActiveSection] = useState<"upcoming" | "completed">(
     "upcoming"
-  ); // State to track the active section
+  );
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // To make the comparison date-only
 
   useEffect(() => {
     const fetch = async () => {
       if (patient) {
-        await getAppointments({
-          patient: patient._id,
-        });
+        await getAppointments({ patient: patient._id });
       }
     };
     fetch();
@@ -74,15 +75,42 @@ const MyAppointmentsList = () => {
       );
       closeRatingModal();
     }
-    
   };
 
-  const upcoming = upcomingAppointments.filter(
-    (appointment) => appointment.status !== "completed"
-  );
-  const completed = upcomingAppointments.filter(
-    (appointment) => appointment.status === "completed"
-  );
+  // Combine upcoming and completed appointments
+  const allAppointments = upcomingAppointments.map((appointment) => {
+    const appointmentDate = new Date(appointment.appointmentDate);
+    appointmentDate.setHours(0, 0, 0, 0); // Make it date-only for comparison
+
+    let status = appointment.status;
+    if (appointmentDate < today && appointment.status === "accepted") {
+      status = "not attended"; // Update status for past appointments
+    }
+
+    return {
+      ...appointment,
+      status,
+      isUpcoming: appointmentDate >= today, // Flag for upcoming appointments
+    };
+  });
+
+  // Sort upcoming appointments by date (ascending order)
+  const upcoming = allAppointments
+    .filter((appointment) => appointment.isUpcoming)
+    .sort(
+      (a, b) =>
+        new Date(a.appointmentDate).getTime() -
+        new Date(b.appointmentDate).getTime()
+    );
+
+  // Sort completed appointments by date (descending order)
+  const completed = allAppointments
+    .filter((appointment) => !appointment.isUpcoming)
+    .sort(
+      (a, b) =>
+        new Date(b.appointmentDate).getTime() -
+        new Date(a.appointmentDate).getTime()
+    );
 
   const activeAppointments =
     activeSection === "upcoming" ? upcoming : completed;
@@ -120,7 +148,6 @@ const MyAppointmentsList = () => {
           to display!
         </p>
       )}
-
       <div className="space-y-6">
         {activeAppointments.map((appointment) => (
           <div
@@ -129,11 +156,7 @@ const MyAppointmentsList = () => {
           >
             <div className="flex-shrink-0 mr-4">
               <Image
-                src={
-                  patient && patient.profilePic
-                    ? patient.profilePic
-                    : "/images/avatar-icon.png"
-                }
+                src={patient?.profilePic || "/images/avatar-icon.png"}
                 alt="Avatar"
                 width={100}
                 height={100}
