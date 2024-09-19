@@ -16,6 +16,8 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
   params,
 }) => {
   const [selectedDates, setSelectedDates] = useState<Date[]>([new Date()]);
+  // const [selectedDates, setSelectedDates] = useState<Date[]>([]);
+
   const [slots, setSlots] = useState<any[]>([]);
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const [slotToCancel, setSlotToCancel] = useState<string | null>(null);
@@ -201,9 +203,6 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
     );
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
-
   const isDateAvailable = (date: Date) => {
     const formattedDate = formatDateInTimeZone(date, timeZone);
     return availableDates.some(
@@ -282,14 +281,14 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
     return `${hour}:${minute} ${isPM ? "PM" : "AM"}`;
   };
   const renderSlotManagement = () => (
-    <div className="w-[99%] p-4 ">
+    <div className="w-[99%]  ">
       {selectedDates.length === 0 ? (
         <p>Select date to mark available or to manage schedule.</p>
       ) : (
         <>
-          <div className="flex flex-wrap justify-between items-center   mb-4">
+          <div className="flex items-center justify-between bg-gray-200 p-2 rounded-lg mb-4">
             <div>
-              <h3 className="text-xl font-normal ">
+              <h1 className="text-lg font-normal ">
                 Manage Slots for{" "}
                 {/* {formatDateInTimeZone(selectedDates[0], timeZone)} */}
                 {selectedDates[0].toLocaleDateString("en-GB", {
@@ -297,7 +296,7 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
                   month: "short", // 'short' for abbreviated month names
                   year: "numeric",
                 })}
-              </h3>
+              </h1>
             </div>
 
             <div className="flex flex-wrap items-center space-x-2">
@@ -318,22 +317,27 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
             </div>
           </div>
 
-          <button
-            className="bg-red-500 text-white px-4 py-2 mb-4 rounded"
-            onClick={handleCancelAllSlots}
-          >
-            Cancel All Slots
-          </button>
+          {slots?.length > 0 && (
+            <button
+              className="bg-red-500 text-white px-4 py-2 mb-4 rounded"
+              onClick={handleCancelAllSlots}
+            >
+              Cancel All Slots
+            </button>
+          )}
+
           <div>
             <ul className="flex flex-wrap gap-4">
-              {slots.map((slot) => (
-                <button
-                  key={slot.id}
-                  onClick={() => handleCancelSlot(slot.id)}
-                  disabled={slot.status === "cancelled"}
-                  className={`w-28 rounded-lg pt-2 text-center ${
-                    slot.status === "available" && "bg-green-500 cursor-pointer"
-                  }
+              {slots.length > 0 ? (
+                slots.map((slot) => (
+                  <button
+                    key={slot.id}
+                    onClick={() => handleCancelSlot(slot.id)}
+                    disabled={slot.status === "cancelled"}
+                    className={`w-28 rounded-lg pt-2 text-center ${
+                      slot.status === "available" &&
+                      "bg-green-500 cursor-pointer"
+                    }
                     ${
                       slot.status === "booked" && "bg-blue-500 cursor-pointer"
                     }  
@@ -341,29 +345,34 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
                       slot.status === "cancelled" &&
                       "bg-gray-300 cursor-not-allowed"
                     }`}
-                >
-                  <li>
-                    <div className="flex justify-center mb-2">
-                      <div>
-                        <span className="flex items-center">
-                          <div className="mr-1">
-                            {slot.status === "cancelled" && <FcCancel />}
-                          </div>
+                  >
+                    <li>
+                      <div className="flex justify-center mb-2">
+                        <div>
+                          <span className="flex items-center">
+                            <div className="mr-1">
+                              {slot.status === "cancelled" && <FcCancel />}
+                            </div>
 
-                          <div className="mr-1 ">
-                            {slot.status === "available" && <FaCheck />}
-                          </div>
+                            <div className="mr-1 ">
+                              {slot.status === "available" && <FaCheck />}
+                            </div>
 
-                          <div className="mr-1">
-                            {slot.status === "booked" && <MdEventAvailable />}
-                          </div>
-                          {formatTime(slot.time)}
-                        </span>
+                            <div className="mr-1">
+                              {slot.status === "booked" && <MdEventAvailable />}
+                            </div>
+                            {formatTime(slot.time)}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  </li>
-                </button>
-              ))}
+                    </li>
+                  </button>
+                ))
+              ) : (
+                <p className="text-center text-gray-500 w-full">
+                  No available slots on this date.
+                </p>
+              )}
             </ul>
           </div>
         </>
@@ -381,7 +390,7 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
           {/* Customize your loader */}
         </div>
       )}
-      <div className="w-58    border-r p-4">
+      <div className="w-58  border-r p-4 h-[90vh] bg-gray-100">
         <h2 className="text-xl font-normal text-center mb-4">
           Availability Calendar
         </h2>
