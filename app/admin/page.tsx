@@ -42,10 +42,10 @@ export default function DoctorList() {
   );
 
   return (
-    <div className="flex mt-16 ">
+    <div className="flex mt-16  h-screen">
       {/* Sidebar */}
       <div
-        className={`transition-transform duration-300  ${
+        className={`transition-transform duration-300 bg-white  ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } fixed top-0 left-0 h-full  border-r border-gray-300 w-64 p-4 mt-16`}
       >

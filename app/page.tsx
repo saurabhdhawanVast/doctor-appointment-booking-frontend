@@ -10,9 +10,12 @@ import icon01 from "../public/images/icon01.png";
 import icon02 from "../public/images/icon02.png";
 import icon03 from "../public/images/icon03.png";
 import featureImg from "../public/images/feature-img.png";
-import faqImg from "../public/images/faq-img.png";
-import videoIcon from "../public/images/video-icon.png";
-import avatarIcon from "../public/images/avatar-icon.png";
+import faqImg from "../public/images/homePageDoctor.png";
+import bgImage1 from "../public/images/HomeBg.jpg";
+import bgImage2 from "../public/images/doctors2.png";
+import bgImage3 from "../public/images/doctors3.jpg";
+import bgImage4 from "../public/images/doctors4.jpg";
+
 import ReviewList from "./components/reviewModel";
 import Typewriter from "typewriter-effect";
 
@@ -25,9 +28,7 @@ export default function Home() {
   useEffect(() => {
     const getDoctors = async () => {
       await fetchDoctors();
-      // Access the Zustand state directly to get doctors
       const fetchedDoctors = useDoctorStore.getState().doctors;
-      // Ensure fetchedDoctors is an array
       if (Array.isArray(fetchedDoctors)) {
         setDoctors(fetchedDoctors);
       } else {
@@ -37,9 +38,9 @@ export default function Home() {
     getDoctors();
   }, [fetchDoctors]);
 
-  // Framer Motion scroll animations
   const { scrollY } = useScroll();
   const yRange = useTransform(scrollY, [0, 500], [0, -100]);
+
   const renderStars = (rating: number) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -53,30 +54,47 @@ export default function Home() {
     }
     return stars;
   };
+
   const handleReviewModelClose = () => {
     setIsReviewModelOpen(false);
     setSelectedDoctor("");
   };
+
   const handleReviewModelOpen = (doctor: any) => {
     setIsReviewModelOpen(true);
     setSelectedDoctor(doctor);
   };
+
   return (
     <>
-      <section className="hero relative bg-blue-500 text-white text-center h-[130vh] ">
-        {/* <div className="container mb-20"> */}
+      {/* Hero Section */}
+      <section className="hero relative text-white text-center h-[100vh] sm:h-screen overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-10">
+          <Image
+            src={bgImage1} // Replace with your image path
+            alt="Background Image"
+            layout="fill"
+            objectFit="cover"
+            // Adjust opacity as needed
+          />
+        </div>
+
+        {/* Overlay for Opacity Effect */}
+        <div className="absolute inset-0 bg-teal-600 opacity-60  z-20"></div>
+
+        {/* Content */}
         <motion.div
-          className="container mb-20 p-6 "
+          className="relative container mb-20 p-6 z-30"
           initial={{ scale: 1 }}
           whileInView={{ scale: 1.05 }}
           transition={{ duration: 0.7 }}
         >
-          <div className="container  text-center">
-            <label className="block text-4xl font-bold">
+          <div className="text-center">
+            <label className="block text-3xl sm:text-4xl font-bold">
               <Typewriter
                 options={{
-                  // strings: ["Doctors", "Appointment", "Booking", "System"],
-                  strings: ["Doctors Appointment Booking System"],
+                  strings: ["Doctor's Appointment Booking System"],
                   autoStart: true,
                   loop: true,
                   delay: 200,
@@ -86,252 +104,157 @@ export default function Home() {
             </label>
           </div>
 
-          <h1 className="text-4xl font-bold mt-6 mb-4">
+          <h1 className="text-2xl sm:text-4xl font-bold mt-6 mb-4">
             We Help You Find the Best Doctors
           </h1>
-          <p className="text-xl ">
+          <p className="text-lg sm:text-xl">
             Easily book your appointments and get the best healthcare services.
           </p>
         </motion.div>
-
-        {/* <section className="features py-16 absolute top-[70%] "> */}
       </section>
 
-      <section className="features p-16 sm:relative sm:top-0 md:absolute md:top-[90%]">
-        <div className="container mx-auto text-center md:text-white">
-          <h2 className="text-3xl font-bold mb-8">Why Choose Us?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-9 text-black">
-            {[
-              {
-                title: "Easy Appointment Scheduling",
-                desc: "Book and manage your appointments with ease.",
-                icon: icon01,
-              },
-              {
-                title: "Experienced Doctors",
-                desc: "Connect with certified and experienced doctors.",
-                icon: icon02,
-              },
-              {
-                title: "24/7 Support",
-                desc: "Get support anytime you need it.",
-                icon: icon03,
-              },
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                className="feature-card p-6 bg-white border rounded-lg shadow-2xl drop-shadow-2xl"
-                initial={{ scale: 1 }}
-                whileInView={{ scale: 1.05 }}
-                transition={{ duration: 0.7 }}
-              >
-                <Image
-                  src={feature.icon}
-                  alt={feature.title}
-                  width={40}
-                  height={40}
-                />
-                <h3 className="text-xl font-semibold mt-4">{feature.title}</h3>
-                <p className="mt-2">{feature.desc}</p>
-              </motion.div>
-            ))}
-          </div>
+      {/* Features Section - Overlapping Cards */}
+      <section className="features relative p-8 w-full -mt-40">
+        {" "}
+        {/* Use negative margin to overlap */}
+        {/* Blue Background */}
+        <div className="absolute top-0 left-0 w-full h-full  -z-10"></div>
+        {/* Title */}
+        {/* Cards */}
+        <div className="text-center relative z-20 mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white">
+            Why Choose Us?
+          </h2>
         </div>
-      </section>
-
-      {/* How It Works Section */}
-      <section className="py-16 md:mt-16">
-        <div className="container mx-auto text-center ">
-          <h2 className="text-3xl font-bold mb-8">How It Works</h2>
-          <div className="flex flex-col md:flex-row gap-9 justify-center">
-            {[
-              {
-                step: 1,
-                title: "Search for Doctors",
-                desc: "Use our search feature to find the best doctors near you.",
-              },
-              {
-                step: 2,
-                title: "Choose a Time",
-                desc: "Select a time slot that works for you from the available options.",
-              },
-              {
-                step: 3,
-                title: "Confirm and Book",
-                desc: "Confirm your details and book your appointment.",
-              },
-            ].map((step, index) => (
-              <motion.div
-                key={index}
-                className="step-card p-6 border rounded-lg  shadow-2xl drop-shadow-2xl sm:w-full md:w-1/3"
-                initial={{ scale: 1 }}
-                whileInView={{ scale: 1.05 }}
-                transition={{ duration: 0.7 }}
-              >
-                <h3 className="text-2xl font-semibold">Step {step.step}</h3>
-                <h4 className="text-xl font-semibold mt-2">{step.title}</h4>
-                <p className="mt-2">{step.desc}</p>
-              </motion.div>
-            ))}
-          </div>
+        <div className="relative z-30 grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+          {[
+            {
+              title: "Easy Appointment Scheduling",
+              desc: "Book and manage your appointments with ease.",
+              icon: icon01,
+            },
+            {
+              title: "Experienced Doctors",
+              desc: "Connect with certified and experienced doctors.",
+              icon: icon02,
+            },
+            {
+              title: "24/7 Support",
+              desc: "Get support anytime you need it.",
+              icon: icon03,
+            },
+          ].map((feature, index) => (
+            <motion.div
+              key={index}
+              className="relative p-6 bg-gray-100 rounded-lg shadow-lg transform transition-transform duration-500 hover:scale-105"
+              initial={{ y: 50 }}
+              whileInView={{ y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.2 }}
+            >
+              <Image
+                src={feature.icon}
+                alt={feature.title}
+                width={40}
+                height={40}
+              />
+              <h3 className="text-xl font-semibold mt-4">{feature.title}</h3>
+              <p className="mt-2">{feature.desc}</p>
+            </motion.div>
+          ))}
         </div>
       </section>
 
       {/* Doctor List Section */}
       <section className="doctor-list py-16">
         <div className="container mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Find Your Doctor
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8">
+            Our Best Doctors
           </h2>
-          <div className="flex justify-center mb-6">
-            <input
-              type="text"
-              placeholder="Search by name, specialty, or location..."
-              className="p-2 rounded-lg border"
-            />
-          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {doctors.length > 0 ? (
-              doctors.map((doctor: any) => (
-                <motion.div
-                  key={doctor._id}
-                  className="doctor-card p-6 bg-white border rounded-lg shadow-md"
-                  initial={{ scale: 0.9 }}
-                  whileInView={{ scale: 1.05 }}
-                  transition={{ duration: 0.9 }}
+              <>
+                {doctors.slice(0, 3).map((doctor) => (
+                  <motion.div
+                    key={doctor._id}
+                    className="doctor-card p-6 bg-white border rounded-lg shadow-md hover:shadow-xl transition-all duration-300 h-fit"
+                    initial={{ scale: 0.9 }}
+                    whileInView={{ scale: 1.05 }}
+                    transition={{ duration: 0.9 }}
+                  >
+                    <div className="flex justify-between">
+                      {/* Profile picture and doctor details */}
+                      <div className="flex">
+                        <div className="w-16 h-16 mr-4">
+                          <img
+                            src={doctor.profilePic || "/default-profile.png"}
+                            alt={doctor.name}
+                            className="w-full h-full rounded-full object-cover"
+                          />
+                        </div>
+                        <div className="flex flex-col justify-center">
+                          <h3 className="text-lg font-semibold">
+                            {doctor.name}
+                          </h3>
+                          <p>{doctor.speciality || ""}</p>
+                          {/* <Link
+                  href={`/login`}
+                  className="mt-6 bg-teal-600 rounded-lg flex items-center justify-center px-4 py-2 hover:bg-teal-700"
                 >
-                  <div className="flex justify-between">
-                    <div>
-                      <h3 className="text-xl font-semibold">{doctor.name}</h3>
-                      <p className="mt-2">{doctor.speciality || ""}</p>
-                      <Link
-                        href={`/doctor/${doctor._id}`}
-                        className="btn btn-primary mt-4"
-                      >
-                        View Profile
-                      </Link>
-                    </div>
-                    <div>
-                      <div className="flex mt-2">
-                        {renderStars(doctor.avgRating)}
+                  Book Appointment
+                </Link> */}
+                        </div>
                       </div>
-                      <div
-                        className="text-center text-sm underline hover:text-blue-500 cursor-pointer"
-                        onClick={() => handleReviewModelOpen(doctor._id)}
-                      >
-                        Reviews
+
+                      {/* Rating and reviews */}
+                      <div>
+                        <div className="flex mt-2">
+                          {renderStars(doctor.avgRating)}
+                        </div>
+                        <div
+                          className="text-center text-sm underline hover:text-blue-500 cursor-pointer"
+                          onClick={() => handleReviewModelOpen(doctor._id)}
+                        >
+                          Reviews
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+
+                {/* Render skeleton loaders if fewer than 3 doctors are present */}
+                {[...Array(3 - doctors.length)].map((_, index) => (
+                  <div
+                    key={`skeleton-${index}`}
+                    className="p-6 bg-gray-200 border rounded-lg shadow-md animate-pulse h-fit"
+                  >
+                    <div className="flex justify-between">
+                      {/* Profile picture placeholder */}
+                      <div className="flex">
+                        <div className="w-16 h-16 mr-4 bg-gray-300 rounded-full"></div>
+                        <div className="flex flex-col justify-center">
+                          <div className="h-6 bg-gray-300 rounded w-3/4 mb-2"></div>
+                          <div className="h-4 bg-gray-300 rounded w-1/2 mb-2"></div>
+                        </div>
+                      </div>
+                      {/* Rating placeholder */}
+                      <div>
+                        <div className="flex mt-2">
+                          <div className="h-4 bg-gray-300 rounded w-10 mr-1"></div>
+                          <div className="h-4 bg-gray-300 rounded w-10"></div>
+                        </div>
+                        <div className="h-4 bg-gray-300 rounded w-20 mt-2"></div>
                       </div>
                     </div>
                   </div>
-                </motion.div>
-              ))
+                ))}
+              </>
             ) : (
               <p className="text-center col-span-full">No doctors found</p>
             )}
           </div>
         </div>
       </section>
-
-      {/* Testimonials Section */}
-      <section className="testimonials bg-gray-100 py-16">
-        <div className="container mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-8">What Our Patients Say</h2>
-          <div className="flex flex-col md:flex-row gap-6">
-            {[
-              {
-                name: "Emily R.",
-                review:
-                  "Excellent service! Booking an appointment was a breeze.",
-              },
-              {
-                name: "Michael T.",
-                review: "Great doctors and fast appointment scheduling.",
-              },
-              {
-                name: "Sarah L.",
-                review: "The support team was very helpful with my queries.",
-              },
-            ].map((testimonial, index) => (
-              <motion.div
-                key={index}
-                className="testimonial-card p-6 bg-white border rounded-lg shadow-md"
-                initial={{ scale: 0.9 }}
-                whileInView={{ scale: 1.05 }}
-                transition={{ duration: 0.7 }}
-              >
-                <p className="text-md mb-4">"{testimonial.review}"</p>
-                <p className="font-semibold">- {testimonial.name}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Feature Section */}
-      {/* <section className="feature py-16">
-        <div className="container mx-auto flex flex-col lg:flex-row items-center justify-between">
-          <div className="lg:w-1/2">
-            <h2 className="text-3xl font-bold mb-4">
-              Get Virtual Treatment Anytime
-            </h2>
-            <ul className="list-disc list-inside text-lg mb-4">
-              <li>Schedule the appointment directly.</li>
-              <li>Search your physician and contact their office.</li>
-              <li>
-                View physicians who are accepting new patients and use the
-                online scheduling tool to select an appointment time.
-              </li>
-            </ul>
-            <Link href="/services" className="btn btn-primary">
-              Learn More
-            </Link>
-          </div>
-          <div className="lg:w-1/2 mt-8 lg:mt-0 relative">
-            <motion.div
-              className="relative"
-              initial={{ scale: 1 }}
-              whileInView={{ scale: 1.05 }}
-              transition={{ duration: 0.7 }}
-            >
-              <Image
-                src={featureImg}
-                alt="Feature Image"
-                layout="responsive"
-                width={700}
-                height={500}
-              />
-              <div className="absolute bottom-4 left-4 bg-white p-4 rounded-lg shadow-lg">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <p className="text-lg font-semibold">Tue, 24</p>
-                    <p className="text-lg">10:00AM</p>
-                  </div>
-                  <span className="w-8 h-8 bg-yellow-300 rounded-full flex items-center justify-center">
-                    <Image
-                      src={videoIcon}
-                      alt="Video Icon"
-                      width={24}
-                      height={24}
-                    />
-                  </span>
-                </div>
-                <div className="bg-blue-100 p-2 rounded-full mt-2 text-center text-blue-600">
-                  Consultation
-                </div>
-                <div className="flex items-center gap-2 mt-4">
-                  <Image
-                    src={avatarIcon}
-                    alt="Avatar Icon"
-                    width={24}
-                    height={24}
-                  />
-                  <p className="text-lg font-semibold">Wayne Collins</p>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section> */}
 
       {/* FAQ Section */}
       <section className="faq py-16">
@@ -353,44 +276,45 @@ export default function Home() {
             </motion.div>
           </div>
           <div className="md:w-1/2">
-            <h2 className="text-3xl font-bold mb-8">Most Asked Questions</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-8">
+              Most Asked Questions
+            </h2>
             <div className="space-y-4">
-              <div className="faq-item">
-                <h3 className="text-xl font-semibold">
-                  How do I book an appointment?
-                </h3>
-                <p className="mt-2">
-                  You can book an appointment through our website by searching
-                  for doctors and selecting a time slot that suits you.
-                </p>
-              </div>
-              <div className="faq-item">
-                <h3 className="text-xl font-semibold">
-                  What should I bring to my appointment?
-                </h3>
-                <p className="mt-2">
-                  Please bring your ID, insurance card, and any relevant medical
-                  records.
-                </p>
-              </div>
-              <div className="faq-item">
-                <h3 className="text-xl font-semibold">
-                  How can I cancel or reschedule my appointment?
-                </h3>
-                <p className="mt-2">
-                  You can cancel or reschedule your appointment by logging into
-                  your account and selecting the appointment details.
-                </p>
-              </div>
+              {[
+                {
+                  question: "How do I book an appointment?",
+                  answer:
+                    "You can book an appointment through our website by searching for doctors and selecting a time slot that suits you.",
+                },
+                {
+                  question: "What should I bring to my appointment?",
+                  answer:
+                    "Please bring your ID, insurance card, and any relevant medical records.",
+                },
+                {
+                  question: "How can I cancel or reschedule my appointment?",
+                  answer:
+                    "You can cancel or reschedule your appointment by logging into your account and selecting the appointment details.",
+                },
+              ].map((faq, index) => (
+                <div key={index} className="faq-item">
+                  <h3 className="font-semibold">{faq.question}</h3>
+                  <p className="mt-2">{faq.answer}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
-      <ReviewList
-        isOpen={isReviewModelOpen}
-        onClose={handleReviewModelClose}
-        doctorId={selectedDoctor}
-      />
+
+      {/* Reviews Section */}
+      {isReviewModelOpen && (
+        <ReviewList
+          doctorId={selectedDoctor}
+          isOpen={isReviewModelOpen}
+          onClose={handleReviewModelClose}
+        />
+      )}
     </>
   );
 }

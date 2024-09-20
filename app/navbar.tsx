@@ -76,6 +76,7 @@ const Navbar = () => {
     loadData();
     console.log("loading user", loading);
     console.log("role", isLoggedIn);
+    console.log("user", user);
   }, [isLoggedIn, fetchUser, setLoading]);
 
   const handleLogout = async () => {
@@ -279,7 +280,7 @@ const Navbar = () => {
                         My Reviews
                       </button>
                     )}
-                    
+
                     <button
                       onClick={handleLogout}
                       className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
