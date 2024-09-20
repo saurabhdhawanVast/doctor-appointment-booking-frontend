@@ -1,18 +1,16 @@
 "use client";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useArticleStore } from "@/store/useArticleStore";
 import { debounce } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { IoMdArrowDropdown, IoMdArrowDropright } from "react-icons/io";
-
 import {
-  MdCategory,
   MdKeyboardArrowLeft,
   MdKeyboardArrowRight,
   MdKeyboardDoubleArrowLeft,
   MdKeyboardDoubleArrowRight,
 } from "react-icons/md";
-import useLoginStore from "@/store/useLoginStore";
+import { FaPlus, FaBook } from "react-icons/fa";
 
 interface Article {
   _id: string;
@@ -33,7 +31,6 @@ const categories = [
     subCategories: [
       { name: "Hair Growth", imagePath: "/images/hairGrowth.jfif" },
       { name: "Hair Loss Prevention", imagePath: "/images/hairLoss.jfif" },
-      // { name: "Hair Care Tips", imagePath: "/images/default.jpg" },
       { name: "Scalp Treatments", imagePath: "/images/scalp-treatment.jpg" },
       { name: "Hair Coloring", imagePath: "/images/hairColor.jfif" },
     ],
@@ -68,7 +65,6 @@ const categories = [
       { name: "Flossing Tips", imagePath: "/images/flossingtips.jpg" },
       { name: "Oral Hygiene", imagePath: "/images/27503.jpg" },
       { name: "Teeth Whitening", imagePath: "/images/whitning.jpg" },
-      // { name: "Dentist Visits", imagePath: "/images/default.jpg" },
     ],
   },
   {
@@ -143,8 +139,6 @@ const ArticlesList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [articlesPerPage] = useState(6);
   const [totalPages, setTotalPages] = useState(1);
-  const doctor = useLoginStore((state) => state.doctor);
-  const doctorId = doctor?._id;
   const router = useRouter();
 
   useEffect(() => {
@@ -182,6 +176,7 @@ const ArticlesList = () => {
   const resetFilter = async () => {
     setSelectedCategory(null);
     setSelectedSubCategory(null);
+    setSearchQuery("");
     await fetchArticles();
   };
 
@@ -253,249 +248,194 @@ const ArticlesList = () => {
     indexOfLastArticle
   );
 
+  const hasActiveFilters =
+    selectedCategory !== null ||
+    selectedSubCategory !== null ||
+    searchQuery !== "";
+
   return (
-    <div className="bg-gray-100 min-h-screen">
-      <div className="py-2 mt-16">
-        {/* Search Bar and Buttons */}
-        <div className="relative flex flex-wrap justify-between items-center px-6 border-b">
-          <div className="flex flex-wrap items-center space-x-2">
+    <div className="min-h-screen mt-16 bg-gray-100">
+      {/* Button and Search Section */}
+      <div className="container mx-auto py-8 mb-4">
+        <div className="flex justify-between items-center">
+          <div className="flex space-x-4">
             <button
-              onClick={() => router.push(`/doctor/article-form/${doctorId}`)}
-              className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-semibold transition duration-300"
+              onClick={() => router.push(`/doctor/article-form`)}
+              className="flex items-center bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg shadow-md transition duration-300"
             >
-              Create Article
+              <FaPlus className="mr-2" /> Create Article
             </button>
             <button
               onClick={() => router.push("/doctor/myArticles")}
-              className="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-semibold transition duration-300"
+              className="flex items-center bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg shadow-md transition duration-300"
             >
-              My Articles
+              <FaBook className="mr-2" /> My Articles
             </button>
           </div>
-          {/* Search Bar */}
-          <div className="relative w-full max-w-md mt-2 mr-2">
+          <div className="relative w-full max-w-md">
             <input
               type="text"
               value={searchQuery}
               onChange={handleSearchChange}
               placeholder="Search articles by title..."
-              className="w-full px-4 py-2 mb-4 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+              className="w-full px-4 py-2 border rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <div className="absolute mb-4 inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-              {/* Search Icon */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="currentColor"
-                className="w-5 h-5 text-gray-400"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21 21l-4.35-4.35M18.25 10.75a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z"
-                />
-              </svg>
-            </div>
           </div>
-
-          {/* Buttons */}
         </div>
-
-        {/* Selected Category and Reset Button */}
-        {selectedCategory && (
-          <div className="mb-4 mt-2 px-16 text-xl font-semibold flex items-center justify-between w-full">
-            <span>
-              <span className="text-gray-700">
-                {selectedCategory && selectedSubCategory
-                  ? `${selectedCategory} > ${selectedSubCategory}`
-                  : selectedCategory}
-              </span>
-            </span>
-            <button
-              onClick={resetFilter}
-              className="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-semibold transition duration-300"
-            >
-              Reset
-            </button>
-          </div>
-        )}
       </div>
 
-      {/* Articles and Categories */}
-      <div className="mx-auto p-6">
-        <div className="flex justify-between px-2">
+      <div className="container mx-auto py-8">
+        {/* Articles List */}
+        <div className="flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6">
           {/* Articles Section */}
-          {loading ? (
-            <div className="text-center text-gray-700">Loading...</div>
-          ) : articles.length === 0 ? (
-            <div className="text-center text-gray-700">No articles found.</div>
-          ) : (
-            <div>
-              <div className="grid grid-cols-1 md:grid-cols-2 px-3 lg:grid-cols-2 gap-6">
+          <div className="w-full md:w-3/4">
+            {loading ? (
+              <div className="text-center text-lg font-semibold">
+                Loading...
+              </div>
+            ) : currentArticles.length === 0 ? (
+              <div className="text-center text-lg font-semibold">
+                No articles found.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {currentArticles.map((article) => (
                   <div
                     key={article._id}
+                    className="bg-white p-4 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition duration-300"
                     onClick={() => handleArticleClick(article._id)}
-                    className="bg-white cursor-pointer rounded-lg overflow-hidden hover:bg-blue-100 transition duration-300"
                   >
-                    {/* Image Section */}
-                    <div className="relative w-full h-60 overflow-hidden rounded-t-lg">
+                    {article.image && (
                       <img
-                        src={article.image || "/images/default.jpg"}
+                        src={article.image}
                         alt={article.title}
-                        className="object-cover w-full h-full"
+                        className="w-full h-48 object-cover rounded-lg mb-4"
                       />
+                    )}
+                    <h2 className="text-xl font-semibold text-blue-700 mb-2">
+                      {article.title}
+                    </h2>
+                    <div className="text-gray-500 text-sm mb-2">
+                      {new Date(article.createdAt).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
                     </div>
-                    <div className="p-6">
-                      <h3 className="text-lg font-bold text-gray-900 mb-2">
-                        {article.title}
-                      </h3>
-                      <div className="text-sm text-gray-500 mb-2">
-                        <p>
-                          By:{" "}
-                          <span className="font-semibold text-gray-700">
-                            Dr. {article?.doctor?.name || "Unknown"}
-                          </span>
-                        </p>
-                        <p>
-                          Published on:{" "}
-                          <span className="font-semibold text-gray-700">
-                            {new Date(article.createdAt).toLocaleDateString(
-                              "en-GB",
-                              {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                              }
-                            )}
-                          </span>
-                        </p>
-                      </div>
-                      <p
-                        className="text-gray-700"
-                        dangerouslySetInnerHTML={{
-                          __html: truncateHtmlContent(article.content, 100),
-                        }}
-                      ></p>
-                    </div>
+                    <p className="text-gray-600">
+                      {truncateHtmlContent(article.content, 100)}
+                    </p>
                   </div>
                 ))}
               </div>
+            )}
 
-              {/* Pagination */}
-              <div className="flex items-center space-x-2 justify-end mt-6">
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center mt-8 space-x-2">
                 <button
                   onClick={() => handlePageChange(1)}
                   disabled={currentPage === 1}
-                  className="w-10 h-10 flex items-center justify-center bg-blue-500 text-white disabled:bg-gray-400"
+                  className={`${
+                    currentPage === 1
+                      ? "bg-gray-200 cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                  } py-2 px-4 rounded-lg font-semibold transition duration-300`}
                 >
-                  <MdKeyboardDoubleArrowLeft />
+                  <MdKeyboardDoubleArrowLeft size={20} />
                 </button>
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="w-10 h-10 flex items-center justify-center bg-blue-500 text-white disabled:bg-gray-400"
+                  className={`${
+                    currentPage === 1
+                      ? "bg-gray-200 cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                  } py-2 px-4 rounded-lg font-semibold transition duration-300`}
                 >
-                  <MdKeyboardArrowLeft />
+                  <MdKeyboardArrowLeft size={20} />
                 </button>
-
-                {/* Previous Page Number */}
-                {currentPage > 2 && (
-                  <button
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    className="w-10 h-10 flex items-center justify-center bg-gray-200 text-black"
-                  >
-                    {currentPage - 1}
-                  </button>
-                )}
-
-                {/* Current Page Number */}
-                <span className="w-10 h-10 flex items-center justify-center bg-blue-500 text-white">
-                  {currentPage}
-                </span>
-
-                {/* Next Page Number */}
-                {currentPage < totalPages - 1 && (
-                  <button
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    className="w-10 h-10 flex items-center justify-center bg-gray-200 text-black"
-                  >
-                    {currentPage + 1}
-                  </button>
-                )}
-
+                <div className="py-2 px-4 bg-gray-100 rounded-lg">
+                  {currentPage} / {totalPages}
+                </div>
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="w-10 h-10 flex items-center justify-center bg-blue-500 text-white disabled:bg-gray-400"
+                  className={`${
+                    currentPage === totalPages
+                      ? "bg-gray-200 cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                  } py-2 px-4 rounded-lg font-semibold transition duration-300`}
                 >
-                  <MdKeyboardArrowRight />
+                  <MdKeyboardArrowRight size={20} />
                 </button>
                 <button
                   onClick={() => handlePageChange(totalPages)}
                   disabled={currentPage === totalPages}
-                  className="w-10 h-10 flex items-center justify-center bg-blue-500 text-white disabled:bg-gray-400"
+                  className={`${
+                    currentPage === totalPages
+                      ? "bg-gray-200 cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                  } py-2 px-4 rounded-lg font-semibold transition duration-300`}
                 >
-                  <MdKeyboardDoubleArrowRight />
+                  <MdKeyboardDoubleArrowRight size={20} />
                 </button>
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
-          {/* Categories Section */}
-          <div className="px-6 w-1/4 border flex flex-col flex-wrap rounded-md">
-            <h2 className="text-center mt-3 border-b pb-1 text-xl border-black mb-6">
-              Our Categories...
-            </h2>
-            {categories.map((category) => (
-              <div key={category.name} className="mb-4">
-                {/* Category Item */}
-                <div
-                  className={`flex font-semibold text-lg cursor-pointer p-2 rounded-lg 
-                    ${
-                      selectedCategory === category.name
-                        ? "bg-blue-500 text-white"
-                        : "bg-gray-100 text-gray-700"
-                    }
-                    hover:bg-blue-200 hover:text-blue-900 transition-all duration-200`}
-                  onClick={() => handleToggleCategory(category.name)}
+          {/* Categories Sidebar */}
+          <div className="w-full md:w-1/4 bg-white p-4 rounded-lg shadow-md">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-blue-700">
+                Categories
+              </h2>
+              {hasActiveFilters && (
+                <button
+                  onClick={resetFilter}
+                  className="bg-red-600 hover:bg-red-700 text-white py-1 px-2 rounded-lg shadow-md transition duration-300"
                 >
-                  {/* Arrow Icon */}
-                  <div className="mt-1 text-xl mr-2">
+                  Reset
+                </button>
+              )}
+            </div>
+
+            <div>
+              {categories.map((category) => (
+                <div key={category.name}>
+                  <div
+                    className="flex justify-between items-center cursor-pointer py-2 text-gray-600 hover:bg-gray-200 rounded-lg transition"
+                    onClick={() => handleToggleCategory(category.name)}
+                  >
+                    <span>{category.name}</span>
                     {expandedCategories.includes(category.name) ? (
                       <IoMdArrowDropdown />
                     ) : (
                       <IoMdArrowDropright />
                     )}
                   </div>
-                  {category.name}
-                </div>
-                {expandedCategories.includes(category.name) && (
-                  <div className="flex flex-col mt-2 ml-6">
-                    {category.subCategories.map((subCategory) => (
-                      <div
-                        key={subCategory.name}
-                        className={`flex items-center cursor-pointer text-left pl-4 py-1 rounded-lg
-                          ${
+                  {expandedCategories.includes(category.name) && (
+                    <div className="pl-4">
+                      {category.subCategories.map((subCategory) => (
+                        <div
+                          key={subCategory.name}
+                          className={`flex items-center cursor-pointer pl-4 py-1 text-gray-600 hover:bg-gray-200 rounded-lg transition ${
                             selectedSubCategory === subCategory.name
-                              ? "bg-green-500 text-white"
-                              : "bg-gray-100 text-gray-700"
+                              ? "bg-blue-100 font-semibold text-blue-700"
+                              : ""
+                          }`}
+                          onClick={() =>
+                            handleFilterSubCategory(subCategory.name)
                           }
-                          hover:bg-green-200 hover:text-green-900 transition-all duration-200`}
-                        onClick={() =>
-                          handleFilterSubCategory(subCategory.name)
-                        }
-                      >
-                        <MdCategory className="mr-2 text-gray-600" />
-                        {subCategory.name}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
+                        >
+                          <span>{subCategory.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

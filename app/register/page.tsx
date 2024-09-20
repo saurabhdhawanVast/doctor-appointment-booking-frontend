@@ -1,48 +1,97 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 
 const Register = () => {
   return (
-    <div className="flex mt-24 h-[75vh] p-10 gap-4 justify-between ">
-      {/* Doctor card */}
-      <div
-        className="flex-1 w-1/2  p-6 bg-blue-100 rounded-lg shadow-lg  bg-cover bg-center"
-        style={{
-          backgroundImage: "url('/images/doctorRegister.png')", // Replace with the doctor image path
-        }}
-      >
-        <h2 className="text-xl font-semibold">Doctor</h2>
+    <div className="mt-16 min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-600 to-gray-300 p-10">
+      <h1 className="text-5xl font-extrabold text-gray-800 mb-4 animate-fadeIn">
+        Join Us
+      </h1>
+      <p className="text-xl text-gray-700 mb-10">
+        Choose your role and embark on your journey!
+      </p>
 
-        <p className="mt-2 text-gray-700">
-          Information about the doctor goes here.
-        </p>
-        <Link
-          href="/register/registerdoctor"
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 btn btn-ghost"
-        >
-          Register
-        </Link>
+      <div className="flex flex-col md:flex-row gap-10 items-center">
+        {/* Doctor Card */}
+        <div className="relative w-[500px] h-[350px] bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl animate-fadeIn">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover z-[-1] opacity-50"
+          >
+            <source src="/video/v1.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <div className="absolute inset-0 bg-black opacity-40 z-0"></div>
+          <div className="relative z-10 flex flex-col justify-center items-center h-full p-6">
+            <h2 className="text-3xl font-semibold text-white">Doctor</h2>
+            <p className="mt-2 text-white text-center">
+              Become a doctor and make a difference in people's lives.
+            </p>
+            <Link
+              href="/register/registerdoctor"
+              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition duration-300"
+            >
+              Register
+            </Link>
+          </div>
+        </div>
+
+        {/* Patient Card */}
+        <div className="relative w-[500px] h-[350px] bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl animate-fadeIn">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover z-[-1] opacity-50"
+          >
+            <source src="/video/v3.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <div className="absolute inset-0 bg-black opacity-40 z-0"></div>
+          <div className="relative z-10 flex flex-col justify-center items-center h-full p-6">
+            <h2 className="text-3xl font-semibold text-white">Patient</h2>
+            <p className="mt-2 text-white text-center">
+              Join us as a patient and access quality healthcare.
+            </p>
+            <Link
+              href="/register/registerpatient"
+              className="mt-4 px-6 py-2 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition duration-300"
+            >
+              Register
+            </Link>
+          </div>
+        </div>
       </div>
 
-      {/* Patient card */}
-      <div
-        className="flex-1 p-6 bg-orange-100 rounded-lg shadow-lg bg-cover bg-center"
-        style={{
-          backgroundImage: "url('/path-to-your-patient-image.jpg')", // Replace with the patient image path
-        }}
-      >
-        <h2 className="text-xl font-semibold">Patient</h2>
-        <p className="mt-2 text-gray-700">
-          Information about the patient goes here.
-        </p>
-        <Link
-          href="/register/registerpatient"
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 btn btn-ghost"
-        >
-          Register
+      <p className="text-gray-700 mt-8">
+        Already have an account?{" "}
+        <Link href="/login" className="text-blue-500 hover:underline">
+          Login here
         </Link>
-      </div>
+      </p>
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          0% {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease-in-out forwards;
+        }
+      `}</style>
     </div>
   );
 };

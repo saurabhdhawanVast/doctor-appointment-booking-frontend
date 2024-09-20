@@ -95,7 +95,7 @@ const DataSecurity = () => {
               </div>
             </motion.div>
 
-            <motion.div
+            {/* <motion.div
               className="bg-white p-8 rounded-xl shadow-lg mb-8 md:mb-0 flex items-start"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -114,7 +114,7 @@ const DataSecurity = () => {
                   recoverable.
                 </p>
               </div>
-            </motion.div>
+            </motion.div> */}
 
             <motion.div
               className="bg-white p-8 rounded-xl shadow-lg mb-8 md:mb-0 flex items-start"
