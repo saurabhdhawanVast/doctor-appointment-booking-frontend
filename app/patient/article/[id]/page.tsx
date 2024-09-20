@@ -48,82 +48,99 @@ const ArticlePage = ({ params }: ArticlePageProps) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        Loading...
+        <div className="text-lg font-semibold text-gray-600">Loading...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-screen">{error}</div>
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-lg font-semibold text-red-500">{error}</div>
+      </div>
     );
   }
 
   if (!article) {
     return (
       <div className="flex items-center justify-center h-screen">
-        Article not found
+        <div className="text-lg font-semibold text-gray-600">
+          Article not found
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="mt-16 relative">
-      <div className="absolute left-4 z-10 top-4">
-        <button
-          onClick={() => router.back()}
-          className="p-3 bg-gray-200 hover:bg-gray-300 rounded-full shadow-lg flex items-center justify-center"
-        >
-          <IoMdArrowRoundBack className="text-black text-xl" />
-        </button>
-      </div>
+    <div className="mt-16 relative min-h-screen bg-gradient-to-r from-blue-50 to-purple-100">
       <Head>
         <title>{article.title}</title>
         <meta name="description" content={article.title} />
       </Head>
-      <div className="relative">
-        {/* Hero Image */}
-        <div className="flex justify-center bg-gray-100">
+      <div className="absolute left-4 top-4 z-10">
+        <button
+          onClick={() => router.back()}
+          className="p-3 bg-white hover:bg-gray-200 rounded-full shadow-lg flex items-center justify-center transition-transform duration-300 hover:scale-105"
+        >
+          <IoMdArrowRoundBack className="text-black text-3xl" />
+        </button>
+      </div>
+      <section className="relative flex justify-center items-center h-auto py-10">
+        <div className="absolute inset-0 bg-black opacity-50 z-0"></div>
+        <div className="relative z-10 flex justify-center items-center">
           <img
-            className="w-3/5"
-            src={article.image ? article.image : "/images/default.jpg"}
-          ></img>
+            className="rounded-xl shadow-lg"
+            src={article.image || "/images/default.jpg"}
+            alt={article.title}
+            style={{
+              maxWidth: "100%",
+              maxHeight: "200px",
+              objectFit: "contain",
+            }}
+          />
         </div>
-        <div className="bg-gray-100 flex items-center justify-center">
-          <h1 className="text-3xl mt-2 font-bold text-gray-700 drop-shadow-lg">
-            {article.title}
-          </h1>
+        <div className="relative ml-2 w-[48rem] z-10 text-center text-white mt-6">
+          <h1 className="text-4xl font-bold drop-shadow-lg">{article.title}</h1>
+          <p className="mt-2 text-lg italic">
+            Published on{" "}
+            {new Date(article.createdAt).toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            })}
+          </p>
         </div>
-        {/* Article Content */}
-        <div className="flex justify-center pb-12 pt-4 px-4 bg-gray-100">
-          <div className="max-w-3xl w-full">
-            <div className="mb-6">
-              <p className="text-lg text-gray-600">
-                Category: {article.category} / {article.subCategory}
-              </p>
-              <p className="text-sm text-gray-500">
-                Published on{" "}
-                {new Date(article.createdAt).toLocaleDateString("en-GB", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                })}
-              </p>
-            </div>
+      </section>
 
+      {/* Article Info */}
+      <section className="max-w-4xl mx-auto px-4 py-10 bg-white shadow-lg rounded-lg -mt-10  z-20 relative">
+        <div className="text-center">
+          <p className="text-lg text-gray-700">
+            Category:{" "}
+            <span className="font-semibold text-blue-600">
+              {article.category}
+            </span>{" "}
+            /{" "}
+            <span className="font-semibold text-purple-600">
+              {article.subCategory}
+            </span>
+          </p>
+        </div>
+        <div className="mt-6 text-gray-900 leading-relaxed text-lg">
+          <div className="prose max-w-full mx-auto">
             <div
-              className="text-lg text-gray-800 leading-relaxed space-y-6"
               dangerouslySetInnerHTML={{ __html: article.content }}
+              className="space-y-4"
             />
-
-            <div className="mt-12 text-right">
-              <p className="text-sm text-gray-600">
-                Written by {article?.doctor?.name}
-              </p>
-            </div>
           </div>
         </div>
-      </div>
+        <p className="text-right text-lg font-medium text-gray-600">
+          Written by{" "}
+          <span className="font-semibold text-gray-800">
+            {article?.doctor?.name || "Unknown Doctor"}
+          </span>
+        </p>
+      </section>
     </div>
   );
 };

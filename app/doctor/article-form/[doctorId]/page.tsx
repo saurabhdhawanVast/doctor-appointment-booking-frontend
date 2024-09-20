@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { useArticleStore } from "@/store/useArticleStore";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
-import useLoginStore from "@/store/useLoginStore";
+import styles from "./CreateArticleForm.module.css";
 
 const CreateArticleForm: React.FC = () => {
   const [title, setTitle] = useState("");
@@ -17,6 +17,11 @@ const CreateArticleForm: React.FC = () => {
   const [imagePreview, setImagePreview] = useState<string | ArrayBuffer | null>(
     null
   );
+  const [titleError, setTitleError] = useState<string>("");
+  const [contentError, setContentError] = useState<string>("");
+  const [categoryError, setCategoryError] = useState<string>("");
+  const [subCategoryError, setSubCategoryError] = useState<string>("");
+  const [imageError, setImageError] = useState<string>("");
   const [redirect, setRedirect] = useState(false);
   const editor = useRef(null);
   const router = useRouter();
@@ -29,7 +34,7 @@ const CreateArticleForm: React.FC = () => {
   const doctorId = Array.isArray(params?.doctorId)
     ? params.doctorId[0]
     : params?.doctorId;
-console.log(doctorId);
+
   useEffect(() => {
     if (editArticle) {
       setTitle(editArticle.title);
@@ -46,13 +51,13 @@ console.log(doctorId);
       setImagePreview(null);
     }
   }, [editArticle]);
+
   const categories = [
     {
       name: "Healthy Hair",
       subCategories: [
         "Hair Growth",
         "Hair Loss Prevention",
-        "Hair Care Tips",
         "Scalp Treatments",
         "Hair Coloring",
       ],
@@ -84,17 +89,16 @@ console.log(doctorId);
         "Flossing Tips",
         "Oral Hygiene",
         "Teeth Whitening",
-        "Dentist Visits",
       ],
     },
     {
       name: "General Health",
       subCategories: [
         "Immunity Boost",
-        "Disease Prevention",
-        "Detox",
-        "Healthy Aging",
-        "Stress Management",
+        "Injury care",
+        "Healthy Digestion",
+        "Periods Care",
+        "Sleep Better",
       ],
     },
     {
@@ -102,29 +106,24 @@ console.log(doctorId);
       subCategories: [
         "Cardio Workouts",
         "Strength Training",
-        "Flexibility Exercises",
-        "Workout Routines",
-        "Recovery Techniques",
+        "Medication",
+        "Everyday Fitness",
+        "Yoga",
       ],
     },
     {
       name: "Pain Management",
-      subCategories: [
-        "Chronic Pain Relief",
-        "Acute Pain Management",
-        "Alternative Therapies",
-        "Pain Medication",
-        "Physical Therapy",
-      ],
+      subCategories: ["Back Pain", "Neck Pain", "Headache", "Physical Therapy"],
     },
     {
       name: "Mental Well-being",
       subCategories: [
         "Stress Reduction",
         "Depression Management",
-        "Mindfulness Practices",
+        "Addiction",
         "Counseling",
         "Emotional Support",
+        "Anger Management",
       ],
     },
     {
@@ -132,9 +131,9 @@ console.log(doctorId);
       subCategories: [
         "Child Development",
         "Parenting Tips",
-        "Family Health",
-        "Early Education",
+        "During/After Pregnancy",
         "Positive Discipline",
+        "Childhood Nutrition",
       ],
     },
   ];
@@ -142,9 +141,22 @@ console.log(doctorId);
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedCategory = e.target.value;
     setCategory(selectedCategory);
+    if (e.target.value.trim().length > 0) {
+      setCategoryError("");
+    } else {
+      setCategoryError("Category is required.");
+    }
     setSubCategory(""); // Reset subcategory when category changes
   };
-
+  const handleSubCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedSubCategory = e.target.value;
+    setSubCategory(selectedSubCategory);
+    if (e.target.value.trim().length > 0) {
+      setSubCategoryError("");
+    } else {
+      setSubCategoryError("Sub-Category is required.");
+    }
+  };
   const handleImageChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -154,61 +166,122 @@ console.log(doctorId);
       uploadData.append("file", file);
       uploadData.append("upload_preset", "doctors-app");
       uploadData.append("cloud_name", "dicldxhya");
-      await fetch(`https://api.cloudinary.com/v1_1/dicldxhya/image/upload`, {
-        method: "post",
-        body: uploadData,
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setImage(data.url);
-          console.log(data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
 
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const res = await fetch(
+          `https://api.cloudinary.com/v1_1/dicldxhya/image/upload`,
+          {
+            method: "post",
+            body: uploadData,
+          }
+        );
+        const data = await res.json();
+        setImage(data.url);
+        setImageError("");
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImagePreview(reader.result);
+        };
+        reader.readAsDataURL(file);
+      } catch (err) {
+        console.error(err);
+        setImageError("Failed to upload image.");
+      }
     }
   };
 
+  const validateForm = () => {
+    let valid = true;
+    if (!title) {
+      setTitleError("Title is required.");
+      valid = false;
+    } else {
+      setTitleError("");
+    }
+
+    if (!content) {
+      setContentError("Content is required.");
+      valid = false;
+    } else {
+      setContentError("");
+    }
+
+    if (!category) {
+      setCategoryError("Category is required.");
+      valid = false;
+    } else {
+      setCategoryError("");
+    }
+
+    if (!subCategory) {
+      setSubCategoryError("Subcategory is required.");
+      valid = false;
+    } else {
+      setSubCategoryError("");
+    }
+
+    if (!image) {
+      setImageError("Image is required.");
+      valid = false;
+    } else {
+      setImageError("");
+    }
+
+    return valid;
+  };
+  const handleTitleChange = (e: any) => {
+    setTitle(e.target.value);
+    if (e.target.value.trim().length > 0) {
+      setTitleError("");
+    } else {
+      setTitleError("Title is required.");
+    }
+  };
+  const handleContentChange = (content: any) => {
+    setContent(content);
+    if (content.trim().length > 0) {
+      setContentError("");
+    } else {
+      setContentError("Content is required.");
+    }
+  };
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!image) {
-      throw new Error("Please select an image");
+    if (!validateForm()) {
+      return;
     }
+
     try {
-      if (!editArticle) {
-        await createArticle({
-          title,
-          content,
-          category,
-          image,
-          subCategory,
-          doctorId,
-        });
-        setRedirect(true);
-        toast.success("Article Created Successfully!");
-      } else {
-        await updateArticle({
-          _id: editArticle._id,
-          title,
-          content,
-          category,
-          image,
-          subCategory,
-          doctorId,
-        });
-        setEditArticle(null);
-        toast.success("Article Updated Successfully!");
-        router.push("/doctor/myArticles");
+      if (image) {
+        if (!editArticle) {
+          await createArticle({
+            title,
+            content,
+            category,
+            image,
+            subCategory,
+            doctorId,
+          });
+          setRedirect(true);
+          toast.success("Article Created Successfully!");
+        } else {
+          await updateArticle({
+            _id: editArticle._id,
+            title,
+            content,
+            category,
+            image,
+            subCategory,
+            doctorId,
+          });
+          setEditArticle(null);
+          toast.success("Article Updated Successfully!");
+          router.push("/doctor/myArticles");
+        }
       }
     } catch (error) {
-      console.error("Error creating article:", error);
-      toast.error("Error creating Article");
+      console.error("Error creating or updating article:", error);
+      toast.error("Error creating or updating article.");
     }
   };
 
@@ -234,31 +307,35 @@ console.log(doctorId);
             <input
               type="text"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              className="shadow-sm border rounded-lg w-full py-3 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => handleTitleChange(e)}
+              className={`shadow-sm border rounded-lg w-full py-3 px-4 text-gray-700 focus:outline-none focus:ring-2 ${
+                titleError
+                  ? "border-red-500 focus:ring-red-500"
+                  : "focus:ring-blue-500"
+              }`}
             />
+            {titleError && (
+              <div className="text-red-600 text-sm mt-2">{titleError}</div>
+            )}
           </div>
-          <div className="mb-6 ">
+          <div className="mb-6">
             <label className="block text-gray-700 text-sm font-semibold mb-2">
               Content:
             </label>
             <ReactQuill
               ref={editor}
               value={content}
-              onChange={(newContent: any) => setContent(newContent)}
-              className="border rounded-lg"
+              onChange={(newContent: any) => handleContentChange(newContent)}
+              className={`border rounded-lg ${
+                contentError ? "border-red-500" : ""
+              }`}
               modules={{
                 toolbar: [
                   ["bold", "italic", "underline", "strike"], // toggled buttons
-                  ["blockquote", "code-block"],
 
-                  [{ header: 1 }, { header: 2 }], // custom button values
                   [{ list: "ordered" }, { list: "bullet" }],
                   [{ script: "sub" }, { script: "super" }], // superscript/subscript
                   [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
-                  [{ direction: "rtl" }], // text direction
-
                   [{ size: ["small", false, "large", "huge"] }], // custom dropdown
                   [{ header: [1, 2, 3, 4, 5, 6, false] }],
 
@@ -272,6 +349,9 @@ console.log(doctorId);
                 ],
               }}
             />
+            {contentError && (
+              <div className="text-red-600 text-sm mt-2">{contentError}</div>
+            )}
           </div>
           <div className="mb-6">
             <label className="block text-gray-700 text-sm font-semibold mb-2">
@@ -280,34 +360,49 @@ console.log(doctorId);
             <select
               value={category}
               onChange={handleCategoryChange}
-              required
-              className="shadow-sm border rounded-lg w-full py-3 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`shadow-sm border rounded-lg w-full py-3 px-4 text-gray-700 focus:outline-none focus:ring-2 ${
+                categoryError
+                  ? "border-red-500 focus:ring-red-500"
+                  : "focus:ring-blue-500"
+              }`}
             >
-              <option value="">Select a Category</option>
+              <option value="">Select Category</option>
               {categories.map((cat) => (
                 <option key={cat.name} value={cat.name}>
                   {cat.name}
                 </option>
               ))}
             </select>
+            {categoryError && (
+              <div className="text-red-600 text-sm mt-2">{categoryError}</div>
+            )}
           </div>
           <div className="mb-6">
             <label className="block text-gray-700 text-sm font-semibold mb-2">
-              SubCategory:
+              Subcategory:
             </label>
             <select
               value={subCategory}
-              onChange={(e) => setSubCategory(e.target.value)}
-              required
-              className="shadow-sm border rounded-lg w-full py-3 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => handleSubCategoryChange(e)}
+              className={`shadow-sm border rounded-lg w-full py-3 px-4 text-gray-700 focus:outline-none focus:ring-2 ${
+                subCategoryError
+                  ? "border-red-500 focus:ring-red-500"
+                  : "focus:ring-blue-500"
+              }`}
+              disabled={!category}
             >
-              <option value="">Select a SubCategory</option>
-              {subCategories.map((subCat) => (
-                <option key={subCat} value={subCat}>
-                  {subCat}
+              <option value="">Select Subcategory</option>
+              {subCategories.map((sub) => (
+                <option key={sub} value={sub}>
+                  {sub}
                 </option>
               ))}
             </select>
+            {subCategoryError && (
+              <div className="text-red-600 text-sm mt-2">
+                {subCategoryError}
+              </div>
+            )}
           </div>
           <div className="mb-6">
             <label className="block text-gray-700 text-sm font-semibold mb-2">
@@ -315,22 +410,27 @@ console.log(doctorId);
             </label>
             <input
               type="file"
-              accept="image/*"
               onChange={handleImageChange}
-              className="shadow-sm border rounded-lg w-full py-3 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`shadow-sm border rounded-lg w-full py-3 px-4 text-gray-700 focus:outline-none focus:ring-2 ${
+                imageError
+                  ? "border-red-500 focus:ring-red-500"
+                  : "focus:ring-blue-500"
+              }`}
             />
             {imagePreview && (
               <img
                 src={imagePreview as string}
-                alt="Preview"
-                className="mt-4 rounded-lg"
-                style={{ maxWidth: "100%", height: "auto" }}
+                alt="Image preview"
+                className="mt-4 max-w-xs mx-auto"
               />
+            )}
+            {imageError && (
+              <div className="text-red-600 text-sm mt-2">{imageError}</div>
             )}
           </div>
           <button
             type="submit"
-            className="bg-blue-500 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="bg-blue-500 text-white py-3 px-6 rounded-lg shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {editArticle ? "Update" : "Create"} Article
           </button>
