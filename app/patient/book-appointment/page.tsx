@@ -196,7 +196,7 @@ const BookAppointmentPage = () => {
   };
 
   return (
-    <div className="p-4 mt-20 w-[99.9%]  flex  flex-wrap  ">
+    <div className="p-4 mt-16 w-[99.9%]  flex  flex-wrap h-screen min-h-screen">
       <div className="flex flex-row flex-wrap  w-full h-full gap-4 ">
         <div className="flex flex-col flex-wrap w-96 h-fit p-2 ">
           <div className="flex flex-wrap space-x-4 mb-6 items-center  ">

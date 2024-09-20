@@ -2,14 +2,14 @@ import axios from "axios";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
-interface Medicine {
+export interface Medicine {
   name: string;
   dosage: string[];
   time: string;
   days: number;
 }
 
-interface Prescription {
+export interface Prescription {
   _id?: string;
   patientId: string;
   doctorId: string;
@@ -21,7 +21,7 @@ interface Prescription {
   appointmentDate: string;
   slotId: string;
 }
-interface Report {
+export interface Report {
   _id: string;
   reportName: string;
   uploadReport: string;
@@ -144,6 +144,7 @@ export const usePrescriptionStore = create<PrescriptionState>()(
         throw error;
       }
     },
+
 
     fetchPrescriptionsByPatientAndDoctor: async (patientId, doctorId) => {
       try {

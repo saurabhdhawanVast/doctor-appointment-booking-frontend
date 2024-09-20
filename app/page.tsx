@@ -93,14 +93,12 @@ export default function Home() {
             Easily book your appointments and get the best healthcare services.
           </p>
         </motion.div>
-
-        {/* <section className="features py-16 absolute top-[70%] "> */}
       </section>
 
-      <section className="features p-16 sm:relative sm:top-0 md:absolute md:top-[90%]">
-        <div className="container mx-auto text-center md:text-white">
-          <h2 className="text-3xl font-bold mb-8">Why Choose Us?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-9 text-black">
+      {/* <section className="features p-8 sm:relative sm:top-0 md:absolute md:top-[90%] lg-[100%] xl:top-[105%] w-full">
+        <div className=" text-center md:text-white">
+          <h2 className="text-3xl  font-bold mb-8">Why Choose Us?</h2>
+          <div className=" flex flex-col md:flex-row gap-9 justify-center items-center text-black">
             {[
               {
                 title: "Easy Appointment Scheduling",
@@ -120,7 +118,49 @@ export default function Home() {
             ].map((feature, index) => (
               <motion.div
                 key={index}
-                className="feature-card p-6 bg-white border rounded-lg shadow-2xl drop-shadow-2xl"
+                className="feature-card p-6 bg-white border rounded-lg shadow-2xl drop-shadow-2xl w-96"
+                initial={{ scale: 1 }}
+                whileInView={{ scale: 1.05 }}
+                transition={{ duration: 0.7 }}
+              >
+                <Image
+                  src={feature.icon}
+                  alt={feature.title}
+                  width={40}
+                  height={40}
+                />
+                <h3 className="text-xl font-semibold mt-4">{feature.title}</h3>
+                <p className="mt-2">{feature.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section> */}
+
+      <section className="features p-8 sm:relative sm:top-0 md:absolute md:top-[90%] lg:[100%] xl:[105%] w-full">
+        <div className=" text-center md:text-white ">
+          <h2 className="text-3xl font-bold mb-8">Why Choose Us?</h2>
+          <div className="flex flex-col md:flex-row gap-9 justify-center text-black">
+            {[
+              {
+                title: "Easy Appointment Scheduling",
+                desc: "Book and manage your appointments with ease.",
+                icon: icon01,
+              },
+              {
+                title: "Experienced Doctors",
+                desc: "Connect with certified and experienced doctors.",
+                icon: icon02,
+              },
+              {
+                title: "24/7 Support",
+                desc: "Get support anytime you need it.",
+                icon: icon03,
+              },
+            ].map((feature, index) => (
+              <motion.div
+                key={index}
+                className="feature-card p-6 bg-white border rounded-lg shadow-2xl drop-shadow-2xl w-96"
                 initial={{ scale: 1 }}
                 whileInView={{ scale: 1.05 }}
                 transition={{ duration: 0.7 }}
