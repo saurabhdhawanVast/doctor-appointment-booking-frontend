@@ -120,7 +120,6 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
       try {
         // Perform the API call to cancel the slot
         setIsLoading(true);
-        console.log(isLoading);
         await cancelSlot(params.doctorId, selectedDates[0], slotToCancel!);
 
         // Fetch the updated list of available dates
@@ -326,25 +325,6 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
             Cancel All Slots
           </button>
           <div>
-            {/* {slots.map((slot) => (
-              <div
-                key={slot.id}
-                className="border p-4 my-2 flex justify-between items-center hover:bg-gray-100 transition duration-200"
-              >
-                <div>
-                  <p className="font-medium">Time: {formatTime(slot.time)}</p>
-                  <p>Status: {slot.status}</p>
-                </div>
-                {(slot.status === "available" || slot.status === "booked") && (
-                  <button
-                    className="bg-red-500 text-white px-4 py-2 rounded"
-                    onClick={() => handleCancelSlot(slot.id)}
-                  >
-                    Cancel Slot
-                  </button>
-                )}
-              </div>
-            ))} */}
             <ul className="flex flex-wrap gap-4">
               {slots.map((slot) => (
                 <button
@@ -385,65 +365,6 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
                 </button>
               ))}
             </ul>
-            {/* <ul className="flex flex-wrap gap-4">
-              {slots.length > 0 ? (
-                slots.map((slot) => {
-                  const slotTime = slot.time;
-                  const todayDate = new Date();
-                  const currentTime = new Date().toLocaleTimeString("en-GB", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: false,
-                  });
-
-                  // Assuming you have a function formattedDate that formats the date
-                  const formattedTodayDate = formattedDate(todayDate);
-
-                  // If selected date equals today's date, check if slot time is in the future
-
-                  console.log("selected date", selectedDate);
-                  console.log("today date", formattedTodayDate);
-                  console.log(typeof formattedTodayDate);
-
-                  // const isAvailable = slot.status === "available";
-
-                  let isAvailable;
-                  if (selectedDate === formattedTodayDate) {
-                    isAvailable =
-                      slot.status === "available" && currentTime <= slotTime;
-                  } else {
-                    // Otherwise, it's just based on the slot availability
-                    isAvailable = slot.status === "available";
-                  }
-                  console.log("is available", isAvailable);
-
-                  return (
-                    <button
-                      key={slot.id}
-                      onClick={() => handleBookSlot(slot.id)}
-                      disabled={!isAvailable}
-                      className={`w-28 rounded-lg pt-2 text-center ${
-                        isAvailable
-                          ? "bg-green-500 cursor-pointer"
-                          : "bg-gray-300 cursor-not-allowed"
-                      }`}
-                    >
-                      <li>
-                        <div className="flex justify-center mb-2">
-                          <div>
-                            <span>{formatTime(slot.time)}</span>
-                          </div>
-                        </div>
-                      </li>
-                    </button>
-                  );
-                })
-              ) : (
-                <p className="text-center text-gray-500 w-full">
-                  No available slots on this date.
-                </p>
-              )}
-            </ul> */}
           </div>
         </>
       )}

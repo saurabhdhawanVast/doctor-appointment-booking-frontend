@@ -11,6 +11,11 @@ import "react-datepicker/dist/react-datepicker.css";
 import { date, set } from "zod";
 import { toDate } from "date-fns-tz";
 import { IoPlayBack, IoPlayForward } from "react-icons/io5";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import medicalHistory from "../../public/images/medicalHistory.png";
+import prescription from "../../public/images/prescription.png";
+
 interface Patient {
   name: string;
   profilePic?: string;
@@ -50,6 +55,7 @@ const Doctor = () => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5); // Adjust the number of items per page as needed
+  const router = useRouter();
 
   useEffect(() => {
     if (typeof doctorId === "string") {
@@ -64,7 +70,7 @@ const Doctor = () => {
         .finally(() => {
           setLoading(false);
         });
-
+      console.log("Appointments are : ", appointments);
       // Fetch doctor details
       fetchDoctorDetails(doctorId).catch((err) => {
         console.error("Failed to load doctor details:", err);
@@ -166,78 +172,6 @@ const Doctor = () => {
 
   const totalPages = Math.ceil(getFilteredAppointments().length / itemsPerPage);
 
-  // const renderSlots = (slots: any) => {
-  //   if (!slots || slots.length === 0) {
-  //     return <p className="text-gray-500">No slots available.</p>;
-  //   }
-
-  //   return slots.map((slot: any) => (
-  //     <motion.div
-  //       key={slot.slotId}
-  //       className="bg-slate-100 p-2 flex
-  //       flex-wrap border items-center justify-between border-gray-200
-  //       rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out mb-4 relative"
-  //       whileHover={{ scale: 1.01 }}
-  //       style={{ height: "auto" }} // Adjust the height here if needed
-  //     >
-  //       <div className="flex items-center space-x-4">
-  //         <div className="w-14 h-14 flex-shrink-0">
-  //           <img
-  //             src={slot.patient?.profilePic || "/default-profile.png"}
-  //             alt={slot.patient?.name || "Profile Picture"}
-  //             className="w-full h-full object-cover rounded-full border border-gray-300"
-  //           />
-  //         </div>
-  //         <div className="flex-1 space-y-1 ">
-  //           <div className="text-md text-blue-600 font-normal">
-  //             {slot.patient?.name || "No appointment"}
-  //           </div>
-  //           {slot.patient && (
-  //             <div className="text-sm text-gray-500">
-  //               <div>
-  //                 Contact Number :{" "}
-  //                 {slot.patient?.contactNumber || "No contact info"}
-  //               </div>
-  //             </div>
-  //           )}
-  //         </div>
-  //       </div>
-
-  //       {/* ------------------------Time Button------------------- */}
-  //       <div className="p-2 rounded-lg flex flex-wrap items-center gap-2 flex-end">
-  //         <div className="text-md text-gray-600 ml-4 mr-4">
-  //           {formatTime(slot.time)}
-  //         </div>
-  //         <div className="divider divider-horizontal"></div>
-
-  //         {slot.patient && (
-  //           <div>
-  //             <button
-  //               className="px-4 py-2 bg-teal-600 text-white rounded  transition duration-300"
-  //               onClick={() => {
-  //                 console.log("selectedDate: ", selectedDate?.toISOString());
-  //                 console.log("appointmentDate: ", appointmentDate);
-  //                 if (selectedDate) {
-  //                   handleAddPrescription(
-  //                     slot.patient,
-  //                     selectedDate.toISOString(),
-
-  //                     slot.slotId
-  //                   );
-  //                 } else {
-  //                   // Handle case where selectedDate is null
-  //                   console.error("Selected date is not set");
-  //                 }
-  //               }}
-  //             >
-  //               Prescribe
-  //             </button>
-  //           </div>
-  //         )}
-  //       </div>
-  //     </motion.div>
-  //   ));
-  // };
   const renderSlots = (slots: any) => {
     if (!slots || slots.length === 0) {
       return <p className="text-gray-500">No slots available.</p>;
@@ -267,7 +201,7 @@ const Doctor = () => {
               className="w-full h-full object-cover rounded-full border border-gray-300"
             />
           </div>
-          <div className="flex-1 space-y-1 ">
+          <div className="flex-1 space-y-1">
             <div className="text-md text-blue-600 font-normal">
               {slot.patient?.name || "No appointment"}
             </div>
@@ -290,12 +224,11 @@ const Doctor = () => {
           <div className="divider divider-horizontal"></div>
 
           {slot.patient && (
-            <div>
+            <div className="flex items-center gap-4">
+              {/* Prescribe Button */}
               <button
-                className="px-4 py-2 bg-teal-600 text-white rounded transition duration-300"
+                className="flex items-center gap-2 px-2 py-1 bg-teal-600 text-white rounded transition duration-300 text-sm"
                 onClick={() => {
-                  console.log("selectedDate: ", selectedDate?.toISOString());
-                  console.log("appointmentDate: ", appointmentDate);
                   if (selectedDate) {
                     handleAddPrescription(
                       slot.patient,
@@ -307,7 +240,30 @@ const Doctor = () => {
                   }
                 }}
               >
-                Prescribe
+                <Image
+                  src={prescription}
+                  alt="Medical History"
+                  width={28} // Set the desired width
+                  height={28} // Set the desired height
+                />
+                <span>Prescribe</span>
+              </button>
+
+              <button
+                className="flex items-center gap-2 px-2 py-1 bg-teal-600 text-white rounded transition duration-300 text-sm"
+                onClick={() => {
+                  router.push(
+                    `doctor/myPatients/patientDetails/${slot.patient?.patientId}`
+                  );
+                }}
+              >
+                <Image
+                  src={medicalHistory}
+                  alt="Medical History"
+                  width={28} // Set the desired width
+                  height={28} // Set the desired height
+                />
+                <span>Medical History</span>
               </button>
             </div>
           )}
