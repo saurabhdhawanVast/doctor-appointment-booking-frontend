@@ -3,15 +3,23 @@ import useDoctorStore from "@/store/useDoctorStore";
 import { usePatientStore } from "@/store/usePatientStore";
 import React, { useEffect, useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa"; // Importing FontAwesome icons
+import { MdDelete } from "react-icons/md";
+import { AnimatePresence, motion } from "framer-motion";
 
 const Users = () => {
   const patients = usePatientStore((state) => state.patients);
   const allPatients = usePatientStore((state) => state.allPatients);
   const doctors = useDoctorStore((state) => state.doctors);
+  const deleteDoctor = useDoctorStore((state) => state.deleteDoctor);
+  const deletePatient = usePatientStore((state) => state.deletePatient);
   const fetchDoctors = useDoctorStore((state) => state.fetchDoctors);
   const [view, setView] = useState("doctors"); // State to toggle between doctors and patients
   const [sidebarOpen, setSidebarOpen] = useState(true); // State to handle sidebar visibility
   const [searchTerm, setSearchTerm] = useState(""); // State to handle search input
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedDoctorId, setSelectedDoctorId] = useState<string>("");
+  const [selectedPatientId, setSelectedPatientId] = useState<string>("");
+  const [isViewImage, setIsViewImage] = useState<boolean>(false);
 
   useEffect(() => {
     fetchDoctors();
@@ -25,6 +33,16 @@ const Users = () => {
   const filteredPatients = patients?.filter((patient) =>
     patient.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleDoctorDelete = (doctorId: string) => {
+    setSelectedDoctorId(doctorId);
+    setIsModalOpen(true);
+  };
+
+  const handlePatientDelete = (patientId: string) => {
+    setSelectedPatientId(patientId);
+    setIsModalOpen(true);
+  };
 
   return (
     <div className="flex min-h-screen mt-16">
@@ -62,6 +80,49 @@ const Users = () => {
 
       {/* Main Content Area */}
       <div className="flex-1 pl-4 pr-4 bg-gray-100 relative">
+        {/* Modal for Viewing Full Image */}
+
+        {isModalOpen && (
+          <AnimatePresence>
+            <motion.div
+              className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <motion.div
+                className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md"
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0.8 }}
+              >
+                <h3 className="text-lg font-semibold mb-4">Confirm Deletion</h3>
+                <p>Are you sure you want to delete this user ?</p>
+                <div className="flex justify-end mt-4">
+                  <button
+                    className="bg-blue-500 text-white px-4 py-2 mr-2 rounded"
+                    onClick={() => setIsModalOpen(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-red-500 text-white px-4 py-2 rounded"
+                    onClick={() => {
+                      if (view === "doctors") {
+                        deleteDoctor(selectedDoctorId);
+                      } else if (view === "patients") {
+                        deletePatient(selectedPatientId);
+                      }
+                      setIsModalOpen(false);
+                    }}
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          </AnimatePresence>
+        )}
         <div className="flex items-center p-2  border-b border-gray-200 ">
           {/* Toggle Button */}
           {!sidebarOpen && (
@@ -97,9 +158,31 @@ const Users = () => {
                 filteredDoctors.map((doctor) => (
                   <li
                     key={doctor._id}
-                    className="p-2 bg-white mb-2 shadow rounded font-semibold"
+                    className="p-2 bg-white mb-2 shadow rounded font-semibold flex justify-between items-center"
                   >
-                    {doctor.name}
+                    <div className="flex items-center">
+                      <img
+                        src={doctor.profilePic || "/default-profile.png"} // Default profile picture if unavailable
+                        alt={`${doctor.name}'s profile`}
+                        className="w-10 h-10 rounded-full mr-4 " // Cursor pointer for clickable image
+                      />
+                      <div>
+                        <span className="block">{doctor.name}</span>
+                        <span className="block text-sm text-gray-500">
+                          {doctor.contactNumber
+                            ? doctor.contactNumber
+                            : "No contact available"}
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        handleDoctorDelete(doctor._id); // Open the modal
+                      }}
+                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                    >
+                      <MdDelete />
+                    </button>
                   </li>
                 ))
               ) : (
@@ -117,9 +200,33 @@ const Users = () => {
                 filteredPatients.map((patient) => (
                   <li
                     key={patient._id}
-                    className="p-2 bg-white mb-2 shadow rounded font-semibold"
+                    className="p-2 bg-white mb-2 shadow rounded font-semibold flex justify-between items-center"
                   >
-                    {patient.name}
+                    <div className="flex items-center">
+                      <img
+                        src={patient.profilePic || "/default-profile.png"} // Use a default profile picture if none exists
+                        alt={`${patient.name}'s profile`}
+                        className="w-10 h-10 rounded-full mr-4 "
+                      />
+                      <div>
+                        <span className="block">{patient.name}</span>
+                        <span className="block text-sm text-gray-500">
+                          {patient.contactNumber
+                            ? patient.contactNumber
+                            : "No contact available"}
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        if (patient._id) {
+                          handlePatientDelete(patient._id);
+                        }
+                      }}
+                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                    >
+                      <MdDelete />
+                    </button>
                   </li>
                 ))
               ) : (

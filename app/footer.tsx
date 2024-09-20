@@ -17,12 +17,12 @@ const Footer = () => {
 
         <div className="text-center  w-96 mt-2">
           <h2 className="text-lg font-semibold mb-2">Our Address</h2>
-          <p className="text-sm mb-4 flex justify-center">
-            <FaMapMarkerAlt className="mt-0.5" />
-            <span>
-              301, Chandravarsha, above SBI, Sus Road, Pashan, Pune 411021
+          <div className=" flex items-center justify-center mb-4">
+            <span className="text-sm  flex">
+              <FaMapMarkerAlt className=" h-4 w-4 ml-6" /> 301, Chandravarsha,
+              above SBI, Sus Road, Pashan, Pune 411021
             </span>
-          </p>
+          </div>
         </div>
 
         <div className=" w-96 text-center mt-2">

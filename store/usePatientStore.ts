@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 import useLoginStore, { Patient } from "@/store/useLoginStore";
+import { toast } from "react-toastify";
 export interface Doctor {
   _id: string;
   name: string;
@@ -74,6 +75,7 @@ interface PatientState {
   setPatient: (patient: Patient) => void;
   fetchPatient: (id: string) => void;
   updateProfile: (patient: Partial<Patient>) => void;
+  deletePatient: (id: string) => void;
   fetchPatientByUserId: (userId: string) => void;
   allPatients: () => Promise<void>;
   prescriptions: Prescription[] | null;
@@ -119,6 +121,20 @@ export const usePatientStore = create<PatientState>((set) => ({
       console.error("Error updating profile:", error);
     }
   },
+
+  deletePatient: async (id: string) => {
+    try {
+      await axios.delete(`http://localhost:3000/patients/${id}`);
+      set((state) => ({
+        patients: state.patients?.filter((patient) => patient._id !== id) || null,
+      }));
+      toast.success("Patient deleted successfully");
+    } catch (error) {
+      toast.error("Error deleting patient");
+    }
+  },
+
+
   fetchPrescriptionsByDoctor: async (doctorId, page) => {
     try {
       console.log("fetching prescription for doctorId ", doctorId);
@@ -187,4 +203,9 @@ export const usePatientStore = create<PatientState>((set) => ({
       console.error("Error fetching patient data:", error);
     }
   },
+
+
+
+
+
 }));

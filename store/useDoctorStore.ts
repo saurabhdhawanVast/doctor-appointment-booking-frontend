@@ -1,11 +1,13 @@
 import { create } from "zustand";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 export interface DoctorStoreState {
   // isReviewModelOpen: any;
   doctors: Doctor[];
   doctor: Doctor;
   fetchDoctors: () => Promise<void>;
+  deleteDoctor: (id: string) => Promise<void>;
 }
 
 export interface Doctor {
@@ -90,6 +92,19 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
       console.error(`Error fetching doctors: ${error.message}`);
     }
   },
+
+  deleteDoctor: async (id: string) => {
+    try {
+      await https.delete(`/doctors/${id}`);
+      set((state) => ({
+        doctors: state.doctors.filter((doctor) => doctor._id !== id),
+      }));
+      toast.success(`Doctor deleted successfully`);
+    } catch (error: any) {
+      toast.error(`Error deleting doctor`);
+    }
+  },
+
 }));
 
 export default useDoctorStore;
