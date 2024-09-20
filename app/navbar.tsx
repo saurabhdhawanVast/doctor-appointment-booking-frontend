@@ -279,28 +279,7 @@ const Navbar = () => {
                         My Reviews
                       </button>
                     )}
-                    {role === "doctor" && (
-                      <button
-                        onClick={() => {
-                          router.push("/doctor/myArticles");
-                          setDropdownOpen(false);
-                        }}
-                        className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
-                      >
-                        My Articles
-                      </button>
-                    )}
-                    {role === "doctor" && (
-                      <button
-                        onClick={() => {
-                          router.push("/doctor/article");
-                          setDropdownOpen(false);
-                        }}
-                        className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
-                      >
-                        All Articles
-                      </button>
-                    )}
+                    
                     <button
                       onClick={handleLogout}
                       className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"

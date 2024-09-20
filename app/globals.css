@@ -26,4 +26,8 @@ body {
   }
 }
 
+.ql-editor{
+  height: 200px !important;
+}
+
 /* CustomDatePicker.css */
