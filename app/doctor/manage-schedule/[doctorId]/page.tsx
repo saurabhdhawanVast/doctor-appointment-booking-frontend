@@ -15,8 +15,8 @@ import { FaCheck } from "react-icons/fa";
 const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
   params,
 }) => {
-  const [selectedDates, setSelectedDates] = useState<Date[]>([new Date()]);
-  // const [selectedDates, setSelectedDates] = useState<Date[]>([]);
+  // const [selectedDates, setSelectedDates] = useState<Date[]>([new Date()]);
+  const [selectedDates, setSelectedDates] = useState<Date[]>([]);
 
   const [slots, setSlots] = useState<any[]>([]);
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
