@@ -223,6 +223,7 @@ const EditDoctorProfile = () => {
 
   useEffect(() => {
     if (selectedState) {
+      console.log("selectedState", selectedState);
       const fetchCities = async () => {
         try {
           const response = await fetch(

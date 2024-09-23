@@ -1,18 +1,16 @@
-
 "use client";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useArticleStore } from "@/store/useArticleStore";
 import { debounce } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { IoMdArrowDropdown, IoMdArrowDropright } from "react-icons/io";
 import {
-  MdCategory,
   MdKeyboardArrowLeft,
   MdKeyboardArrowRight,
   MdKeyboardDoubleArrowLeft,
   MdKeyboardDoubleArrowRight,
-  MdLabel,
 } from "react-icons/md";
+import { FaPlus, FaBook } from "react-icons/fa";
 
 interface Article {
   _id: string;
@@ -26,13 +24,13 @@ interface Article {
   };
   createdAt: Date;
 }
+
 const categories = [
   {
     name: "Healthy Hair",
     subCategories: [
       { name: "Hair Growth", imagePath: "/images/hairGrowth.jfif" },
       { name: "Hair Loss Prevention", imagePath: "/images/hairLoss.jfif" },
-      // { name: "Hair Care Tips", imagePath: "/images/default.jpg" },
       { name: "Scalp Treatments", imagePath: "/images/scalp-treatment.jpg" },
       { name: "Hair Coloring", imagePath: "/images/hairColor.jfif" },
     ],
@@ -67,7 +65,6 @@ const categories = [
       { name: "Flossing Tips", imagePath: "/images/flossingtips.jpg" },
       { name: "Oral Hygiene", imagePath: "/images/27503.jpg" },
       { name: "Teeth Whitening", imagePath: "/images/whitning.jpg" },
-      // { name: "Dentist Visits", imagePath: "/images/default.jpg" },
     ],
   },
   {
@@ -138,13 +135,10 @@ const ArticlesList = () => {
     null
   );
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [groupByCategory, setGroupByCategory] = useState(false);
-
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [articlesPerPage] = useState(6);
   const [totalPages, setTotalPages] = useState(1);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -157,21 +151,40 @@ const ArticlesList = () => {
   }, [fetchArticles]);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        // setExpandCategories(false);
-      }
-    };
+    setTotalPages(Math.max(1, Math.ceil(articles.length / articlesPerPage)));
+    setCurrentPage(1);
+  }, [articles]);
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    setCurrentPage(1);
+    debouncedSearch(query);
+  };
+
+  const debouncedSearch = useCallback(
+    debounce((query: string) => {
+      if (query.trim()) {
+        fetchArticles({ title: { $regex: query, $options: "i" } });
+      } else {
+        fetchArticles();
+      }
+    }, 300),
+    [fetchArticles]
+  );
+
+  const resetFilter = async () => {
+    setSelectedCategory(null);
+    setSelectedSubCategory(null);
+    setSearchQuery("");
+    await fetchArticles();
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
 
   const handleToggleCategory = (categoryName: string) => {
-    // Toggle the category expanded state
     if (expandedCategories.includes(categoryName)) {
       setExpandedCategories(
         expandedCategories.filter((name) => name !== categoryName)
@@ -179,6 +192,27 @@ const ArticlesList = () => {
     } else {
       setExpandedCategories([...expandedCategories, categoryName]);
     }
+  };
+
+  const handleFilterSubCategory = async (subCategoryName: string) => {
+    setSelectedSubCategory(subCategoryName);
+    let selectedCategoryName = "";
+
+    for (const category of categories) {
+      const subCategory = category.subCategories.find(
+        (sub) => sub.name === subCategoryName
+      );
+      if (subCategory) {
+        selectedCategoryName = category.name;
+        break;
+      }
+    }
+
+    setSelectedCategory(selectedCategoryName);
+    await fetchArticles({
+      category: selectedCategoryName,
+      subCategory: subCategoryName,
+    });
   };
 
   function truncateHtmlContent(html: string, maxLength: number): string {
@@ -202,57 +236,11 @@ const ArticlesList = () => {
 
     return truncatedText;
   }
+
   const handleArticleClick = async (id: string) => {
     router.push(`/patient/article/${id}`);
   };
-  const resetFilter = async () => {
-    setSelectedCategory(null);
-    await fetchArticles();
-  };
 
-  const debouncedSearch = useCallback(
-    debounce((query: string) => {
-      if (query.trim()) {
-        fetchArticles({ title: { $regex: query, $options: "i" } });
-      } else {
-        fetchArticles();
-      }
-    }, 300),
-    [fetchArticles]
-  );
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-    setCurrentPage(1);
-    debouncedSearch(query);
-  };
-
-  const handleFilterSubCategory = async (subCategoryName: string) => {
-    setSelectedSubCategory(subCategoryName);
-    let selectedCategory = "";
-
-    for (const category of categories) {
-      const subCategory = category.subCategories.find(
-        (sub) => sub.name === subCategoryName
-      );
-      if (subCategory) {
-        selectedCategory = category.name;
-        break;
-      }
-    }
-
-    setSelectedCategory(selectedCategory);
-    await fetchArticles({
-      category: selectedCategory,
-      subCategory: subCategoryName,
-    });
-    setGroupByCategory(false);
-  };
-  useEffect(() => {
-    setTotalPages(Math.max(1, Math.ceil(articles.length / articlesPerPage)));
-    setCurrentPage(1);
-  }, [articles]);
   const indexOfLastArticle = currentPage * articlesPerPage;
   const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
   const currentArticles = articles.slice(
@@ -260,22 +248,25 @@ const ArticlesList = () => {
     indexOfLastArticle
   );
 
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-  };
+  const hasActiveFilters =
+    selectedCategory !== null ||
+    selectedSubCategory !== null ||
+    searchQuery !== "";
+
   return (
-    <div className="bg-gray-100 min-h-screen">
-      <div className="py-4 mt-16">
-        <div className="relative flex justify-end space-x-4 pr-6 border-b">
+    <div className="min-h-screen mt-16 bg-gray-100">
+      {/* Button and Search Section */}
+      <div className="container mx-auto py-4 mb-4">
+        <div className="flex justify-end items-center">
           <div className="relative w-full max-w-md">
             <input
               type="text"
               value={searchQuery}
               onChange={handleSearchChange}
               placeholder="Search articles by title..."
-              className="w-full px-4 py-2 mb-4 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+              className="w-full px-4 py-2 border rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <div className="absolute mb-4 inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -293,192 +284,160 @@ const ArticlesList = () => {
             </div>
           </div>
         </div>
-        {selectedCategory && (
-          <div className="mb-4 mt-2 px-16 text-xl font-semibold flex items-center justify-between w-full">
-            <span>
-              {/* Filtering by:{" "} */}
-              <span className="text-gray-700">
-                {selectedCategory && selectedSubCategory
-                  ? `${selectedCategory} > ${selectedSubCategory}`
-                  : selectedCategory}
-              </span>
-            </span>
-            <button
-              onClick={resetFilter}
-              className="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-semibold transition duration-300"
-            >
-              Reset
-            </button>
-          </div>
-        )}
       </div>
-      <div className="mx-auto p-6">
-        <div className="flex justify-between px-2">
-          {loading ? (
-            <div className="text-center text-gray-700">Loading...</div>
-          ) : articles.length === 0 ? (
-            <div className="text-center text-gray-700">No articles found.</div>
-          ) : (
-            <div>
-              <div className="grid grid-cols-1 md:grid-cols-2 px-3 lg:grid-cols-2 gap-6">
+
+      <div className="container mx-auto py-2">
+        {/* Articles List */}
+        <div className="flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6">
+          {/* Articles Section */}
+          <div className="w-full md:w-3/4">
+            {loading ? (
+              <div className="text-center text-lg font-semibold">
+                Loading...
+              </div>
+            ) : currentArticles.length === 0 ? (
+              <div className="text-center text-lg font-semibold">
+                No articles found.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {currentArticles.map((article) => (
                   <div
                     key={article._id}
+                    className="bg-white p-4 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition duration-300"
                     onClick={() => handleArticleClick(article._id)}
-                    className="bg-white cursor-pointer rounded-lg overflow-hidden hover:bg-blue-100 transition duration-300"
                   >
-                    {/* Image Section */}
-                    <div className="relative w-full h-60 overflow-hidden rounded-t-lg">
+                    {article.image && (
                       <img
-                        src={article.image || "/images/default.jpg"}
+                        src={article.image}
                         alt={article.title}
-                        className="object-cover w-full h-full"
+                        className="w-full h-48 object-cover rounded-lg mb-4"
                       />
+                    )}
+                    <h2 className="text-xl font-semibold text-blue-700 mb-2">
+                      {article.title}
+                    </h2>
+                    <div className="text-gray-500 text-sm mb-2">
+                      {new Date(article.createdAt).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
                     </div>
-                    <div className="p-6">
-                      <h3 className="text-lg font-bold text-gray-900 mb-2">
-                        {article.title}
-                      </h3>
-                      <div className="text-sm text-gray-500 mb-2">
-                        <p>
-                          By:{" "}
-                          <span className="font-semibold text-gray-700">
-                            Dr. {article?.doctor?.name || "Unknown"}
-                          </span>
-                        </p>
-                        <p>
-                          Published on:{" "}
-                          <span className="font-semibold text-gray-700">
-                            {new Date(article.createdAt).toLocaleDateString(
-                              "en-GB",
-                              {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                              }
-                            )}
-                          </span>
-                        </p>
-                      </div>
-                      <p
-                        className="text-gray-700"
-                        dangerouslySetInnerHTML={{
-                          __html: truncateHtmlContent(article.content, 100),
-                        }}
-                      ></p>
-                    </div>
+                    <p className="text-gray-600">
+                      {truncateHtmlContent(article.content, 100)}
+                    </p>
                   </div>
                 ))}
               </div>
-              <div className="flex items-center space-x-2 justify-end mt-6">
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center mt-8 space-x-2">
                 <button
                   onClick={() => handlePageChange(1)}
                   disabled={currentPage === 1}
-                  className="w-10 h-10 flex items-center justify-center bg-blue-500 text-white disabled:bg-gray-400"
+                  className={`${
+                    currentPage === 1
+                      ? "bg-gray-200 cursor-not-allowed"
+                      : "bg-teal-500 hover:bg-blue-700 text-white"
+                  } py-2 px-4 rounded-lg font-semibold transition duration-300`}
                 >
-                  <MdKeyboardDoubleArrowLeft />
+                  <MdKeyboardDoubleArrowLeft size={20} />
                 </button>
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="w-10 h-10 flex items-center justify-center bg-blue-500 text-white disabled:bg-gray-400"
+                  className={`${
+                    currentPage === 1
+                      ? "bg-gray-200 cursor-not-allowed"
+                      : "bg-teal-500 hover:bg-blue-700 text-white"
+                  } py-2 px-4 rounded-lg font-semibold transition duration-300`}
                 >
-                  <MdKeyboardArrowLeft />
+                  <MdKeyboardArrowLeft size={20} />
                 </button>
-
-                {/* Display previous page number if it exists */}
-                {currentPage > 2 && (
-                  <button
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    className="w-10 h-10 flex items-center justify-center bg-gray-200 text-black"
-                  >
-                    {currentPage - 1}
-                  </button>
-                )}
-
-                {/* Display current page number */}
-                <span className="w-10 h-10 flex items-center justify-center bg-blue-500 text-white">
-                  {currentPage}
-                </span>
-
-                {/* Display next page number if it exists */}
-                {currentPage < totalPages - 1 && (
-                  <button
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    className="w-10 h-10 flex items-center justify-center bg-gray-200 text-black"
-                  >
-                    {currentPage + 1}
-                  </button>
-                )}
-
+                <div className="py-2 px-4 bg-gray-100 rounded-lg">
+                  {currentPage} / {totalPages}
+                </div>
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="w-10 h-10 flex items-center justify-center bg-blue-500 text-white disabled:bg-gray-400"
+                  className={`${
+                    currentPage === totalPages
+                      ? "bg-gray-200 cursor-not-allowed"
+                      : "bg-teal-500 hover:bg-blue-700 text-white"
+                  } py-2 px-4 rounded-lg font-semibold transition duration-300`}
                 >
-                  <MdKeyboardArrowRight />
+                  <MdKeyboardArrowRight size={20} />
                 </button>
                 <button
                   onClick={() => handlePageChange(totalPages)}
                   disabled={currentPage === totalPages}
-                  className="w-10 h-10 flex items-center justify-center bg-blue-500 text-white disabled:bg-gray-400"
+                  className={`${
+                    currentPage === totalPages
+                      ? "bg-gray-200 cursor-not-allowed"
+                      : "bg-teal-500 hover:bg-blue-700 text-white"
+                  } py-2 px-4 rounded-lg font-semibold transition duration-300`}
                 >
-                  <MdKeyboardDoubleArrowRight />
+                  <MdKeyboardDoubleArrowRight size={20} />
                 </button>
               </div>
-            </div>
-          )}
-          <div className="px-6 w-2/5 border rounded-md">
-            <h2 className="text-center mt-3 border-b pb-1 text-xl border-black mb-6">
-              Our Categories...
-            </h2>
-            {categories.map((category) => (
-              <div key={category.name} className="mb-4">
-                {/* Category Item */}
-                <div
-                  className={`flex font-semibold text-lg cursor-pointer p-2 rounded-lg 
-                  ${
-                    selectedCategory === category.name
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-100 text-gray-700"
-                  }
-                  hover:bg-blue-200 hover:text-blue-900 transition-all duration-200`}
-                  onClick={() => handleToggleCategory(category.name)}
+            )}
+          </div>
+
+          {/* Categories Sidebar */}
+          <div className="w-full md:w-1/4 bg-white p-4 rounded-lg shadow-md">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-blue-700">
+                Categories
+              </h2>
+              {hasActiveFilters && (
+                <button
+                  onClick={resetFilter}
+                  className="bg-blue-400 hover:bg-blue-700 text-white py-1 px-2 rounded-lg shadow-md transition duration-300"
                 >
-                  {/* Arrow Icon */}
-                  <div className="mt-1 text-xl mr-2">
+                  Reset
+                </button>
+              )}
+            </div>
+
+            <div>
+              {categories.map((category) => (
+                <div key={category.name}>
+                  <div
+                    className="flex justify-between items-center cursor-pointer py-2 text-gray-600 hover:bg-gray-200 rounded-lg transition"
+                    onClick={() => handleToggleCategory(category.name)}
+                  >
+                    <span>{category.name}</span>
                     {expandedCategories.includes(category.name) ? (
                       <IoMdArrowDropdown />
                     ) : (
                       <IoMdArrowDropright />
                     )}
                   </div>
-                  {category.name}
+                  {expandedCategories.includes(category.name) && (
+                    <div className="pl-4">
+                      {category.subCategories.map((subCategory) => (
+                        <div
+                          key={subCategory.name}
+                          className={`flex items-center cursor-pointer pl-4 py-1 text-gray-600 hover:bg-gray-200 rounded-lg transition ${
+                            selectedSubCategory === subCategory.name
+                              ? "bg-blue-100 font-semibold text-blue-700"
+                              : ""
+                          }`}
+                          onClick={() =>
+                            handleFilterSubCategory(subCategory.name)
+                          }
+                        >
+                          <span>{subCategory.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                {expandedCategories.includes(category.name) && (
-                  <div className="flex flex-col mt-2 ml-6">
-                    {category.subCategories.map((subCategory) => (
-                      <div
-                        key={subCategory.name}
-                        className={`flex items-center cursor-pointer text-left pl-4 py-1 rounded-lg
-                                    ${
-                                      selectedSubCategory === subCategory.name
-                                        ? "bg-green-500 text-white"
-                                        : "bg-gray-100 text-gray-700"
-                                    }
-                                    hover:bg-green-200 hover:text-green-900 transition-all duration-200`}
-                        onClick={() =>
-                          handleFilterSubCategory(subCategory.name)
-                        }
-                      >
-                        <MdCategory className="mr-2 text-gray-600" />
-                        {subCategory.name}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>

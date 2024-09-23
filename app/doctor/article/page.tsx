@@ -11,6 +11,7 @@ import {
   MdKeyboardDoubleArrowRight,
 } from "react-icons/md";
 import { FaPlus, FaBook } from "react-icons/fa";
+import useLoginStore from "@/store/useLoginStore";
 
 interface Article {
   _id: string;
@@ -134,6 +135,8 @@ const ArticlesList = () => {
   const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(
     null
   );
+  const doctor = useLoginStore((state) => state.doctor);
+  const doctorId = doctor?._id;
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -256,12 +259,12 @@ const ArticlesList = () => {
   return (
     <div className="min-h-screen mt-16 bg-gray-100">
       {/* Button and Search Section */}
-      <div className="container mx-auto py-8 mb-4">
+      <div className="container mx-auto py-4 mb-4">
         <div className="flex justify-between items-center">
           <div className="flex space-x-4">
             <button
-              onClick={() => router.push(`/doctor/article-form`)}
-              className="flex items-center bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg shadow-md transition duration-300"
+              onClick={() => router.push(`/doctor/article-form/${doctorId}`)}
+              className="flex items-center bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded-lg shadow-md transition duration-300"
             >
               <FaPlus className="mr-2" /> Create Article
             </button>
@@ -280,11 +283,27 @@ const ArticlesList = () => {
               placeholder="Search articles by title..."
               className="w-full px-4 py-2 border rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="w-5 h-5 text-gray-400"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 21l-4.35-4.35M18.25 10.75a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z"
+                />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto py-8">
+      <div className="container mx-auto py-2">
         {/* Articles List */}
         <div className="flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6">
           {/* Articles Section */}
@@ -339,7 +358,7 @@ const ArticlesList = () => {
                   className={`${
                     currentPage === 1
                       ? "bg-gray-200 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                      : "bg-teal-500 hover:bg-blue-700 text-white"
                   } py-2 px-4 rounded-lg font-semibold transition duration-300`}
                 >
                   <MdKeyboardDoubleArrowLeft size={20} />
@@ -350,7 +369,7 @@ const ArticlesList = () => {
                   className={`${
                     currentPage === 1
                       ? "bg-gray-200 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                      : "bg-teal-500 hover:bg-blue-700 text-white"
                   } py-2 px-4 rounded-lg font-semibold transition duration-300`}
                 >
                   <MdKeyboardArrowLeft size={20} />
@@ -364,7 +383,7 @@ const ArticlesList = () => {
                   className={`${
                     currentPage === totalPages
                       ? "bg-gray-200 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                      : "bg-teal-500 hover:bg-blue-700 text-white"
                   } py-2 px-4 rounded-lg font-semibold transition duration-300`}
                 >
                   <MdKeyboardArrowRight size={20} />
@@ -375,7 +394,7 @@ const ArticlesList = () => {
                   className={`${
                     currentPage === totalPages
                       ? "bg-gray-200 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                      : "bg-teal-500 hover:bg-blue-700 text-white"
                   } py-2 px-4 rounded-lg font-semibold transition duration-300`}
                 >
                   <MdKeyboardDoubleArrowRight size={20} />
@@ -393,7 +412,7 @@ const ArticlesList = () => {
               {hasActiveFilters && (
                 <button
                   onClick={resetFilter}
-                  className="bg-red-600 hover:bg-red-700 text-white py-1 px-2 rounded-lg shadow-md transition duration-300"
+                  className="bg-blue-400 hover:bg-blue-700 text-white py-1 px-2 rounded-lg shadow-md transition duration-300"
                 >
                   Reset
                 </button>

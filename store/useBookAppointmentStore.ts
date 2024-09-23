@@ -1,6 +1,7 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 import create from "zustand";
+import useLoginStore from "./useLoginStore";
 
 interface Slot {
   id: string;
@@ -46,12 +47,15 @@ const useBookAppointmentStore = create<BookAppointmentState>((set) => ({
   ) => {
     try {
       console.log(`${slotId} and type is ${typeof slotId}`);
+      const token = useLoginStore.getState().token;
       // Replace this URL with your API endpoint
       const response = await axiosInstance.post("/appointments/bookSlot", {
         doctorId,
         patientId,
         slotId,
         appointmentDate: selectedDate,
+      },{
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.status) {

@@ -223,7 +223,7 @@ export default function Home() {
                 ))}
 
                 {/* Render skeleton loaders if fewer than 3 doctors are present */}
-                {[...Array(3 - doctors.length)].map((_, index) => (
+                {[...Array(Math.max(0, 3 - doctors.length))].map((_, index) => (
                   <div
                     key={`skeleton-${index}`}
                     className="p-6 bg-gray-200 border rounded-lg shadow-md animate-pulse h-fit"

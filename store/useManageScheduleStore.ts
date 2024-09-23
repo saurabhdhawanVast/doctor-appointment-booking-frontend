@@ -237,6 +237,7 @@
 import create from "zustand";
 import axios from "axios";
 import { format, toZonedTime } from "date-fns-tz";
+import useLoginStore from "./useLoginStore";
 
 export interface Slot {
   id: string;
@@ -280,8 +281,13 @@ const useManageScheduleStore = create<ManageScheduleStore>((set) => ({
   fetchAvailableDates: async (id: string) => {
     set({ loading: true });
     try {
+      const token = useLoginStore.getState().token;
       const response = await axiosInstance.get(
-        `/doctors/getAvailableDates/${id}`
+        `/doctors/getAvailableDates/${id}`,{
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
       );
       if (Array.isArray(response.data)) {
         const availableDates: DateWithSlots[] = await response.data.map(
@@ -355,11 +361,15 @@ const useManageScheduleStore = create<ManageScheduleStore>((set) => ({
       console.log(
         `doctorId: ${doctorId}, date: ${formattedDate}, slotId: ${slotId}`
       );
-
+      const token = useLoginStore.getState().token;
       const response = await axiosInstance.patch(`/doctors/cancelSlot`, {
         doctorId,
         date: formattedDate,
         slotId,
+      },{
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
       });
 
       set((state) => {
@@ -391,10 +401,14 @@ const useManageScheduleStore = create<ManageScheduleStore>((set) => ({
       // Format the zoned date in the desired format (yyyy-MM-dd)
       const formattedDate = format(zonedDate, "yyyy-MM-dd");
       console.log(formattedDate);
-
+      const token = useLoginStore.getState().token;
       await axiosInstance.patch(`/doctors/cancelAllSlots`, {
         doctorId,
         date: formattedDate,
+      },{
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
       });
 
       set((state) => {
@@ -420,10 +434,15 @@ const useManageScheduleStore = create<ManageScheduleStore>((set) => ({
     set({ loading: true });
     try {
       console.log(`Dates to be mark as available are:${dates}`);
+      const token = useLoginStore.getState().token;
       const response = await axiosInstance.post(`/doctors/addAvailability`, {
         doctorId,
         dates,
         timePerSlot,
+      },{
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
       });
 
       console.log("API Response:", response.data);

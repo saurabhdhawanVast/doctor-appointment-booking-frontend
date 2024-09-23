@@ -256,6 +256,7 @@
 
 import { create } from "zustand";
 import axios from "axios";
+import useLoginStore from "./useLoginStore";
 
 interface Appointment {
   _id: string;
@@ -392,11 +393,16 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
   doctorDetails: null,
   getAppointments: async (query = {}) => {
     try {
+      const token = useLoginStore.getState().token;
       const queryString = new URLSearchParams({
         filter: JSON.stringify(query),
       }).toString();
       console.log("Query String is ", queryString);
-      const response = await https.get(`/appointments?${queryString}`);
+      const response = await https.get(`/appointments?${queryString}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       for (let appointment of response.data) {
         let slots = appointment?.doctor?.availability?.find(
           (availability: any) =>
@@ -413,7 +419,12 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
           }
         }
         let ratings = await https.get(
-          `/ratings/appointment/${appointment._id}`
+          `/ratings/appointment/${appointment._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         console.log("ratings", ratings);
         if (ratings && ratings.data && ratings.data.length > 0) {
@@ -431,8 +442,14 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
 
   fetchAppointments: async (doctorId: string, initialDate?: Date) => {
     try {
+      const token = useLoginStore.getState().token;
       const response = await https.get(
-        `/appointments/getAppointmentsByDoctorId?doctorId=${doctorId}`
+        `/appointments/getAppointmentsByDoctorId?doctorId=${doctorId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       console.log("response.data", response.data);
 
@@ -521,7 +538,12 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
 
   fetchDoctorDetails: async (doctorId: string) => {
     try {
-      const response = await https.get(`/doctors/getDoctorById/${doctorId}`);
+      const token = useLoginStore.getState().token;
+      const response = await https.get(`/doctors/getDoctorById/${doctorId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const doctorDetails: DoctorDetails = response.data;
 
       set({ doctorDetails });
@@ -548,7 +570,12 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
   },
   savePrescription: async (prescription: Prescription) => {
     try {
-      await https.post("/prescriptions/savePrescription", prescription);
+      const token = useLoginStore.getState().token;
+      await https.post("/prescriptions/savePrescription", prescription, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       console.log("Prescription saved successfully");
     } catch (error) {
       console.error("Failed to save prescription:", error);
