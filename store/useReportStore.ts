@@ -1,6 +1,7 @@
 import create from "zustand";
 import axios from "axios";
 import { toast } from "react-toastify";
+import useLoginStore from "./useLoginStore";
 interface CreateReport {
   reportName: string;
   uploadReport: string;
@@ -35,11 +36,17 @@ export const useReportStore = create<ReportsState>((set) => ({
   report: null,
   fetchReports: async (query = {}) => {
     try {
+      const token = useLoginStore.getState().token;
       const queryString = new URLSearchParams({
         filter: JSON.stringify(query),
       }).toString();
       const response = await axios.get(
-        `http://localhost:3000/reports?${queryString}`
+        `http://localhost:3000/reports?${queryString}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       console.log(response.data);
       set({ reports: response.data });
@@ -50,8 +57,14 @@ export const useReportStore = create<ReportsState>((set) => ({
 
   removeReport: async (id) => {
     try {
+      const token = useLoginStore.getState().token;
       const response = await axios.delete(
-        `http://localhost:3000/reports/${id}`
+        `http://localhost:3000/reports/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       set((state) => ({
         reports: state.reports.filter((report) => report._id !== id),
@@ -63,7 +76,12 @@ export const useReportStore = create<ReportsState>((set) => ({
 
   createReport: async (Report) => {
     try {
-      await axios.post("http://localhost:3000/reports", Report);
+      const token = useLoginStore.getState().token;
+      await axios.post("http://localhost:3000/reports", Report, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       toast.success("Report added successfully");
     } catch (error) {
       console.error("Error creating Report:", error);

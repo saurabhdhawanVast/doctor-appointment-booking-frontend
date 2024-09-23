@@ -1,6 +1,7 @@
 // src/store/useArticleStore.ts
 import create from "zustand";
 import axios from "axios";
+import useLoginStore from "./useLoginStore";
 
 interface Article {
   _id: string;
@@ -34,11 +35,17 @@ export const useArticleStore = create<ArticleState>((set) => ({
   editArticle: null,
   fetchArticles: async (query = {}) => {
     try {
+      const token = useLoginStore.getState().token;
       const queryString = new URLSearchParams({
         filter: JSON.stringify(query),
       }).toString();
       const response = await axios.get(
-        `http://localhost:3000/articles?${queryString}`
+        `http://localhost:3000/articles?${queryString}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       set({ articles: response.data });
     } catch (error) {
@@ -50,7 +57,12 @@ export const useArticleStore = create<ArticleState>((set) => ({
   },
   getArticle: async (id) => {
     try {
-      const response = await axios.get(`http://localhost:3000/articles/${id}`);
+      const token = useLoginStore.getState().token;
+      const response = await axios.get(`http://localhost:3000/articles/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       console.log(response.data);
       set({ article: response.data });
     } catch (error) {
@@ -60,18 +72,29 @@ export const useArticleStore = create<ArticleState>((set) => ({
 
   createArticle: async (article) => {
     try {
-      await axios.post("http://localhost:3000/articles", article);
+      const token = useLoginStore.getState().token;
+      await axios.post("http://localhost:3000/articles", article, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
     } catch (error) {
       console.error("Error creating article:", error);
     }
   },
   updateArticle: async (article) => {
     try {
+      const token = useLoginStore.getState().token;
       let articleId = article._id;
       delete article._id;
       let updatedArticle = await axios.patch(
         `http://localhost:3000/articles/${articleId}`,
-        article
+        article,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       if (updatedArticle && updatedArticle.data) {
         set((state) => ({
@@ -88,7 +111,12 @@ export const useArticleStore = create<ArticleState>((set) => ({
   },
   removeArticle: async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/articles/${id}`);
+      const token = useLoginStore.getState().token;
+      await axios.delete(`http://localhost:3000/articles/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       set((state) => ({
         articles: state.articles.filter((article) => article._id !== id),
       }));

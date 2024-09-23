@@ -20,8 +20,8 @@ export const useContactStore = create<ContactsState>((set) => ({
       const res = await axios.post("http://localhost:3000/contact", Contact);
       toast.success("Message Sent successfully");
     } catch (error) {
-      console.error("Error creating Contact:", error);
-      toast.error("Error adding contact");
+      console.error("Error...Please try again:", error);
+      toast.error("Error...Please try again");
     }
   },
 }));

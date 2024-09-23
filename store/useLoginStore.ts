@@ -161,7 +161,11 @@ const useLoginStore = create<LoginState>((set, get) => ({
       }
       if (user && user._doc.role === "doctor") {
         const doctorResponse = await axiosInstance.get(
-          `/doctors/fetchDoctorByUserId/${user._doc._id}`
+          `/doctors/fetchDoctorByUserId/${user._doc._id}`,{
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
         );
 
         const doctor = doctorResponse.data;
@@ -215,7 +219,7 @@ const useLoginStore = create<LoginState>((set, get) => ({
     try {
       const response = await axios.get("http://localhost:3000/auth/profile", {
         headers: {
-          Authorization: ` ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -226,7 +230,11 @@ const useLoginStore = create<LoginState>((set, get) => ({
 
       if (response.data._doc.role === "doctor") {
         const doctorResponse = await axiosInstance.get(
-          `/doctors/fetchDoctorByUserId/${response.data._doc._id}`
+          `/doctors/fetchDoctorByUserId/${response.data._doc._id}`,{
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         set({ doctor: doctorResponse.data });
@@ -237,7 +245,12 @@ const useLoginStore = create<LoginState>((set, get) => ({
 
       if (response.data._doc.role === "patient") {
         const patientResponse = await axiosInstance.get(
-          `/patients/fetchPatientByUserId/${response.data._doc._id}`
+          `/patients/fetchPatientByUserId/${response.data._doc._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         set({ patient: patientResponse.data });

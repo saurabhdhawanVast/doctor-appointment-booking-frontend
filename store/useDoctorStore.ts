@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 import { toast } from "react-toastify";
+import useLoginStore from "./useLoginStore";
 
 export interface DoctorStoreState {
   // isReviewModelOpen: any;
@@ -86,7 +87,12 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
   fetchDoctors: async () => {
     try {
       console.log("fetching doctors");
-      const response = await https.get("/doctors");
+      const token = useLoginStore.getState().token;
+      const response = await https.get("/doctors",{
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       set({ doctors: response.data });
     } catch (error: any) {
       console.error(`Error fetching doctors: ${error.message}`);
@@ -95,7 +101,12 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
 
   deleteDoctor: async (id: string) => {
     try {
-      await https.delete(`/doctors/${id}`);
+      const token = useLoginStore.getState().token;
+      await https.delete(`/doctors/${id}`,{
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       set((state) => ({
         doctors: state.doctors.filter((doctor) => doctor._id !== id),
       }));

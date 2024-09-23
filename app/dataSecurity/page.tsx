@@ -47,14 +47,14 @@ const DataSecurity = () => {
               How We Protect Your Data
             </h2>
             <p className="text-gray-600 max-w-3xl mx-auto">
-              At DABS, safeguarding your data is our top priority. Here’s how
-              we ensure the security of your personal and medical information.
+              At DABS, safeguarding your data is our top priority. Here’s how we
+              ensure the security of your personal and medical information.
             </p>
           </motion.div>
 
-          <div className="md:flex md:justify-between md:space-x-8">
+          <div className="flex justify-around ">
             <motion.div
-              className="bg-white p-8 rounded-xl shadow-lg mb-8 md:mb-0 flex items-start"
+              className=" bg-white p-8 rounded-xl shadow-lg mb-8 md:mb-0 flex items-start w-[30%]"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
@@ -67,15 +67,14 @@ const DataSecurity = () => {
                   Advanced Encryption
                 </h3>
                 <p className="text-gray-600">
-                  We have services to ensure that
-                  all your personal and medical data is securely protected
-                  against unauthorized access.
+                  We have services to ensure that all your personal and medical
+                  data is securely protected against unauthorized access.
                 </p>
               </div>
             </motion.div>
 
             <motion.div
-              className="bg-white p-8 rounded-xl shadow-lg mb-8 md:mb-0 flex items-start"
+              className="bg-white p-8 rounded-xl shadow-lg mb-8 md:mb-0 flex items-start w-[30%]"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
@@ -117,7 +116,7 @@ const DataSecurity = () => {
             </motion.div> */}
 
             <motion.div
-              className="bg-white p-8 rounded-xl shadow-lg mb-8 md:mb-0 flex items-start"
+              className="bg-white p-8 rounded-xl shadow-lg mb-8 md:mb-0 flex items-start w-[30%]"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
@@ -164,11 +163,10 @@ const DataSecurity = () => {
           <div className="relative">
             <div className="absolute inset-0 bg-black bg-opacity-50 z-10 flex items-center justify-center p-6 rounded-lg">
               <div className="text-center text-white">
-                
                 <p>
-                  Our services ensures that only you and authorized
-                  parties have access to your sensitive data, maintaining
-                  confidentiality and integrity.
+                  Our services ensures that only you and authorized parties have
+                  access to your sensitive data, maintaining confidentiality and
+                  integrity.
                 </p>
               </div>
             </div>

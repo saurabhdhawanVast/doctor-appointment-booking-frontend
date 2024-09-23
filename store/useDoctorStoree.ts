@@ -122,11 +122,13 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
   fetchSlotsByDate: async (id: string, date: Date) => {
     set({ loading: true });
     try {
+      const token = useLoginStore.getState().token;
       const response = await axiosInstance.get(`/doctors/getSlotsByDate`, {
         params: {
           id,
           date: date.toISOString().split("T")[0],
         },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.status === 200) {
@@ -163,12 +165,14 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
   ) => {
     set({ loading: true });
     try {
+      const token = useLoginStore.getState().token
       const response = await axiosInstance.get("/doctors/getAllDoctors-Admin", {
         params: {
           status,
           page,
           pageSize,
         },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       set({
@@ -187,7 +191,10 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
   fetchDoctorProfile: async (id: string) => {
     set({ loading: true });
     try {
-      const response = await axiosInstance.get(`/doctors/getDoctorById/${id}`);
+      const token = useLoginStore.getState().token;
+      const response = await axiosInstance.get(`/doctors/getDoctorById/${id}`,{
+        headers: { Authorization: `Bearer ${token}` },
+      });
       set({ doctor: response.data, loading: false });
     } catch (error) {
       console.error(`Error fetching doctor profile: ${error}`);
@@ -198,9 +205,12 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
     try {
       let doctorId = doctor._id;
       delete doctor._id;
+      const token = useLoginStore.getState().token;
       let result = await axios.patch(
         `http://localhost:3000/doctors/${doctorId}`,
-        doctor
+        doctor,{
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
       set({ doctor: result.data });
       useLoginStore.getState().setDoctor(result.data);
@@ -213,8 +223,11 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
   fetchAvailableDates: async (id: string) => {
     set({ loading: true });
     try {
+      const token = useLoginStore.getState().token;
       const response = await axiosInstance.get(
-        `/doctors/getAvailableDates/${id}`
+        `/doctors/getAvailableDates/${id}`,{
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
 
       if (Array.isArray(response.data)) {
@@ -282,11 +295,14 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
   ) => {
     set({ loading: true });
     try {
+      const token = useLoginStore.getState().token;
       const response = await axiosInstance.patch(`/doctors/updateSlotStatus`, {
         doctorId,
         date: date.toISOString(),
         slotId,
         status,
+      },{
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.status === 200) {
@@ -324,10 +340,13 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
       if (!slotId) {
         throw new Error("Slot ID is required to cancel a slot.");
       }
+      const token = useLoginStore.getState().token;
       await axiosInstance.post(`/doctors/cancelSlot`, {
         doctorId,
         date: date.toISOString(),
         slotId,
+      },{
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       set((state) => {
@@ -353,10 +372,11 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
   cancelAllSlots: async (doctorId: string, date: Date) => {
     set({ loading: true });
     try {
+      const token = useLoginStore.getState().token;
       await axiosInstance.post(`/doctors/cancelAllSlots`, {
         doctorId,
         date: date.toISOString(),
-      });
+      },{headers:{Authorization: "Bearer " + token}});
 
       set((state) => {
         const dateStr = date.toISOString();
@@ -383,10 +403,13 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
   ) => {
     set({ loading: true });
     try {
+      const token = useLoginStore.getState().token;
       const response = await axiosInstance.post(`/doctors/addAvailability`, {
         doctorId,
         dates,
         timePerSlot,
+      },{
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.status === 200) {

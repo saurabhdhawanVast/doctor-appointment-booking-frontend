@@ -100,7 +100,12 @@ export const usePatientStore = create<PatientState>((set) => ({
 
   fetchPatient: async (id: string) => {
     try {
-      const response = await axios.get(`http://localhost:3000/patients/${id}`);
+      const token = useLoginStore.getState().token;
+      const response = await axios.get(`http://localhost:3000/patients/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       set({ patient: response.data });
     } catch (error) {
       console.error("Error fetching patient data:", error);
@@ -108,12 +113,18 @@ export const usePatientStore = create<PatientState>((set) => ({
   },
   updateProfile: async (patient) => {
     try {
+      const token = useLoginStore.getState().token;
       let patientId = patient._id;
       delete patient._id;
       console.log("patient", patient);
       let result = await axios.patch(
         `http://localhost:3000/patients/${patientId}`,
-        patient
+        patient,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       set({ patient: result.data });
       useLoginStore.getState().setPatient(result.data);
@@ -124,9 +135,15 @@ export const usePatientStore = create<PatientState>((set) => ({
 
   deletePatient: async (id: string) => {
     try {
-      await axios.delete(`http://localhost:3000/patients/${id}`);
+      const token = useLoginStore.getState().token;
+      await axios.delete(`http://localhost:3000/patients/${id}`, {
+        headers: {
+          Authorization: `Bearer${token}`,
+        },
+      });
       set((state) => ({
-        patients: state.patients?.filter((patient) => patient._id !== id) || null,
+        patients:
+          state.patients?.filter((patient) => patient._id !== id) || null,
       }));
       toast.success("Patient deleted successfully");
     } catch (error) {
@@ -134,14 +151,17 @@ export const usePatientStore = create<PatientState>((set) => ({
     }
   },
 
-
   fetchPrescriptionsByDoctor: async (doctorId, page) => {
     try {
       console.log("fetching prescription for doctorId ", doctorId);
+      const token = useLoginStore.getState().token;
       const response = await axios.get(
         `http://localhost:3000/prescriptions/findPrescriptionByDoctorId/${doctorId}`,
         {
           params: { page, limit: 10 }, // Implement pagination
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       const prescriptions = response.data;
@@ -155,7 +175,12 @@ export const usePatientStore = create<PatientState>((set) => ({
       const patients = await Promise.all(
         uniquePatientIds.map(async (id) => {
           const patientResponse = await axios.get(
-            `http://localhost:3000/patients/${id}`
+            `http://localhost:3000/patients/${id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
           );
           return patientResponse.data;
         })
@@ -171,8 +196,12 @@ export const usePatientStore = create<PatientState>((set) => ({
       `Patient Store: state: ${state}, city: ${city}, specialty: ${specialty},gender: ${gender}, radius: ${radius}, location: ${location}`
     );
     try {
+      const token = useLoginStore.getState().token;
       const response = await axios.get(`http://localhost:3000/doctors/search`, {
         params: { state, city, specialty, gender, radius, location },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       set({ doctors: response.data }); // Set the doctors in the store
       return response.data; // Return the fetched doctors
@@ -184,8 +213,14 @@ export const usePatientStore = create<PatientState>((set) => ({
 
   fetchPatientByUserId: async (userId: string) => {
     try {
+      const token = useLoginStore.getState().token;
       const response = await axios.get(
-        `http://localhost:3000/patients//fetchPatientByUserId/${userId}`
+        `http://localhost:3000/patients//fetchPatientByUserId/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       set({ patient: response.data });
     } catch (error) {
@@ -195,17 +230,18 @@ export const usePatientStore = create<PatientState>((set) => ({
 
   allPatients: async () => {
     try {
+      const token = useLoginStore.getState().token;
       const response = await axios.get(
-        "http://localhost:3000/patients/allPatients"
+        "http://localhost:3000/patients/allPatients",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       set({ patients: response.data });
     } catch (error) {
       console.error("Error fetching patient data:", error);
     }
   },
-
-
-
-
-
 }));

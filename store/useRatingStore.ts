@@ -1,6 +1,7 @@
 import create from "zustand";
 import axios from "axios";
 import { toast } from "react-toastify";
+import useLoginStore from "./useLoginStore";
 
 interface CreateRating {
   doctor: string;
@@ -37,7 +38,12 @@ export const useRatingStore = create<RatingsState>((set) => ({
   createRating: async (Rating) => {
     console.log(`creating rating${JSON.stringify(Rating)}`);
     try {
-      await axios.post("http://localhost:3000/ratings", Rating);
+      const token = useLoginStore.getState().token;
+      await axios.post("http://localhost:3000/ratings", Rating, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       toast.success("Thank you for providing your feedback!");
     } catch (error) {
       console.error("Error creating Rating:", error);
@@ -46,8 +52,14 @@ export const useRatingStore = create<RatingsState>((set) => ({
   },
   getRatingsForDoctor: async (doctorId) => {
     try {
+      const token = useLoginStore.getState().token;
       let response = await axios.get(
-        `http://localhost:3000/ratings/doctor/${doctorId}`
+        `http://localhost:3000/ratings/doctor/${doctorId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       set({ ratings: response.data });
     } catch (error) {
