@@ -7,8 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { format } from "date-fns-tz";
 import { toast } from "react-toastify";
 import Loading from "../../../loading";
-import { FcCancel, FcCheckmark } from "react-icons/fc";
-import { SiNike } from "react-icons/si";
+import { FcCancel } from "react-icons/fc";
 import { MdEventAvailable } from "react-icons/md";
 import { FaCheck } from "react-icons/fa";
 

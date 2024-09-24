@@ -33,8 +33,12 @@ export const FormDataSchemaDoctor = z
 
     password: z
       .string()
-      .min(8, "Password must be at least 8 characters long")
-      .max(20, "Password must be at most 20 characters long"),
+      .regex(/[A-Z]/, "Must contain at least one uppercase letter")
+      .regex(/[a-z]/, "Must contain at least one lowercase letter")
+      .regex(/[^a-zA-Z\d]/, "Must contain at least one special character")
+      .regex(/\d/, "Must contain at least one digit")
+      .min(8, "Password must be at least 8 characters long"),
+
     confirmPassword: z.string(),
 
     speciality: z.string().min(1, "Speciality is required"),

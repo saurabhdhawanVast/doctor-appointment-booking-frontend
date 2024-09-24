@@ -3,14 +3,17 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import useDoctorStore from "@/store/useDoctorStoree";
-import Link from "next/link";
-import { IoArrowBackCircle } from "react-icons/io5";
+
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useRouter } from "next/navigation";
+
+import { AnimatePresence, motion } from "framer-motion";
+import { toast } from "react-toastify";
 
 export default function DoctorProfile() {
   const { doctorId } = useParams(); // Get the doctorId from URL parameters
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
 
   const router = useRouter();
 
@@ -28,9 +31,10 @@ export default function DoctorProfile() {
     }
   }, [doctorId, fetchDoctorProfile]);
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     if (doctorId) {
-      verifyDoctor(doctorId as string);
+      await verifyDoctor(doctorId as string);
+      toast.success("Doctor verified successfully");
     }
   };
 
@@ -84,8 +88,9 @@ export default function DoctorProfile() {
 
           {/* Verify Button */}
           <button
-            onClick={handleVerify}
-            className="btn btn-primary mt-4 "
+            // onClick={handleVerify}
+            onClick={() => setIsVerificationModalOpen(true)}
+            className="btn  mt-4  bg-teal-600"
             disabled={doctor.isVerified} // Disable if already verified
           >
             {doctor.isVerified ? "Verified" : "Verify Doctor"}
@@ -124,6 +129,56 @@ export default function DoctorProfile() {
           </div>
         )}
       </div>
+
+      {isVerificationModalOpen && (
+        <AnimatePresence>
+          <motion.div
+            className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md"
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.8 }}
+            >
+              <h3 className="text-lg font-semibold mb-4">
+                Confirm Verification
+              </h3>
+              <div>
+                <p>Are you sure you want to verify this doctor?</p>
+                <ul className="list-disc pl-5">
+                  <li>This action will confirm their credentials.</li>
+                  <li>They will be allowed to provide services.</li>
+                  <li>
+                    Please ensure all necessary checks have been completed
+                    before proceeding.
+                  </li>
+                </ul>
+              </div>
+              <div className="flex justify-end mt-4">
+                <button
+                  className="bg-blue-500 text-white px-4 py-2 mr-2 rounded"
+                  onClick={() => setIsVerificationModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="bg-red-500 text-white px-4 py-2 rounded"
+                  onClick={() => {
+                    handleVerify();
+                    setIsVerificationModalOpen(false);
+                  }}
+                >
+                  Confirm
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
+      )}
 
       {/* Modal for Viewing Full Image */}
       {isModalOpen && (

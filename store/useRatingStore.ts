@@ -32,6 +32,9 @@ interface RatingsState {
   createRating: (article: CreateRating) => Promise<void>;
   getRatingsForDoctor: (doctorId: string) => Promise<void>;
 }
+const https = axios.create({
+  baseURL: "http://localhost:3000", // Adjust if necessary
+});
 
 export const useRatingStore = create<RatingsState>((set) => ({
   ratings: [],
@@ -39,7 +42,7 @@ export const useRatingStore = create<RatingsState>((set) => ({
     console.log(`creating rating${JSON.stringify(Rating)}`);
     try {
       const token = useLoginStore.getState().token;
-      await axios.post("http://localhost:3000/ratings", Rating, {
+      await https.post("/ratings", Rating, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -53,8 +56,8 @@ export const useRatingStore = create<RatingsState>((set) => ({
   getRatingsForDoctor: async (doctorId) => {
     try {
       const token = useLoginStore.getState().token;
-      let response = await axios.get(
-        `http://localhost:3000/ratings/doctor/${doctorId}`,
+      let response = await https.get(
+        `/ratings/doctor/${doctorId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

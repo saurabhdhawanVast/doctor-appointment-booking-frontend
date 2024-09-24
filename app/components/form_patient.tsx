@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import defaultProfilePic from "@/public/images/avatar.png";
 
 import Loading from "../loading";
 
@@ -56,6 +57,24 @@ const Form_Patient = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const delta = currentStep - previousStep;
 
+  const [password, setPassword] = useState("");
+
+  // Function to check password validity
+  const checkPasswordValidity = (password: string) => {
+    return {
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      digit: /\d/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    };
+  };
+  const passwordValidity = checkPasswordValidity(password);
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
   //store sign up
   const signup = useRegisterPatientStore((state) => state.signup);
   const getUserByEmail = useRegisterPatientStore(
@@ -83,6 +102,12 @@ const Form_Patient = () => {
   } = useForm<Inputs>({
     resolver: zodResolver(FormDataSchemaPatient),
   });
+  const fetchDefaultImageAsFile = async (imageUrl: string) => {
+    const response = await fetch(imageUrl); // Fetch the image
+    const blob = await response.blob(); // Convert to Blob
+    const file = new File([blob], "default-profile.jpg", { type: blob.type });
+    return file;
+  };
 
   //Submit form
   const processForm: SubmitHandler<Inputs> = async (data) => {
@@ -90,8 +115,10 @@ const Form_Patient = () => {
     console.log("ProcessFrom", data);
     toast.info("Please wait, form is being processed...");
     try {
-      //getUrl
-      const profilePicPatient = data.profilePic[0];
+      const profilePicPatient =
+        data.profilePic && data.profilePic[0]
+          ? data.profilePic[0]
+          : await fetchDefaultImageAsFile("/images/avatar.png");
 
       //profilePic
       const uploadDataArray = [profilePicPatient];
@@ -252,7 +279,7 @@ const Form_Patient = () => {
   }, [selectedState]);
 
   return (
-    <div className="flex h- items-center justify-center py-12 px-4 sm:px-2 lg:px-4">
+    <div className="flex h- items-center justify-center py-12 px-4 sm:px-2 lg:px-4 h-fit min-h-screen">
       {isLoading && (
         <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
           <div className="loader">
@@ -261,7 +288,7 @@ const Form_Patient = () => {
           {/* Customize your loader */}
         </div>
       )}
-      <section className=" w-full max-w-12xl h-screen inset-0 flex flex-col justify-between p-12">
+      <section className=" w-full max-w-12xl inset-0 flex flex-col justify-between p-12 h-fit min-h-screen">
         {/* steps */}
 
         <nav aria-label="Progress ">
@@ -488,6 +515,81 @@ const Form_Patient = () => {
                     >
                       Password<span className="text-red-500"> *</span>
                     </label>
+
+                    <div className="mt-2">
+                      <input
+                        type="password"
+                        id="password"
+                        {...register("password")}
+                        autoComplete="new-password"
+                        onChange={handlePasswordChange} // Add onChange handler
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
+                      />
+                      <div className="text-xs text-gray-500 mt-1">
+                        <ul className="list-disc pl-5">
+                          <li
+                            className={
+                              passwordValidity.length
+                                ? "text-green-500"
+                                : "text-red-500"
+                            }
+                          >
+                            At least 8 characters long
+                          </li>
+                          <li
+                            className={
+                              passwordValidity.uppercase
+                                ? "text-green-500"
+                                : "text-red-500"
+                            }
+                          >
+                            Contains at least one uppercase letter
+                          </li>
+                          <li
+                            className={
+                              passwordValidity.lowercase
+                                ? "text-green-500"
+                                : "text-red-500"
+                            }
+                          >
+                            Contains at least one lowercase letter
+                          </li>
+                          <li
+                            className={
+                              passwordValidity.digit
+                                ? "text-green-500"
+                                : "text-red-500"
+                            }
+                          >
+                            Contains at least one digit
+                          </li>
+                          <li
+                            className={
+                              passwordValidity.special
+                                ? "text-green-500"
+                                : "text-red-500"
+                            }
+                          >
+                            Contains at least one special character
+                          </li>
+                        </ul>
+                      </div>
+
+                      {errors.password && (
+                        <p className="mt-2 text-sm text-red-400">
+                          {errors.password.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* <div className="w-full md:w-1/3 p-2">
+                    <label
+                      htmlFor="password"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Password<span className="text-red-500"> *</span>
+                    </label>
                     <div className="mt-2">
                       <input
                         type="password"
@@ -502,7 +604,7 @@ const Form_Patient = () => {
                         </p>
                       )}
                     </div>
-                  </div>
+                  </div> */}
 
                   {/*Confirm  Password */}
 
