@@ -221,7 +221,6 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
     }
   },
 
-
   fetchAvailableDates: async (id: string) => {
     set({ loading: true });
     try {
@@ -272,7 +271,14 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
     set({ loading: true });
     try {
       console.log(id);
-      await https.post(`/admin/verifyDoctor/${id}`);
+      const token = useLoginStore.getState().token;
+      await https.post(
+        `/admin/verifyDoctor/${id}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       set((state) => ({
         doctors: state.doctors.map((doc) =>
           doc._id === id ? { ...doc, isVerified: true } : doc

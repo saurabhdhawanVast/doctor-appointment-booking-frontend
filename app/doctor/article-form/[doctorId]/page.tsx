@@ -120,7 +120,7 @@ const CreateArticleForm: React.FC = () => {
         "Depression Management",
         "Addiction",
         "Counseling",
-        "Emotional Support",
+        "Emotional Support",  
         "Anger Management",
       ],
     },
