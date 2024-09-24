@@ -12,6 +12,8 @@ const Users = () => {
   const doctors = useDoctorStore((state) => state.doctors);
   const deleteDoctor = useDoctorStore((state) => state.deleteDoctor);
   const deletePatient = usePatientStore((state) => state.deletePatient);
+
+  const disableDoctor = useDoctorStore((state) => state.disableDoctor);
   const fetchDoctors = useDoctorStore((state) => state.fetchDoctors);
   const [view, setView] = useState("doctors"); // State to toggle between doctors and patients
   const [sidebarOpen, setSidebarOpen] = useState(true); // State to handle sidebar visibility
@@ -97,7 +99,13 @@ const Users = () => {
                 exit={{ scale: 0.8 }}
               >
                 <h3 className="text-lg font-semibold mb-4">Confirm Deletion</h3>
-                <p>Are you sure you want to delete this user ?</p>
+                {view === "doctors" && (
+                  <p>Are you sure you want to Disable this doctor?</p>
+                )}
+
+                {view === "patients" && (
+                  <p>Are you sure you want to delete this patient?</p>
+                )}
                 <div className="flex justify-end mt-4">
                   <button
                     className="bg-blue-500 text-white px-4 py-2 mr-2 rounded"
@@ -109,7 +117,7 @@ const Users = () => {
                     className="bg-red-500 text-white px-4 py-2 rounded"
                     onClick={() => {
                       if (view === "doctors") {
-                        deleteDoctor(selectedDoctorId);
+                        disableDoctor(selectedDoctorId);
                       } else if (view === "patients") {
                         deletePatient(selectedPatientId);
                       }
@@ -181,7 +189,7 @@ const Users = () => {
                       }}
                       className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                     >
-                      <MdDelete />
+                      Disable
                     </button>
                   </li>
                 ))

@@ -29,18 +29,25 @@ interface ArticleState {
   removeArticle: (id: string) => Promise<void>;
 }
 
+const https = axios.create({
+  baseURL: "http://localhost:3000", // Adjust if necessary
+});
+
+
 export const useArticleStore = create<ArticleState>((set) => ({
   articles: [],
   article: null,
   editArticle: null,
+
+
   fetchArticles: async (query = {}) => {
     try {
       const token = useLoginStore.getState().token;
       const queryString = new URLSearchParams({
         filter: JSON.stringify(query),
       }).toString();
-      const response = await axios.get(
-        `http://localhost:3000/articles?${queryString}`,
+      const response = await https.get(
+        `/articles?${queryString}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -58,7 +65,7 @@ export const useArticleStore = create<ArticleState>((set) => ({
   getArticle: async (id) => {
     try {
       const token = useLoginStore.getState().token;
-      const response = await axios.get(`http://localhost:3000/articles/${id}`, {
+      const response = await https.get(`/articles/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -73,7 +80,7 @@ export const useArticleStore = create<ArticleState>((set) => ({
   createArticle: async (article) => {
     try {
       const token = useLoginStore.getState().token;
-      await axios.post("http://localhost:3000/articles", article, {
+      await https.post("/articles", article, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -87,8 +94,8 @@ export const useArticleStore = create<ArticleState>((set) => ({
       const token = useLoginStore.getState().token;
       let articleId = article._id;
       delete article._id;
-      let updatedArticle = await axios.patch(
-        `http://localhost:3000/articles/${articleId}`,
+      let updatedArticle = await https.patch(
+        `/articles/${articleId}`,
         article,
         {
           headers: {
@@ -112,7 +119,7 @@ export const useArticleStore = create<ArticleState>((set) => ({
   removeArticle: async (id) => {
     try {
       const token = useLoginStore.getState().token;
-      await axios.delete(`http://localhost:3000/articles/${id}`, {
+      await https.delete(`/articles/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

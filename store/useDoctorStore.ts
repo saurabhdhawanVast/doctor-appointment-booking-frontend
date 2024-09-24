@@ -9,6 +9,7 @@ export interface DoctorStoreState {
   doctor: Doctor;
   fetchDoctors: () => Promise<void>;
   deleteDoctor: (id: string) => Promise<void>;
+  disableDoctor: (id: string) => Promise<void>;
 }
 
 export interface Doctor {
@@ -113,6 +114,20 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
       toast.success(`Doctor deleted successfully`);
     } catch (error: any) {
       toast.error(`Error deleting doctor`);
+    }
+  },
+
+  disableDoctor: async (id: string) => {
+    try {
+      await https.post(`/doctors/${id}`);
+      set((state) => ({
+        doctors: state.doctors.map((doctor) =>
+          doctor._id === id ? { ...doctor, isVerified: false } : doctor
+        ),
+      }));
+      toast.success(`Doctor disabled successfully`);
+    } catch (error: any) {
+      toast.error(`Error disabling doctor`);
     }
   },
 
