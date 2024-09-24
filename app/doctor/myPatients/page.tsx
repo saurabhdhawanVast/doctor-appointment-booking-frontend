@@ -46,10 +46,14 @@ const PatientListPage = () => {
   );
 
   return (
-    <div className="container mx-auto px-4 py-8 mt-16">
+    <div className="container mx-auto px-4 py-8 mt-16 h-fit min-h-screen">
       {/* Search Bar */}
-      <div className="flex justify-end mb-6">
-        <div className="relative w-full max-w-xs">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="m-4 font-normal text-xl">Treated Patients</h1>
+        </div>
+
+        <div className="relative w-full max-w-xs justify-end">
           <input
             type="text"
             placeholder="Search by name or contact number..."
@@ -62,37 +66,41 @@ const PatientListPage = () => {
       </div>
 
       {/* Patient List */}
-      <h1 className="m-4 font-normal text-xl">Treated Patients</h1>
+
       <div className="space-y-6">
-        {paginatedPatients?.map((patient: Patient) => (
-          <div
-            key={patient._id}
-            className="card bg-white shadow-lg rounded-lg p-6 cursor-pointer hover:shadow-xl transition-shadow duration-300 w-full"
-            onClick={() => handlePatientClick(patient._id!)} // Ensure _id is defined
-          >
-            <div className="flex flex-col md:flex-row items-center space-x-6">
-              <img
-                src={patient.profilePic || "/default-profile.png"} // Provide a default image
-                alt={patient.name}
-                className="rounded-full w-20 h-20 object-cover"
-              />
-              <div className="flex-1 mt-4 md:mt-0">
-                <h2 className="text-xl font-normal text-blue-600">
-                  {patient.name}
-                </h2>
-                <p className="text-sm text-gray-600">
-                  Blood Group: {patient.bloodGroup}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Contact: {patient.contactNumber}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Location: {patient.address?.city}, {patient.address?.state}
-                </p>
+        {paginatedPatients && paginatedPatients.length > 0 ? (
+          paginatedPatients.map((patient: Patient) => (
+            <div
+              key={patient._id}
+              className="card bg-white shadow-lg rounded-lg p-6 cursor-pointer hover:shadow-xl transition-shadow duration-300 w-full"
+              onClick={() => handlePatientClick(patient._id!)} // Ensure _id is defined
+            >
+              <div className="flex flex-col md:flex-row items-center space-x-6">
+                <img
+                  src={patient.profilePic || "/default-profile.png"} // Provide a default image
+                  alt={patient.name}
+                  className="rounded-full w-20 h-20 object-cover"
+                />
+                <div className="flex-1 mt-4 md:mt-0">
+                  <h2 className="text-xl font-normal text-blue-600">
+                    {patient.name}
+                  </h2>
+                  <p className="text-sm text-gray-600">
+                    Blood Group: {patient.bloodGroup}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Contact: {patient.contactNumber}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Location: {patient.address?.city}, {patient.address?.state}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <div className="text-center text-gray-500">No patients present</div>
+        )}
       </div>
 
       {/* Pagination Controls */}

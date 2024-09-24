@@ -86,6 +86,38 @@ export default function Form_Doctor() {
   const [previousStep, setPreviousStep] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
   const delta = currentStep - previousStep;
+  const [passwordError, setPasswordError] = useState("");
+
+  const [password, setPassword] = useState("");
+
+  // Function to check password validity
+  const checkPasswordValidity = (password: string) => {
+    return {
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      digit: /\d/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    };
+  };
+  const passwordValidity = checkPasswordValidity(password);
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
+  // const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const passwordValue = e.target.value;
+  //   const result = FormDataSchemaDoctor.safeParse(passwordValue);
+
+  //   if (!result.success) {
+  //     // Set the first validation error message
+  //     setPasswordError(result.error.errors[0].message);
+  //   } else {
+  //     // Clear the error message if validation passes
+  //     setPasswordError("");
+  //   }
+  // };
 
   //doctor state
   const stateMedicalCouncilsList = useRegisterDoctorStore(
@@ -146,15 +178,27 @@ export default function Form_Doctor() {
     formState: { errors },
   } = useForm<Inputs>({
     resolver: zodResolver(FormDataSchemaDoctor),
+    mode: "onChange",
   });
+
+  const fetchDefaultImageAsFile = async (imageUrl: string) => {
+    const response = await fetch(imageUrl); // Fetch the image
+    const blob = await response.blob(); // Convert to Blob
+    const file = new File([blob], "default-profile.jpg", { type: blob.type });
+    return file;
+  };
 
   //chat
   const processForm: SubmitHandler<Inputs> = async (data) => {
     try {
       setIsLoading(true);
       toast.info("Please wait, form is being processed...");
-      console.log("Processing form...");
-      const profilePic = data.profilePic[0];
+
+      const profilePic =
+        data.profilePic && data.profilePic[0]
+          ? data.profilePic[0]
+          : await fetchDefaultImageAsFile("/images/avatar.png");
+
       const document = data.document[0];
       const uploadDataArray = [profilePic, document];
       const url: string[] = [];
@@ -351,7 +395,7 @@ export default function Form_Doctor() {
   }, [selectedState]);
 
   return (
-    <div className="flex  items-center justify-center py-12 px-4 sm:px-2 lg:px-4">
+    <div className="flex  items-center justify-center py-12 px-4 sm:px-2 lg:px-4  h-fit min-h-screen">
       {isLoading && (
         <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
           <div className="loader">
@@ -360,14 +404,11 @@ export default function Form_Doctor() {
           {/* Customize your loader */}
         </div>
       )}
-      <section className=" w-full max-w-12xl h-screen inset-0 flex flex-col justify-between p-12">
+      <section className=" w-full max-w-12xl h-fit min-h-screen inset-0 flex flex-col justify-between p-12">
         {/* steps */}
 
         <nav aria-label="Progress ">
-          <ol
-            role="list"
-            className="space-y-4 md:flex md:space-x-8 md:space-y-0"
-          >
+          <ol role="list" className="space-y-4 md:flex  ">
             {steps.map((step, index) => (
               <li key={step.name} className="md:flex-1">
                 {currentStep > index ? (
@@ -553,13 +594,14 @@ export default function Form_Doctor() {
 
                   {/* Password */}
 
-                  <div className="w-full md:w-1/3 p-2">
+                  {/* <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="password"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
                       Password<span className="text-red-500"> *</span>
                     </label>
+
                     <div className="mt-2">
                       <input
                         type="password"
@@ -568,7 +610,87 @@ export default function Form_Doctor() {
                         autoComplete="family-name"
                         className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
                       />
+                      <p className="text-xs text-gray-500 mt-1">
+                        (Password must be at least 8 characters long, contain at
+                        least one uppercase letter, one lowercase letter, one
+                        digit, and one special character.)
+                      </p>
                       {errors.password?.message && (
+                        <p className="mt-2 text-sm text-red-400">
+                          {errors.password.message}
+                        </p>
+                      )}
+                    </div>
+                  </div> */}
+
+                  <div className="w-full md:w-1/3 p-2">
+                    <label
+                      htmlFor="password"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Password<span className="text-red-500"> *</span>
+                    </label>
+
+                    <div className="mt-2">
+                      <input
+                        type="password"
+                        id="password"
+                        {...register("password")}
+                        autoComplete="new-password"
+                        onChange={handlePasswordChange} // Add onChange handler
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
+                      />
+                      <div className="text-xs text-gray-500 mt-1">
+                        <ul className="list-disc pl-5">
+                          <li
+                            className={
+                              passwordValidity.length
+                                ? "text-green-500"
+                                : "text-red-500"
+                            }
+                          >
+                            At least 8 characters long
+                          </li>
+                          <li
+                            className={
+                              passwordValidity.uppercase
+                                ? "text-green-500"
+                                : "text-red-500"
+                            }
+                          >
+                            Contains at least one uppercase letter
+                          </li>
+                          <li
+                            className={
+                              passwordValidity.lowercase
+                                ? "text-green-500"
+                                : "text-red-500"
+                            }
+                          >
+                            Contains at least one lowercase letter
+                          </li>
+                          <li
+                            className={
+                              passwordValidity.digit
+                                ? "text-green-500"
+                                : "text-red-500"
+                            }
+                          >
+                            Contains at least one digit
+                          </li>
+                          <li
+                            className={
+                              passwordValidity.special
+                                ? "text-green-500"
+                                : "text-red-500"
+                            }
+                          >
+                            Contains at least one special character
+                          </li>
+                        </ul>
+                      </div>
+
+                      {errors.password && (
                         <p className="mt-2 text-sm text-red-400">
                           {errors.password.message}
                         </p>
@@ -576,6 +698,40 @@ export default function Form_Doctor() {
                     </div>
                   </div>
 
+                  {/* ------------------------------------------ */}
+                  {/* <div className="w-full md:w-1/3 p-2">
+                    <label
+                      htmlFor="password"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Password<span className="text-red-500"> *</span>
+                    </label>
+
+                    <div className="mt-2">
+                      <input
+                        type="password"
+                        id="password"
+                        {...register("password")} // Register the input field
+                        autoComplete="new-password"
+                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
+                      />
+                      <div className="text-xs text-gray-500 mt-1">
+                        <ul className="list-disc pl-5">
+                          <li>At least 8 characters long</li>
+                          <li>Contains at least one uppercase letter</li>
+                          <li>Contains at least one lowercase letter</li>
+                          <li>Contains at least one digit</li>
+                          <li>Contains at least one special character</li>
+                        </ul>
+                      </div>
+
+                      {errors.password && (
+                        <p className="mt-2 text-sm text-red-400">
+                          {errors.password.message}
+                        </p>
+                      )}
+                    </div>
+                  </div> */}
                   {/*Confirm  Password */}
 
                   <div className="w-full md:w-1/3 p-2">
@@ -1156,7 +1312,7 @@ export default function Form_Doctor() {
         </div>
 
         {/* Navigation */}
-        <div className="flex justify-between mt-6">
+        <div className="flex justify-between mt-4">
           {currentStep > 0 && (
             <button
               type="button"

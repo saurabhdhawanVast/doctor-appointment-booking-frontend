@@ -8,10 +8,10 @@ import { FaSearch } from "react-icons/fa"; // Import search icon from react-icon
 
 import useRegisterDoctorStore from "@/store/useRegisterDoctorStore";
 import { toast } from "react-toastify";
-import { set } from "react-hook-form";
+
 import Loading from "../loading";
 
-const Doctor = () => {
+const Patient = () => {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -106,4 +106,4 @@ const Doctor = () => {
   );
 };
 
-export default Doctor;
+export default Patient;

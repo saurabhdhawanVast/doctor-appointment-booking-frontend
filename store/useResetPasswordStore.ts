@@ -15,6 +15,8 @@ const useResetPasswordStore = create<ResetPasswordState>((set) => ({
   resetPassword: async (newPassword, resetToken) => {
     set({ loading: true, error: null });
 
+
+
     try {
       const response = await fetch(
         "http://localhost:3000/auth/reset-password",

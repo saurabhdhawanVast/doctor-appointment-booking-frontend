@@ -83,14 +83,18 @@ const MyAppointmentsList = () => {
     appointmentDate.setHours(0, 0, 0, 0); // Make it date-only for comparison
 
     let status = appointment.status;
+
+    // If the appointment is in the past and accepted, mark it as 'not attended'
     if (appointmentDate < today && appointment.status === "accepted") {
-      status = "not attended"; // Update status for past appointments
+      status = "not attended";
     }
 
+    // Flag for upcoming appointments
     return {
       ...appointment,
       status,
-      isUpcoming: appointmentDate >= today, // Flag for upcoming appointments
+      isUpcoming:
+        appointmentDate >= today && appointment.status !== "completed",
     };
   });
 
@@ -116,7 +120,7 @@ const MyAppointmentsList = () => {
     activeSection === "upcoming" ? upcoming : completed;
 
   return (
-    <div className="mt-16 p-4">
+    <div className="mt-16 p-4 h-fit min-h-screen">
       {/* Sidebar for toggling */}
       <div className="flex justify-center mb-8">
         <button

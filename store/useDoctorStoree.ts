@@ -104,7 +104,7 @@ interface DoctorStoreState {
   clearError: () => void;
 }
 
-const axiosInstance = axios.create({
+const https = axios.create({
   baseURL: "http://localhost:3000",
 });
 
@@ -123,7 +123,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
     set({ loading: true });
     try {
       const token = useLoginStore.getState().token;
-      const response = await axiosInstance.get(`/doctors/getSlotsByDate`, {
+      const response = await https.get(`/doctors/getSlotsByDate`, {
         params: {
           id,
           date: date.toISOString().split("T")[0],
@@ -166,13 +166,15 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
     set({ loading: true });
     try {
       const token = useLoginStore.getState().token
-      const response = await axiosInstance.get("/doctors/getAllDoctors-Admin", {
+
+      const response = await https.get("/doctors/getAllDoctors-Admin", {
         params: {
           status,
           page,
           pageSize,
         },
         headers: { Authorization: `Bearer ${token}` },
+
       });
 
       set({
@@ -192,7 +194,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
     set({ loading: true });
     try {
       const token = useLoginStore.getState().token;
-      const response = await axiosInstance.get(`/doctors/getDoctorById/${id}`,{
+      const response = await https.get(`/doctors/getDoctorById/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       set({ doctor: response.data, loading: false });
@@ -206,11 +208,11 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
       let doctorId = doctor._id;
       delete doctor._id;
       const token = useLoginStore.getState().token;
-      let result = await axios.patch(
-        `http://localhost:3000/doctors/${doctorId}`,
-        doctor,{
-          headers: { Authorization: `Bearer ${token}` },
-        }
+      let result = await https.patch(
+        `/doctors/${doctorId}`,
+        doctor, {
+        headers: { Authorization: `Bearer ${token}` },
+      }
       );
       set({ doctor: result.data });
       useLoginStore.getState().setDoctor(result.data);
@@ -224,10 +226,10 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
     set({ loading: true });
     try {
       const token = useLoginStore.getState().token;
-      const response = await axiosInstance.get(
-        `/doctors/getAvailableDates/${id}`,{
-          headers: { Authorization: `Bearer ${token}` },
-        }
+      const response = await https.get(
+        `/doctors/getAvailableDates/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }
       );
 
       if (Array.isArray(response.data)) {
@@ -270,7 +272,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
     set({ loading: true });
     try {
       console.log(id);
-      await axiosInstance.post(`/admin/verifyDoctor/${id}`);
+      await https.post(`/admin/verifyDoctor/${id}`);
       set((state) => ({
         doctors: state.doctors.map((doc) =>
           doc._id === id ? { ...doc, isVerified: true } : doc
@@ -296,12 +298,12 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
     set({ loading: true });
     try {
       const token = useLoginStore.getState().token;
-      const response = await axiosInstance.patch(`/doctors/updateSlotStatus`, {
+      const response = await https.patch(`/doctors/updateSlotStatus`, {
         doctorId,
         date: date.toISOString(),
         slotId,
         status,
-      },{
+      }, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -341,11 +343,11 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
         throw new Error("Slot ID is required to cancel a slot.");
       }
       const token = useLoginStore.getState().token;
-      await axiosInstance.post(`/doctors/cancelSlot`, {
+      await https.post(`/doctors/cancelSlot`, {
         doctorId,
         date: date.toISOString(),
         slotId,
-      },{
+      }, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -373,10 +375,10 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
     set({ loading: true });
     try {
       const token = useLoginStore.getState().token;
-      await axiosInstance.post(`/doctors/cancelAllSlots`, {
+      await https.post(`/doctors/cancelAllSlots`, {
         doctorId,
         date: date.toISOString(),
-      },{headers:{Authorization: "Bearer " + token}});
+      }, { headers: { Authorization: "Bearer " + token } });
 
       set((state) => {
         const dateStr = date.toISOString();
@@ -404,11 +406,11 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
     set({ loading: true });
     try {
       const token = useLoginStore.getState().token;
-      const response = await axiosInstance.post(`/doctors/addAvailability`, {
+      const response = await https.post(`/doctors/addAvailability`, {
         doctorId,
         dates,
         timePerSlot,
-      },{
+      }, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

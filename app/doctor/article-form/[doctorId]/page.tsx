@@ -1,12 +1,10 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
-import dynamic from "next/dynamic";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { useArticleStore } from "@/store/useArticleStore";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
-import styles from "./CreateArticleForm.module.css";
 
 const CreateArticleForm: React.FC = () => {
   const [title, setTitle] = useState("");

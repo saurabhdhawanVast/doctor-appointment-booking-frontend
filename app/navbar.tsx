@@ -167,18 +167,18 @@ const Navbar = () => {
               <Link href="/patient/find-doctor">Find Doctor</Link>
             </li>
             <li>
-              <Link href={`/patient/myAppointments`}>View Appointments</Link>
+              <Link href={`/patient/myAppointments`}>Appointments</Link>
             </li>
             <li>
               <Link href={`/patient/prescriptions/${patientId}`}>
-                View Prescriptions
+                Prescriptions
               </Link>
             </li>
             <li>
-              <Link href="/patient/article">View Articles</Link>
+              <Link href="/patient/article">Articles</Link>
             </li>
             <li>
-              <Link href="/patient/reports">View Reports</Link>
+              <Link href="/patient/reports">Reports</Link>
             </li>
           </div>
         );
@@ -270,7 +270,7 @@ const Navbar = () => {
                       onClick={handleProfile}
                       className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
                     >
-                      Manage Profile
+                      Edit Profile
                     </button>
                     {role === "doctor" && (
                       <button
