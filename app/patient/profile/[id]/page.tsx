@@ -221,7 +221,6 @@ const EditProfile = () => {
           </div>
         </div>
 
-       
         <div className="mt-4">
           <label
             htmlFor="name"
@@ -241,7 +240,7 @@ const EditProfile = () => {
             <p className="text-red-500 text-xs italic">{errors.name.message}</p>
           )}
         </div>
-  
+
         <div className="mt-4">
           <label
             htmlFor="contactNumber"
@@ -475,4 +474,3 @@ const EditProfile = () => {
 };
 
 export default EditProfile;
-

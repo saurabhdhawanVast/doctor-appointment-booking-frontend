@@ -49,7 +49,7 @@ export interface Doctor {
 const https = axios.create({
   baseURL: "http://localhost:3000",
 });
-
+const token = useLoginStore.getState().token;
 const useDoctorStore = create<DoctorStoreState>((set) => ({
   doctors: [],
   doctor: {
@@ -85,11 +85,12 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
     avgRating: 0,
   },
 
+
   fetchDoctors: async () => {
     try {
       console.log("fetching doctors");
       const token = useLoginStore.getState().token;
-      const response = await https.get("/doctors",{
+      const response = await https.get("/doctors", {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -103,7 +104,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
   deleteDoctor: async (id: string) => {
     try {
       const token = useLoginStore.getState().token;
-      await https.delete(`/doctors/${id}`,{
+      await https.delete(`/doctors/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -119,11 +120,18 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
 
   disableDoctor: async (id: string) => {
     try {
-      await https.post(`/doctors/${id}`);
+
+      console.log(token);
+      await https.patch(`/doctors/disable/${id}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       set((state) => ({
         doctors: state.doctors.map((doctor) =>
           doctor._id === id ? { ...doctor, isVerified: false } : doctor
-        ),
+        ).filter((doctor) => doctor.isVerified) // Remove disabled doctor from the list
       }));
       toast.success(`Doctor disabled successfully`);
     } catch (error: any) {
