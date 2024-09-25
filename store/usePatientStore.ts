@@ -140,7 +140,7 @@ export const usePatientStore = create<PatientState>((set) => ({
       const token = useLoginStore.getState().token;
       await https.delete(`/patients/${id}`, {
         headers: {
-          Authorization: `Bearer${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       set((state) => ({
