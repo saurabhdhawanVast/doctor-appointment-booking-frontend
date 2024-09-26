@@ -1,12 +1,9 @@
-
 import { toast } from "react-toastify";
 import { create } from "zustand";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { Doctor } from "./useDoctorStore";
 import { Patients } from "./usePatientStore";
-
-
 
 interface Input {
   email: string;
@@ -57,8 +54,6 @@ export interface Address {
 //   pinCode: number;
 // }
 
-
-
 interface LoginState {
   isLoggedIn: boolean;
 
@@ -89,15 +84,11 @@ const useLoginStore = create<LoginState>((set, get) => ({
 
   login: async (data: Input) => {
     try {
-      const response = await https.post(
-        "/auth/login",
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await https.post("/auth/login", data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       const accessToken = response.data["access_token"];
       if (!accessToken) {
@@ -124,11 +115,12 @@ const useLoginStore = create<LoginState>((set, get) => ({
       }
       if (user && user._doc.role === "doctor") {
         const doctorResponse = await https.get(
-          `/doctors/fetchDoctorByUserId/${user._doc._id}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
+          `/doctors/fetchDoctorByUserId/${user._doc._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
         );
 
         const doctor = doctorResponse.data;
@@ -183,7 +175,6 @@ const useLoginStore = create<LoginState>((set, get) => ({
       const response = await https.get("/auth/profile", {
         headers: {
           Authorization: `Bearer ${token}`,
-
         },
       });
 
@@ -194,12 +185,12 @@ const useLoginStore = create<LoginState>((set, get) => ({
 
       if (response.data._doc.role === "doctor") {
         const doctorResponse = await https.get(
-          `/doctors/fetchDoctorByUserId/${response.data._doc._id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-
+          `/doctors/fetchDoctorByUserId/${response.data._doc._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         set({ doctor: doctorResponse.data });
@@ -284,4 +275,3 @@ if (typeof window !== "undefined") {
 }
 
 export default useLoginStore;
-

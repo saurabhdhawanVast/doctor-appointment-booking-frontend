@@ -75,6 +75,7 @@ const Navbar = () => {
     };
     loadData();
     console.log("loading user", loading);
+    console.log("User:", user);
     console.log("role", isLoggedIn);
     console.log("user", user);
   }, [isLoggedIn, fetchUser, setLoading]);
@@ -138,11 +139,6 @@ const Navbar = () => {
       case "doctor":
         return (
           <div className="menu menu-horizontal ">
-            {/* <li>
-              <Link href={`/doctor/appointments/${doctorId}`}>
-                Appointments
-              </Link>
-            </li> */}
             <li>
               <Link href={`/doctor`}>Appointments</Link>
             </li>
@@ -266,12 +262,15 @@ const Navbar = () => {
 
                 {dropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                    <button
-                      onClick={handleProfile}
-                      className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
-                    >
-                      Edit Profile
-                    </button>
+                    {role === "doctor" ||
+                      (role === "patient" && (
+                        <button
+                          onClick={handleProfile}
+                          className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                        >
+                          Edit Profile
+                        </button>
+                      ))}
                     {role === "doctor" && (
                       <button
                         onClick={handleReviewModelOpen}

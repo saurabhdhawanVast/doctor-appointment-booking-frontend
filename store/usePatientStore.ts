@@ -6,10 +6,6 @@ import useLoginStore from "./useLoginStore";
 import { Doctor } from "./useDoctorStore";
 import { Prescription } from "./usePrescriptionStore";
 
-
-
-
-
 export interface Patients {
   _id: string;
   user: string;
@@ -66,7 +62,6 @@ export const usePatientStore = create<PatientState>((set) => ({
 
   fetchPatient: async (id: string) => {
     try {
-
       const response = await https.get(`/patients/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -79,19 +74,14 @@ export const usePatientStore = create<PatientState>((set) => ({
   },
   updateProfile: async (patient) => {
     try {
-
       let patientId = patient._id;
       delete patient._id;
       console.log("patient", patient);
-      let result = await https.patch(
-        `/patients/${patientId}`,
-        patient,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      let result = await https.patch(`/patients/${patientId}`, patient, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       set({ patient: result.data });
       useLoginStore.getState().setPatient(result.data);
     } catch (error) {
@@ -101,7 +91,6 @@ export const usePatientStore = create<PatientState>((set) => ({
 
   deletePatient: async (id: string) => {
     try {
-
       await https.delete(`/patients/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -119,7 +108,6 @@ export const usePatientStore = create<PatientState>((set) => ({
 
   fetchPrescriptionsByDoctor: async (doctorId, page) => {
     try {
-
       const response = await https.get(
         `/prescriptions/findPrescriptionByDoctorId/${doctorId}`,
         {
@@ -161,7 +149,6 @@ export const usePatientStore = create<PatientState>((set) => ({
       `Patient Store: state: ${state}, city: ${city}, specialty: ${specialty},gender: ${gender}, radius: ${radius}, location: ${location}`
     );
     try {
-
       const response = await https.get(`/doctors/search`, {
         params: { state, city, specialty, gender, radius, location },
         headers: {
@@ -178,7 +165,6 @@ export const usePatientStore = create<PatientState>((set) => ({
 
   fetchPatientByUserId: async (userId: string) => {
     try {
-
       const response = await https.get(
         `patients/fetchPatientByUserId/${userId}`,
         {
@@ -195,15 +181,11 @@ export const usePatientStore = create<PatientState>((set) => ({
 
   allPatients: async () => {
     try {
-
-      const response = await https.get(
-        "patients/allPatients",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await https.get("patients/allPatients", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       set({ patients: response.data });
     } catch (error) {
       console.error("Error fetching patient data:", error);

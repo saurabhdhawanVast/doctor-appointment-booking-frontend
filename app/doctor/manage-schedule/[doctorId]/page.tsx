@@ -335,10 +335,10 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
                     disabled={slot.status === "cancelled"}
                     className={`w-28 rounded-lg pt-2 text-center ${
                       slot.status === "available" &&
-                      "bg-green-500 cursor-pointer"
+                      "bg-green-400 cursor-pointer"
                     }
                     ${
-                      slot.status === "booked" && "bg-blue-500 cursor-pointer"
+                      slot.status === "booked" && "bg-blue-400 cursor-pointer"
                     }  
                     ${
                       slot.status === "cancelled" &&

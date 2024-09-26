@@ -259,9 +259,9 @@ const ArticlesList = () => {
   return (
     <div className="min-h-screen mt-16 bg-gray-100">
       {/* Button and Search Section */}
-      <div className="container mx-auto py-4 mb-4">
-        <div className="flex justify-between items-center">
-          <div className="flex space-x-4">
+      <div className="container mx-auto py-4 ">
+        <div className="flex justify-between items-center mt-4">
+          <div className="flex space-x-4 ">
             <button
               onClick={() => router.push(`/doctor/article-form/${doctorId}`)}
               className="flex items-center bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded-lg shadow-md transition duration-300"
@@ -331,7 +331,7 @@ const ArticlesList = () => {
                         className="w-full h-48 object-cover rounded-lg mb-4"
                       />
                     )}
-                    <h2 className="text-xl font-semibold text-blue-700 mb-2">
+                    <h2 className="text-xl font-medium text-blue-700 mb-2">
                       {article.title}
                     </h2>
                     <div className="text-gray-500 text-sm mb-2">
