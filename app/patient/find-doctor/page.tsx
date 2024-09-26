@@ -2,15 +2,15 @@
 import React, { useState, useEffect, use } from "react";
 import { useForm, Controller, set } from "react-hook-form";
 import { Slider } from "@mui/material";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { usePatientStore } from "@/store/usePatientStore";
-import Link from "next/link";
+
 import useLoginStore from "@/store/useLoginStore";
 import { FaStar, FaRegStar, FaStarHalfAlt, FaSearch } from "react-icons/fa";
 import { LuFilterX } from "react-icons/lu";
 import { toast } from "react-toastify";
 import ReviewList from "@/app/components/reviewModel";
-import { FaCalendarDays } from "react-icons/fa6";
+
 import { IoTodaySharp } from "react-icons/io5";
 import useRegisterDoctorStore from "@/store/useRegisterDoctorStore";
 import { MdLocationOff, MdLocationOn } from "react-icons/md";
@@ -447,7 +447,7 @@ const SearchDoctorsPage = () => {
                   setValue("radius", newValue as number);
                 }}
                 aria-labelledby="radius-slider"
-                min={25}
+                min={5}
                 max={100}
                 step={25} // Sets the step value
                 marks={[

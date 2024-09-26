@@ -1,8 +1,9 @@
 "use client";
-import useDoctorStore from "@/store/useDoctorStore";
+
 import { usePatientStore } from "@/store/usePatientStore";
+import useDoctorStore from "@/store/useDoctorStore";
 import React, { useEffect, useState } from "react";
-import { FaBars, FaTimes } from "react-icons/fa"; // Importing FontAwesome icons
+import { FaBars, FaTimes } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -10,11 +11,11 @@ const Users = () => {
   const patients = usePatientStore((state) => state.patients);
   const allPatients = usePatientStore((state) => state.allPatients);
   const doctors = useDoctorStore((state) => state.doctors);
-  const deleteDoctor = useDoctorStore((state) => state.deleteDoctor);
+
   const deletePatient = usePatientStore((state) => state.deletePatient);
 
   const disableDoctor = useDoctorStore((state) => state.disableDoctor);
-  const fetchDoctors = useDoctorStore((state) => state.fetchDoctors);
+  const fetchDoctorsMain = useDoctorStore((state) => state.fetchDoctorsMain);
   const [view, setView] = useState("doctors"); // State to toggle between doctors and patients
   const [sidebarOpen, setSidebarOpen] = useState(true); // State to handle sidebar visibility
   const [searchTerm, setSearchTerm] = useState(""); // State to handle search input
@@ -24,9 +25,9 @@ const Users = () => {
   const [isViewImage, setIsViewImage] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchDoctors();
+    fetchDoctorsMain();
     allPatients();
-  }, [fetchDoctors, allPatients]);
+  }, [fetchDoctorsMain, allPatients]);
 
   // Filtered list based on the search term
   const filteredDoctors = doctors?.filter((doctor) =>

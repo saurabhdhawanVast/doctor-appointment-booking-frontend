@@ -36,7 +36,7 @@ interface ManageScheduleStore {
 const https = axios.create({
   baseURL: "http://localhost:3000",
 });
-
+const token = useLoginStore.getState().token;
 const useManageScheduleStore = create<ManageScheduleStore>((set) => ({
   availableDates: [],
   slotsByDate: {},
@@ -46,7 +46,7 @@ const useManageScheduleStore = create<ManageScheduleStore>((set) => ({
   fetchAvailableDates: async (id: string) => {
     set({ loading: true });
     try {
-      const token = useLoginStore.getState().token;
+
       const response = await https.get(
         `/doctors/getAvailableDates/${id}`, {
         headers: {
@@ -126,7 +126,7 @@ const useManageScheduleStore = create<ManageScheduleStore>((set) => ({
       console.log(
         `doctorId: ${doctorId}, date: ${formattedDate}, slotId: ${slotId}`
       );
-      const token = useLoginStore.getState().token;
+
       const response = await https.patch(`/doctors/cancelSlot`, {
         doctorId,
         date: formattedDate,
@@ -166,7 +166,7 @@ const useManageScheduleStore = create<ManageScheduleStore>((set) => ({
       // Format the zoned date in the desired format (yyyy-MM-dd)
       const formattedDate = format(zonedDate, "yyyy-MM-dd");
       console.log(formattedDate);
-      const token = useLoginStore.getState().token;
+
       await https.patch(`/doctors/cancelAllSlots`, {
         doctorId,
         date: formattedDate,
@@ -199,7 +199,7 @@ const useManageScheduleStore = create<ManageScheduleStore>((set) => ({
     set({ loading: true });
     try {
       console.log(`Dates to be mark as available are:${dates}`);
-      const token = useLoginStore.getState().token;
+
       const response = await https.post(`/doctors/addAvailability`, {
         doctorId,
         dates,

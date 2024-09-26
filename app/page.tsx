@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+
 import useDoctorStore from "@/store/useDoctorStore";
 import Link from "next/link";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
@@ -9,12 +10,9 @@ import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
 import icon01 from "../public/images/icon01.png";
 import icon02 from "../public/images/icon02.png";
 import icon03 from "../public/images/icon03.png";
-import featureImg from "../public/images/feature-img.png";
+
 import faqImg from "../public/images/homePageDoctor.png";
 import bgImage1 from "../public/images/HomeBg.jpg";
-import bgImage2 from "../public/images/doctors2.png";
-import bgImage3 from "../public/images/doctors3.jpg";
-import bgImage4 from "../public/images/doctors4.jpg";
 
 import ReviewList from "./components/reviewModel";
 import Typewriter from "typewriter-effect";
@@ -23,11 +21,12 @@ export default function Home() {
   const [doctors, setDoctors] = useState<any[]>([]);
   const [isReviewModelOpen, setIsReviewModelOpen] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState("");
-  const fetchDoctors = useDoctorStore((state) => state.fetchDoctors);
+
+  const fetchDoctorsMain = useDoctorStore((state) => state.fetchDoctorsMain);
 
   useEffect(() => {
     const getDoctors = async () => {
-      await fetchDoctors();
+      await fetchDoctorsMain();
       const fetchedDoctors = useDoctorStore.getState().doctors;
       if (Array.isArray(fetchedDoctors)) {
         setDoctors(fetchedDoctors);
@@ -36,7 +35,7 @@ export default function Home() {
       }
     };
     getDoctors();
-  }, [fetchDoctors]);
+  }, [fetchDoctorsMain]);
 
   const { scrollY } = useScroll();
   const yRange = useTransform(scrollY, [0, 500], [0, -100]);
