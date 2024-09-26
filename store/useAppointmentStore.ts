@@ -1,4 +1,3 @@
-
 import { create } from "zustand";
 import axios from "axios";
 import useLoginStore from "./useLoginStore";
@@ -40,8 +39,6 @@ export interface DoctorDetails {
   contactNumber?: string;
 }
 
-
-
 export interface AppointmentStore {
   appointments: DateWithSlots[];
   upcomingAppointments: Appointment[]; // Add upcoming appointments to the store for displaying on the dashboard
@@ -67,7 +64,6 @@ export interface AppointmentStore {
     slotId: string,
     selectedDate: Date
   ) => Promise<void>;
-
 }
 
 const https = axios.create({
@@ -94,7 +90,6 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
 
   getAppointments: async (query = {}) => {
     try {
-
       const queryString = new URLSearchParams({
         filter: JSON.stringify(query),
       }).toString();
@@ -143,7 +138,6 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
 
   fetchAppointments: async (doctorId: string, initialDate?: Date) => {
     try {
-
       const response = await https.get(
         `/appointments/getAppointmentsByDoctorId?doctorId=${doctorId}`,
         {
@@ -239,7 +233,6 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
 
   fetchDoctorDetails: async (doctorId: string) => {
     try {
-
       const response = await https.get(`/doctors/getDoctorById/${doctorId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -271,7 +264,6 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
   },
   savePrescription: async (prescription: Prescription) => {
     try {
-
       await https.post("/prescriptions/savePrescription", prescription, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -294,23 +286,24 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
       console.log(`${slotId} and type is ${typeof slotId}`);
 
       // Replace this URL with your API endpoint
-      const response = await https.post("/appointments/bookSlot", {
-        doctorId,
-        patientId,
-        slotId,
-        appointmentDate: selectedDate,
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await https.post(
+        "/appointments/bookSlot",
+        {
+          doctorId,
+          patientId,
+          slotId,
+          appointmentDate: selectedDate,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (!response.status) {
         throw new Error("Failed to book slot.");
       }
-
-
     } catch (error) {
       console.error("Error booking slot:", error);
-
     }
   },
 }));

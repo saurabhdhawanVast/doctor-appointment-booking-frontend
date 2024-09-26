@@ -15,7 +15,7 @@ const config = {
 };
 
 const patientSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(2, "Name is required"),
   contactNumber: z
     .string()
     .min(10, "Contact number must be at least 10 digits long"),
@@ -181,6 +181,11 @@ const EditProfile = () => {
   const handleCloseModal = () => {
     setShowModal(false);
   };
+  // const renderProfile = () => {
+  //       switch (role) {
+  //         case "doctor":
+  //           return <></>; // Add specific form fields for doctors if needed
+  //         case "patient":
 
   return (
     <>
@@ -233,7 +238,7 @@ const EditProfile = () => {
             type="text"
             {...register("name")}
             className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-              errors.contactNumber ? "border-red-500" : ""
+              errors.name ? "border-red-500" : ""
             }`}
           />
           {errors.name && (

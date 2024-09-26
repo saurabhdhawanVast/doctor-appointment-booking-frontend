@@ -74,7 +74,7 @@ const SearchDoctorsPage = () => {
   const [cities, setCities] = useState<string[]>([]);
   const [selectedState, setSelectedState] = useState<string>("");
 
-  const [radius, setRadius] = useState<number>(25);
+  const [radius, setRadius] = useState<number>(5);
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -286,7 +286,7 @@ const SearchDoctorsPage = () => {
     reset();
     setSelectedState("");
     setCities([]);
-    setRadius(50);
+    setRadius(5);
     setLatitude(null);
     setLongitude(null);
     setDoctors([]);
@@ -448,13 +448,13 @@ const SearchDoctorsPage = () => {
                 }}
                 aria-labelledby="radius-slider"
                 min={5}
-                max={100}
-                step={25} // Sets the step value
+                max={20}
+                step={5} // Sets the step value
                 marks={[
-                  { value: 25 },
-                  { value: 50 },
-                  { value: 75 },
-                  { value: 100 },
+                  { value: 5 },
+                  { value: 10 },
+                  { value: 15 },
+                  { value: 20 },
                 ]}
                 valueLabelDisplay="auto"
                 className="h-4 w-full"

@@ -71,7 +71,7 @@ const LoginForm = () => {
       )}
 
       {/* Image */}
-      <div className="absolute bottom-0 left-[70%] transform -translate-x-1/2 w-[10%] h-[30%] sm:w-[10%] sm:h-[35%] md:w-[10%] md:h-[50%] lg:w-[15%] lg:h-[75%] xl:w-[21%] xl:h-[90%] z-20 hidden md:block transition-transform duration-300">
+      <div className="absolute top-24 left-[70%] transform -translate-x-1/2 w-[10%] h-[30%] sm:w-[10%] sm:h-[35%] md:w-[10%] md:h-[50%] lg:w-[15%] lg:h-[75%] xl:w-[21%] xl:h-[90%] z-20 hidden md:block transition-transform duration-300">
         <Image
           src="/images/portrait-3d-male-doctor.png"
           alt="3D Male Doctor"

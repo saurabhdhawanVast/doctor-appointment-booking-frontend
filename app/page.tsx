@@ -170,7 +170,7 @@ export default function Home() {
             Our Doctors
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
             {doctors.length > 0 ? (
               <>
                 {doctors.slice(0, 3).map((doctor) => (

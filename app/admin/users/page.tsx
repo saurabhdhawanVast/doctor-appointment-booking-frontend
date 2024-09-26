@@ -48,7 +48,7 @@ const Users = () => {
   };
 
   return (
-    <div className="flex min-h-screen mt-16">
+    <div className="flex  h-fit min-h-screen mt-16">
       {/* Sidebar */}
       <div
         className={`${
@@ -82,7 +82,7 @@ const Users = () => {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 pl-4 pr-4 bg-gray-100 relative">
+      <div className="flex-1 pl-4 pr-4 bg-gray-100 relative h-fit min-h-screen">
         {/* Modal for Viewing Full Image */}
 
         {isModalOpen && (
