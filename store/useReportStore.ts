@@ -33,14 +33,14 @@ interface ReportsState {
 const https = axios.create({
   baseURL: "http://localhost:3000", // Adjust if necessary
 });
-
+const token = useLoginStore.getState().token;
 
 export const useReportStore = create<ReportsState>((set) => ({
   reports: [],
   report: null,
   fetchReports: async (query = {}) => {
     try {
-      const token = useLoginStore.getState().token;
+
       const queryString = new URLSearchParams({
         filter: JSON.stringify(query),
       }).toString();
@@ -61,7 +61,7 @@ export const useReportStore = create<ReportsState>((set) => ({
 
   removeReport: async (id) => {
     try {
-      const token = useLoginStore.getState().token;
+
       const response = await https.delete(
         `/reports/${id}`,
         {
@@ -80,7 +80,7 @@ export const useReportStore = create<ReportsState>((set) => ({
 
   createReport: async (Report) => {
     try {
-      const token = useLoginStore.getState().token;
+
       await https.post("/reports", Report, {
         headers: {
           Authorization: `Bearer ${token}`,

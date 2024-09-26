@@ -4,13 +4,13 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, toZonedTime } from "date-fns-tz";
 
-import useDoctorStore from "@/store/useDoctorStoree";
 import { useSearchParams } from "next/navigation";
-import useBookAppointmentStore from "@/store/useBookAppointmentStore";
+
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
-import { set } from "react-hook-form";
-import { Console } from "console";
+
+import useDoctorStore from "@/store/useDoctorStore";
+import useAppointmentStore from "@/store/useAppointmentStore";
 
 const timeZone = "Asia/Kolkata"; // Set your preferred time zone
 
@@ -37,7 +37,7 @@ const BookAppointmentPage = () => {
     setBookingError,
     setBookingSuccess,
     bookSlot,
-  } = useBookAppointmentStore((state) => ({
+  } = useAppointmentStore((state) => ({
     selectedSlotId: state.selectedSlotId,
     showModal: state.showModal,
     bookingError: state.bookingError,
@@ -58,13 +58,10 @@ const BookAppointmentPage = () => {
     });
     return dateString;
   };
-  // const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+
   const [selectedDate, setSelectedDate] = useState<Date | null>(
     formattedDate(new Date())
   );
-  // const [todaysDate, settodaysDate] = useState<Date | null>(
-  //   formattedDate(new Date())
-  // );
 
   const [slots, setSlots] = useState<any[]>([]);
 
@@ -276,12 +273,43 @@ const BookAppointmentPage = () => {
           <div className="bg-white rounded-lg shadow-md p-6  overflow-y-auto">
             {selectedDate && (
               <>
-                <h2 className="text-xl font-semibold text-gray-700 mb-4">
-                  Available Slots for
+                {/* <h2 className="text-xl font-semibold text-gray-700 mb-4">
+               
                   {format(toZonedTime(selectedDate, timeZone), "d MMM yyyy", {
                     timeZone,
                   })}
-                </h2>
+                </h2> */}
+                <div className="flex items-center justify-between bg-gray-200 p-2 rounded-lg mb-4">
+                  <div>
+                    <h1 className="text-lg font-normal ">
+                      Available Slots for{" "}
+                      {format(
+                        toZonedTime(selectedDate, timeZone),
+                        "d MMM yyyy",
+                        {
+                          timeZone,
+                        }
+                      )}
+                    </h1>
+                  </div>
+
+                  <div className="flex flex-wrap items-center space-x-2">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-green-400"></div>
+                      <span className="text-gray-700">Available</span>
+                    </div>
+                    {/* 
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-blue-500"></div>
+                      <span className="text-gray-700">Booked</span>
+                    </div> */}
+
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-gray-300"></div>
+                      <span className="text-gray-700">Not Available</span>
+                    </div>
+                  </div>
+                </div>
                 <ul className="flex flex-wrap gap-4">
                   {slots.length > 0 ? (
                     slots.map((slot) => {

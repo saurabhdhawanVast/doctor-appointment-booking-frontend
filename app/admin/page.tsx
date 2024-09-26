@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import useDoctorStore from "@/store/useDoctorStoree";
-import { FaBars, FaSearch, FaTimes } from "react-icons/fa"; // Importing FontAwesome icons
+
+import { FaBars, FaSearch, FaTimes } from "react-icons/fa";
+import useDoctorStore from "@/store/useDoctorStore";
 
 export default function DoctorList() {
   const { doctors, fetchDoctors, currentPage, totalPages } = useDoctorStore(

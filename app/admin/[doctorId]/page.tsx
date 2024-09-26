@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import useDoctorStore from "@/store/useDoctorStoree";
 
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useRouter } from "next/navigation";
 
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
+import useDoctorStore from "@/store/useDoctorStore";
 
 export default function DoctorProfile() {
   const { doctorId } = useParams(); // Get the doctorId from URL parameters
@@ -51,81 +51,87 @@ export default function DoctorProfile() {
         </button>
       </div>
 
-      <div className="doctor-profile flex flex-col md:flex-row  p-6 rounded-xl shadow-2xl  bg-teal-50">
-        {/* Doctor Details Section */}
-        <div className="md:w-2/3 md:pr-6">
-          <h2 className="text-3xl font-bold mb-4">{doctor.name}</h2>
+      <div className="flex  flex-wrap   rounded-xl shadow-2xl  h-fit min-h-screen ">
+        <div className="rounded-xl flex flex-wrap sm:w-96 md:w-2/3 px-4">
+          {/* Doctor Profile Picture and Name */}
+          <div className="flex  flex-wrap items-center mb-6">
+            {doctor.profilePic && (
+              <img
+                src={doctor.profilePic}
+                alt={`${doctor.name}'s profile picture`}
+                className="w-32 h-32 rounded-full object-cover border-4 border-teal-500 mr-6"
+              />
+            )}
+            <h2 className="text-4xl font-bold text-gray-800">{doctor.name}</h2>
+          </div>
 
-          {/* Display Profile Picture */}
-          {doctor.profilePic && (
-            <img
-              src={doctor.profilePic}
-              alt={`${doctor.name}'s profile picture`}
-              className="w-32 h-32 rounded-full mb-4"
-            />
-          )}
+          {/* Doctor Details */}
+          <div className="flex flex-wrap gap-4 ">
+            <div className="space-y-2">
+              <p className="text-lg">
+                <strong className="text-teal-600">Speciality:</strong>{" "}
+                {doctor.speciality}
+              </p>
+              <p className="text-lg">
+                <strong className="text-teal-600">Qualification:</strong>{" "}
+                {doctor.qualification}
+              </p>
+              <p className="text-lg">
+                <strong className="text-teal-600">Registration No:</strong>{" "}
+                {doctor.registrationNumber}
+              </p>
+            </div>
+            {/* Vertical Divider */}
+            <div className="border-l border-gray-300 h-auto "></div>
+            <div className="space-y-2">
+              <p className="text-lg">
+                <strong className="text-teal-600">Year of Registration:</strong>{" "}
+                {doctor.yearOfRegistration}
+              </p>
+              <p className="text-lg">
+                <strong className="text-teal-600">
+                  State Medical Council:
+                </strong>{" "}
+                {doctor.stateMedicalCouncil}
+              </p>
+              <p className="text-lg">
+                <strong className="text-teal-600">Clinic Address:</strong>{" "}
+                {doctor.clinicDetails?.clinicAddress}
+              </p>
+            </div>
+          </div>
 
-          <p className="text-lg mb-2">
-            <strong>Speciality:</strong> {doctor.speciality}
-          </p>
-          <p className="text-lg mb-2">
-            <strong>Qualification:</strong> {doctor.qualification}
-          </p>
-          <p className="text-lg mb-2">
-            <strong>Registration Number:</strong> {doctor.registrationNumber}
-          </p>
-
-          <p className="text-lg mb-2">
-            <strong>Year of Registration:</strong> {doctor.yearOfRegistration}
-          </p>
-          <p className="text-lg mb-2">
-            <strong>State Medical Council:</strong> {doctor.stateMedicalCouncil}
-          </p>
-
-          <p className="text-lg mb-2">
-            <strong>Bio:</strong> {doctor.bio}
-          </p>
+          <div className="mt-6">
+            <p className=" text-gray-700 mt-2 text-justify leading-relaxed ">
+              <strong className="text-teal-600 text-lg">Bio:</strong>{" "}
+              {doctor.bio}
+            </p>
+          </div>
 
           {/* Verify Button */}
-          <button
-            // onClick={handleVerify}
-            onClick={() => setIsVerificationModalOpen(true)}
-            className="btn  mt-4  bg-teal-600"
-            disabled={doctor.isVerified} // Disable if already verified
-          >
-            {doctor.isVerified ? "Verified" : "Verify Doctor"}
-          </button>
+          <div className="mt-6">
+            <button
+              onClick={() => setIsVerificationModalOpen(true)}
+              className={`btn px-6 py-3 text-white font-semibold ${
+                doctor.isVerified
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-teal-600 hover:bg-teal-700"
+              } rounded-lg shadow-lg transition duration-300`}
+              disabled={doctor.isVerified}
+            >
+              {doctor.isVerified ? "Verified" : "Verify Doctor"}
+            </button>
+          </div>
         </div>
-
         {/* Document Image Section */}
         {doctor.document && (
-          <div className="md:w-1/3 flex flex-col items-center mt-6 md:mt-0">
+          <div className="md:w-1/3 flex flex-col items-center  ">
             <img
               src={doctor.document}
               alt={`${doctor.name}'s document`}
-              className="w-full h-auto rounded-lg shadow-md cursor-pointer"
+              className="w-full h-auto rounded-lg cursor-pointer"
               onClick={() => setIsModalOpen(true)} // Open modal on click
             />
-
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="btn bg-teal-600  mt-4"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="size-6"
-              >
-                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-                <path
-                  fillRule="evenodd"
-                  d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              View Full Image
-            </button>
           </div>
         )}
       </div>
