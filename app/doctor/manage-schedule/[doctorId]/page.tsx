@@ -30,7 +30,6 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
   const {
     availableDates,
     fetchAvailableDates,
-    toggleAvailableDate,
     cancelSlot,
     cancelAllSlots,
     addAvailability,
@@ -39,7 +38,6 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
   } = useManageScheduleStore((state) => ({
     availableDates: state.availableDates,
     fetchAvailableDates: state.fetchAvailableDates,
-    toggleAvailableDate: state.toggleAvailableDate,
     cancelSlot: state.cancelSlot,
     cancelAllSlots: state.cancelAllSlots,
     addAvailability: state.addAvailability,
@@ -119,20 +117,27 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
   const confirmCancelSlot = async () => {
     if (slotToCancel && selectedDates.length > 0) {
       try {
-        // Perform the API call to cancel the slot
+        // Set loading state to true
         setIsLoading(true);
-        await cancelSlot(params.doctorId, selectedDates[0], slotToCancel!);
 
-        // Fetch the updated list of available dates
+        // Perform the API call to cancel the slot
+        await cancelSlot(params.doctorId, selectedDates[0], slotToCancel);
+
+        // Immediately update the slots in the local state
+        setSlots((prevSlots) =>
+          prevSlots.filter((slot) => slot.id !== slotToCancel)
+        );
+
+        // Optionally, you can re-fetch the available dates if needed
         await fetchAvailableDates(params.doctorId);
 
-        // Optionally s`how a success message
+        // Show a success message
         toast.success("Slot canceled successfully");
       } catch (error) {
         console.error("Failed to cancel slot:", error);
         toast.error("Failed to cancel slot.");
       } finally {
-        // Close the confirmation dialog and reset the slotToCancel state
+        // Reset confirmation and loading states
         setShowConfirmation(false);
         setSlotToCancel(null);
         setIsLoading(false);
@@ -337,9 +342,7 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
                       slot.status === "available" &&
                       "bg-green-400 cursor-pointer"
                     }
-                    ${
-                      slot.status === "booked" && "bg-blue-400 cursor-pointer"
-                    }  
+                    ${slot.status === "booked" && "bg-blue-400 cursor-pointer"}
                     ${
                       slot.status === "cancelled" &&
                       "bg-gray-300 cursor-not-allowed"

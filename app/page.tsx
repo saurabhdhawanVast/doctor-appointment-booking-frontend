@@ -173,53 +173,50 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
             {doctors.length > 0 ? (
               <>
-                {doctors.slice(0, 3).map((doctor) => (
-                  <motion.div
-                    key={doctor._id}
-                    className="doctor-card p-6 bg-white border rounded-lg shadow-md hover:shadow-xl transition-all duration-300 h-fit"
-                    initial={{ scale: 0.9 }}
-                    whileInView={{ scale: 1.05 }}
-                    transition={{ duration: 0.9 }}
-                  >
-                    <div className="flex justify-between">
-                      {/* Profile picture and doctor details */}
-                      <div className="flex">
-                        <div className="w-16 h-16 mr-4">
-                          <img
-                            src={doctor.profilePic || "/default-profile.png"}
-                            alt={doctor.name}
-                            className="w-full h-full rounded-full object-cover"
-                          />
+                {doctors
+                  .sort(() => 0.5 - Math.random()) // Shuffle the array
+                  .slice(0, 3) // Select the first 3 doctors after shuffling
+                  .map((doctor) => (
+                    <motion.div
+                      key={doctor._id}
+                      className="doctor-card p-6 bg-white border rounded-lg shadow-md hover:shadow-xl transition-all duration-300 h-fit"
+                      initial={{ scale: 0.9 }}
+                      whileInView={{ scale: 1.05 }}
+                      transition={{ duration: 0.9 }}
+                    >
+                      <div className="flex justify-between">
+                        {/* Profile picture and doctor details */}
+                        <div className="flex">
+                          <div className="w-16 h-16 mr-4">
+                            <img
+                              src={doctor.profilePic || "/default-profile.png"}
+                              alt={doctor.name}
+                              className="w-full h-full rounded-full object-cover"
+                            />
+                          </div>
+                          <div className="flex flex-col justify-center">
+                            <h3 className="text-lg font-semibold">
+                              {doctor.name}
+                            </h3>
+                            <p>{doctor.speciality || ""}</p>
+                          </div>
                         </div>
-                        <div className="flex flex-col justify-center">
-                          <h3 className="text-lg font-semibold">
-                            {doctor.name}
-                          </h3>
-                          <p>{doctor.speciality || ""}</p>
-                          {/* <Link
-                  href={`/login`}
-                  className="mt-6 bg-teal-600 rounded-lg flex items-center justify-center px-4 py-2 hover:bg-teal-700"
-                >
-                  Book Appointment
-                </Link> */}
-                        </div>
-                      </div>
 
-                      {/* Rating and reviews */}
-                      <div>
-                        <div className="flex mt-2">
-                          {renderStars(doctor.avgRating)}
-                        </div>
-                        <div
-                          className="text-center text-sm underline hover:text-blue-500 cursor-pointer"
-                          onClick={() => handleReviewModelOpen(doctor._id)}
-                        >
-                          Reviews
+                        {/* Rating and reviews */}
+                        <div>
+                          <div className="flex mt-2">
+                            {renderStars(doctor.avgRating)}
+                          </div>
+                          <div
+                            className="text-center text-sm underline hover:text-blue-500 cursor-pointer"
+                            onClick={() => handleReviewModelOpen(doctor._id)}
+                          >
+                            Reviews
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </motion.div>
-                ))}
+                    </motion.div>
+                  ))}
 
                 {/* Render skeleton loaders if fewer than 3 doctors are present */}
                 {[...Array(Math.max(0, 3 - doctors.length))].map((_, index) => (
@@ -251,6 +248,81 @@ export default function Home() {
             ) : (
               <p className="text-center col-span-full">No doctors found</p>
             )}
+
+            {/* {doctors.length > 0 ? (
+              <>
+                {doctors.slice(0, 3).map((doctor) => (
+                  <motion.div
+                    key={doctor._id}
+                    className="doctor-card p-6 bg-white border rounded-lg shadow-md hover:shadow-xl transition-all duration-300 h-fit"
+                    initial={{ scale: 0.9 }}
+                    whileInView={{ scale: 1.05 }}
+                    transition={{ duration: 0.9 }}
+                  >
+                    <div className="flex justify-between">
+                  
+                      <div className="flex">
+                        <div className="w-16 h-16 mr-4">
+                          <img
+                            src={doctor.profilePic || "/default-profile.png"}
+                            alt={doctor.name}
+                            className="w-full h-full rounded-full object-cover"
+                          />
+                        </div>
+                        <div className="flex flex-col justify-center">
+                          <h3 className="text-lg font-semibold">
+                            {doctor.name}
+                          </h3>
+                          <p>{doctor.speciality || ""}</p>
+                        </div>
+                      </div>
+
+                 
+                      <div>
+                        <div className="flex mt-2">
+                          {renderStars(doctor.avgRating)}
+                        </div>
+                        <div
+                          className="text-center text-sm underline hover:text-blue-500 cursor-pointer"
+                          onClick={() => handleReviewModelOpen(doctor._id)}
+                        >
+                          Reviews
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+
+            
+                {[...Array(Math.max(0, 3 - doctors.length))].map((_, index) => (
+                  <div
+                    key={`skeleton-${index}`}
+                    className="p-6 bg-gray-200 border rounded-lg shadow-md animate-pulse h-fit"
+                  >
+                    <div className="flex justify-between">
+                     
+                      <div className="flex">
+                        <div className="w-16 h-16 mr-4 bg-gray-300 rounded-full"></div>
+                        <div className="flex flex-col justify-center">
+                          <div className="h-6 bg-gray-300 rounded w-3/4 mb-2"></div>
+                          <div className="h-4 bg-gray-300 rounded w-1/2 mb-2"></div>
+                        </div>
+                      </div>
+                   
+                      <div>
+                        <div className="flex mt-2">
+                          <div className="h-4 bg-gray-300 rounded w-10 mr-1"></div>
+                          <div className="h-4 bg-gray-300 rounded w-10"></div>
+                        </div>
+                        <div className="h-4 bg-gray-300 rounded w-20 mt-2"></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </>
+            ) : (
+              <p className="text-center col-span-full">No doctors found</p>
+            )} */}
           </div>
         </div>
       </section>
