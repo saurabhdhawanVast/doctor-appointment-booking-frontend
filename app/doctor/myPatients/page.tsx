@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { usePatientStore } from "@/store/usePatientStore";
+import { Patients, usePatientStore } from "@/store/usePatientStore";
 import { useRouter } from "next/navigation";
-import useLoginStore, { Patient } from "@/store/useLoginStore"; // Adjust the import path
+import useLoginStore from "@/store/useLoginStore"; // Adjust the import path
 import { FaSearch } from "react-icons/fa";
 import Loading from "../../loading";
 
@@ -10,7 +10,7 @@ const PatientListPage = () => {
   const { patients, fetchPrescriptionsByDoctor } = usePatientStore();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
+  const [filteredPatients, setFilteredPatients] = useState<Patients[]>([]);
   const [loading, setLoading] = useState(false); // Loading state
   const router = useRouter();
   const doctor = useLoginStore((state) => state.doctor);
@@ -23,7 +23,7 @@ const PatientListPage = () => {
   useEffect(() => {
     const filtered =
       patients?.filter(
-        (patient: Patient) =>
+        (patient: Patients) =>
           patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           patient.contactNumber?.includes(searchTerm) // Handle optional contactNumber
       ) || [];
@@ -69,7 +69,7 @@ const PatientListPage = () => {
 
       <div className="space-y-6">
         {paginatedPatients && paginatedPatients.length > 0 ? (
-          paginatedPatients.map((patient: Patient) => (
+          paginatedPatients.map((patient: Patients) => (
             <div
               key={patient._id}
               className="card bg-white shadow-lg rounded-lg p-6 cursor-pointer hover:shadow-xl transition-shadow duration-300 w-full"

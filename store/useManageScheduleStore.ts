@@ -22,8 +22,7 @@ interface ManageScheduleStore {
   loading: boolean;
   error: string | null;
   fetchAvailableDates: (id: string) => Promise<void>;
-  toggleAvailableDate: (date: string) => void;
-  manageSlots: (date: string) => void;
+  // manageSlots: (date: string) => void;
   cancelSlot: (doctorId: string, date: Date, slotId: string) => Promise<void>;
   cancelAllSlots: (doctorId: string, date: Date) => Promise<void>;
   addAvailability: (
@@ -43,29 +42,75 @@ const useManageScheduleStore = create<ManageScheduleStore>((set) => ({
   selectedDate: null,
   loading: false,
   error: null,
+  // fetchAvailableDates: async (id: string) => {
+  //   set({ loading: true });
+  //   try {
+
+  //     const response = await https.get(
+  //       `/doctors/getAvailableDates/${id}`, {
+  //       headers: {
+  //         'Authorization': `Bearer ${token}`,
+  //       },
+  //     }
+  //     );
+  //     if (Array.isArray(response.data)) {
+  //       const availableDates: DateWithSlots[] = await response.data.map(
+  //         (entry: any) => ({
+  //           date: new Date(entry.date),
+  //           slots: entry.slots.map((slot: any) => ({
+  //             id: slot._id,
+  //             time: slot.time,
+  //             status: slot.status,
+  //           })),
+  //         })
+  //       );
+
+  //       const slotsByDate: Record<string, Slot[]> = availableDates.reduce(
+  //         (acc: Record<string, Slot[]>, dateWithSlots) => {
+  //           acc[dateWithSlots.date.toISOString()] = dateWithSlots.slots;
+  //           return acc;
+  //         },
+  //         {}
+  //       );
+
+  //       await set({ availableDates, slotsByDate, loading: false });
+  //     } else {
+  //       console.error("Unexpected response format:", response.data);
+  //       set({ availableDates: [], slotsByDate: {}, loading: false });
+  //     }
+  //   } catch (error) {
+  //     console.error(`Error fetching available dates: ${error}`);
+  //     set({
+  //       availableDates: [],
+  //       slotsByDate: {},
+  //       loading: false,
+  //       error: "Failed to fetch available dates.",
+  //     });
+  //   }
+  // },
+
   fetchAvailableDates: async (id: string) => {
     set({ loading: true });
+
     try {
-
-      const response = await https.get(
-        `/doctors/getAvailableDates/${id}`, {
+      const response = await https.get(`/doctors/getAvailableDates/${id}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
-      }
-      );
-      if (Array.isArray(response.data)) {
-        const availableDates: DateWithSlots[] = await response.data.map(
-          (entry: any) => ({
-            date: new Date(entry.date),
-            slots: entry.slots.map((slot: any) => ({
-              id: slot._id,
-              time: slot.time,
-              status: slot.status,
-            })),
-          })
-        );
+      });
 
+      // Check if the response is an array
+      if (Array.isArray(response.data)) {
+        const availableDates: DateWithSlots[] = response.data.map((entry: any) => ({
+          date: new Date(entry.date),
+          slots: entry.slots.map((slot: any) => ({
+            id: slot._id,
+            time: slot.time,
+            status: slot.status,
+          })),
+        }));
+
+        // Create slotsByDate object for easier lookup
         const slotsByDate: Record<string, Slot[]> = availableDates.reduce(
           (acc: Record<string, Slot[]>, dateWithSlots) => {
             acc[dateWithSlots.date.toISOString()] = dateWithSlots.slots;
@@ -74,13 +119,14 @@ const useManageScheduleStore = create<ManageScheduleStore>((set) => ({
           {}
         );
 
-        await set({ availableDates, slotsByDate, loading: false });
+        // Update the state
+        set({ availableDates, slotsByDate, loading: false });
       } else {
         console.error("Unexpected response format:", response.data);
         set({ availableDates: [], slotsByDate: {}, loading: false });
       }
     } catch (error) {
-      console.error(`Error fetching available dates: ${error}`);
+      console.error(`Error fetching available dates:`, error);
       set({
         availableDates: [],
         slotsByDate: {},
@@ -89,22 +135,8 @@ const useManageScheduleStore = create<ManageScheduleStore>((set) => ({
       });
     }
   },
-  toggleAvailableDate: (date) =>
-    set((state) => {
-      const dateStr = new Date(date).toISOString();
-      const isAvailable = state.availableDates.some(
-        (avail) => avail.date.toISOString() === dateStr
-      );
-      const newAvailableDates = isAvailable
-        ? state.availableDates.filter(
-          (avail) => avail.date.toISOString() !== dateStr
-        )
-        : [...state.availableDates, { date: new Date(dateStr), slots: [] }];
-      return { availableDates: newAvailableDates };
-    }),
-  manageSlots: (date) => {
-    // Logic to manage slots for the selected date
-  },
+
+
 
   cancelSlot: async (doctorId: string, date: Date, slotId: string) => {
     set({ loading: true });
