@@ -1,57 +1,15 @@
 import { create } from "zustand";
 import axios from "axios";
-import useLoginStore, { Patient } from "@/store/useLoginStore";
+// import useLoginStore, { Patient } from "@/store/useLoginStore";
 import { toast } from "react-toastify";
-export interface Doctor {
-  _id: string;
-  name: string;
-  gender: string;
-  email: string;
-  profilePic: string;
-  password: string;
-  speciality: string;
-  qualification: string;
-  registrationNumber: string;
-  yearOfRegistration: string;
-  stateMedicalCouncil: string;
-  bio: string;
-  document: string;
-  clinicAddress: string;
-  contactNumber: string;
-  city: string;
-  state: string;
-  pinCode: number;
-  clinicName: string;
-  coordinates: {
-    latitude: number;
-    longitude: number;
-  };
-  morningStartTime: string;
-  morningEndTime: string;
-  eveningStartTime: string;
-  eveningEndTime: string;
-  slotDuration: number;
-  isVerified: boolean;
-}
-interface Prescription {
-  _id: string;
-  patientId: string;
-  doctorId: string;
-  appointmentDate: string;
-  medicines: Medicine[];
-  note: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Medicine {
-  name: string;
-  dosage: string;
-}
+import useLoginStore from "./useLoginStore";
+import { Doctor } from "./useDoctorStore";
+import { Prescription } from "./usePrescriptionStore";
 
 export interface Patients {
   _id: string;
   user: string;
+  name: string;
   contactNumber: string;
   address: Address;
   bloodGroup: string;
@@ -69,12 +27,12 @@ interface Address {
 }
 
 interface PatientState {
-  patient: Patient | null;
-  patients: Patient[] | null;
+  patient: Patients | null;
+  patients: Patients[] | null;
   doctors: Doctor[] | null;
-  setPatient: (patient: Patient) => void;
+  setPatient: (patient: Patients) => void;
   fetchPatient: (id: string) => void;
-  updateProfile: (patient: Partial<Patient>) => void;
+  updateProfile: (patient: Partial<Patients>) => void;
   deletePatient: (id: string) => void;
   fetchPatientByUserId: (userId: string) => void;
   allPatients: () => Promise<void>;
@@ -92,6 +50,8 @@ interface PatientState {
 const https = axios.create({
   baseURL: "http://localhost:3000",
 });
+
+const token = useLoginStore.getState().token;
 export const usePatientStore = create<PatientState>((set) => ({
   patient: null,
   doctors: null,
@@ -102,7 +62,6 @@ export const usePatientStore = create<PatientState>((set) => ({
 
   fetchPatient: async (id: string) => {
     try {
-      const token = useLoginStore.getState().token;
       const response = await https.get(`/patients/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -115,19 +74,14 @@ export const usePatientStore = create<PatientState>((set) => ({
   },
   updateProfile: async (patient) => {
     try {
-      const token = useLoginStore.getState().token;
       let patientId = patient._id;
       delete patient._id;
       console.log("patient", patient);
-      let result = await https.patch(
-        `/patients/${patientId}`,
-        patient,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      let result = await https.patch(`/patients/${patientId}`, patient, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       set({ patient: result.data });
       useLoginStore.getState().setPatient(result.data);
     } catch (error) {
@@ -136,11 +90,11 @@ export const usePatientStore = create<PatientState>((set) => ({
   },
 
   deletePatient: async (id: string) => {
+
     try {
-      const token = useLoginStore.getState().token;
       await https.delete(`/patients/${id}`, {
         headers: {
-          Authorization: `Bearer${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       set((state) => ({
@@ -155,8 +109,6 @@ export const usePatientStore = create<PatientState>((set) => ({
 
   fetchPrescriptionsByDoctor: async (doctorId, page) => {
     try {
-      console.log("fetching prescription for doctorId ", doctorId);
-      const token = useLoginStore.getState().token;
       const response = await https.get(
         `/prescriptions/findPrescriptionByDoctorId/${doctorId}`,
         {
@@ -198,7 +150,6 @@ export const usePatientStore = create<PatientState>((set) => ({
       `Patient Store: state: ${state}, city: ${city}, specialty: ${specialty},gender: ${gender}, radius: ${radius}, location: ${location}`
     );
     try {
-      const token = useLoginStore.getState().token;
       const response = await https.get(`/doctors/search`, {
         params: { state, city, specialty, gender, radius, location },
         headers: {
@@ -215,7 +166,6 @@ export const usePatientStore = create<PatientState>((set) => ({
 
   fetchPatientByUserId: async (userId: string) => {
     try {
-      const token = useLoginStore.getState().token;
       const response = await https.get(
         `patients/fetchPatientByUserId/${userId}`,
         {
@@ -232,15 +182,11 @@ export const usePatientStore = create<PatientState>((set) => ({
 
   allPatients: async () => {
     try {
-      const token = useLoginStore.getState().token;
-      const response = await https.get(
-        "patients/allPatients",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await https.get("patients/allPatients", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       set({ patients: response.data });
     } catch (error) {
       console.error("Error fetching patient data:", error);

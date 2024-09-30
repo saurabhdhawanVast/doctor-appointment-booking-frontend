@@ -6,7 +6,7 @@ import useLoginStore from "@/store/useLoginStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import useDoctorStore from "@/store/useDoctorStoree";
+import useDoctorStore from "@/store/useDoctorStore";
 import { toast } from "react-toastify";
 import useRegisterDoctorStore from "@/store/useRegisterDoctorStore";
 
@@ -549,8 +549,6 @@ const EditDoctorProfile = () => {
                           </p>
                         )}
                       </div>
-
-                    
 
                       <div className="mb-4">
                         <label

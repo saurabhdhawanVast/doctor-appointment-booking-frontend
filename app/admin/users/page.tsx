@@ -1,8 +1,9 @@
 "use client";
-import useDoctorStore from "@/store/useDoctorStore";
+
 import { usePatientStore } from "@/store/usePatientStore";
+import useDoctorStore from "@/store/useDoctorStore";
 import React, { useEffect, useState } from "react";
-import { FaBars, FaTimes } from "react-icons/fa"; // Importing FontAwesome icons
+import { FaBars, FaTimes } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -10,11 +11,11 @@ const Users = () => {
   const patients = usePatientStore((state) => state.patients);
   const allPatients = usePatientStore((state) => state.allPatients);
   const doctors = useDoctorStore((state) => state.doctors);
-  const deleteDoctor = useDoctorStore((state) => state.deleteDoctor);
+
   const deletePatient = usePatientStore((state) => state.deletePatient);
 
   const disableDoctor = useDoctorStore((state) => state.disableDoctor);
-  const fetchDoctors = useDoctorStore((state) => state.fetchDoctors);
+  const fetchDoctorsMain = useDoctorStore((state) => state.fetchDoctorsMain);
   const [view, setView] = useState("doctors"); // State to toggle between doctors and patients
   const [sidebarOpen, setSidebarOpen] = useState(true); // State to handle sidebar visibility
   const [searchTerm, setSearchTerm] = useState(""); // State to handle search input
@@ -24,9 +25,9 @@ const Users = () => {
   const [isViewImage, setIsViewImage] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchDoctors();
+    fetchDoctorsMain();
     allPatients();
-  }, [fetchDoctors, allPatients]);
+  }, [fetchDoctorsMain, allPatients]);
 
   // Filtered list based on the search term
   const filteredDoctors = doctors?.filter((doctor) =>
@@ -47,7 +48,7 @@ const Users = () => {
   };
 
   return (
-    <div className="flex min-h-screen mt-16">
+    <div className="flex  h-fit min-h-screen mt-16">
       {/* Sidebar */}
       <div
         className={`${
@@ -81,7 +82,7 @@ const Users = () => {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 pl-4 pr-4 bg-gray-100 relative">
+      <div className="flex-1 pl-4 pr-4 bg-gray-100 relative h-fit min-h-screen">
         {/* Modal for Viewing Full Image */}
 
         {isModalOpen && (
@@ -166,9 +167,9 @@ const Users = () => {
                 filteredDoctors.map((doctor) => (
                   <li
                     key={doctor._id}
-                    className="p-2 bg-white mb-2 shadow rounded font-semibold flex justify-between items-center"
+                    className="p-2 bg-white mb-2 shadow rounded font-semibold flex flex-wrap justify-between items-center"
                   >
-                    <div className="flex items-center">
+                    <div className="flex flex-wrap justify-between items-center">
                       <img
                         src={doctor.profilePic || "/default-profile.png"} // Default profile picture if unavailable
                         alt={`${doctor.name}'s profile`}
@@ -183,14 +184,17 @@ const Users = () => {
                         </span>
                       </div>
                     </div>
-                    <button
-                      onClick={() => {
-                        handleDoctorDelete(doctor._id); // Open the modal
-                      }}
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                    >
-                      Disable
-                    </button>
+                    <div>
+                      <button
+                        onClick={() => {
+                          handleDoctorDelete(doctor._id);
+                          console.log(doctor._id); // Open the modal
+                        }}
+                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                      >
+                        Disable
+                      </button>
+                    </div>
                   </li>
                 ))
               ) : (
@@ -208,9 +212,9 @@ const Users = () => {
                 filteredPatients.map((patient) => (
                   <li
                     key={patient._id}
-                    className="p-2 bg-white mb-2 shadow rounded font-semibold flex justify-between items-center"
+                    className="p-2 bg-white mb-2 shadow rounded font-semibold flex flex-wrap justify-between items-center"
                   >
-                    <div className="flex items-center">
+                    <div className="flex flex-wrap justify-between items-center">
                       <img
                         src={patient.profilePic || "/default-profile.png"} // Use a default profile picture if none exists
                         alt={`${patient.name}'s profile`}

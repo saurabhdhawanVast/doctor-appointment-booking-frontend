@@ -87,7 +87,6 @@ export default function Form_Doctor() {
   const [currentStep, setCurrentStep] = useState(0);
   const delta = currentStep - previousStep;
   const [passwordError, setPasswordError] = useState("");
-
   const [password, setPassword] = useState("");
 
   // Function to check password validity
@@ -105,19 +104,6 @@ export default function Form_Doctor() {
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
   };
-
-  // const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const passwordValue = e.target.value;
-  //   const result = FormDataSchemaDoctor.safeParse(passwordValue);
-
-  //   if (!result.success) {
-  //     // Set the first validation error message
-  //     setPasswordError(result.error.errors[0].message);
-  //   } else {
-  //     // Clear the error message if validation passes
-  //     setPasswordError("");
-  //   }
-  // };
 
   //doctor state
   const stateMedicalCouncilsList = useRegisterDoctorStore(
@@ -408,7 +394,10 @@ export default function Form_Doctor() {
         {/* steps */}
 
         <nav aria-label="Progress ">
-          <ol role="list" className="space-y-4 md:flex  ">
+          <ol
+            role="list"
+            className="space-y-4 md:flex  md:space-x-8 md:space-y-0 "
+          >
             {steps.map((step, index) => (
               <li key={step.name} className="md:flex-1">
                 {currentStep > index ? (
@@ -593,36 +582,6 @@ export default function Form_Doctor() {
                   </div>
 
                   {/* Password */}
-
-                  {/* <div className="w-full md:w-1/3 p-2">
-                    <label
-                      htmlFor="password"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                    >
-                      Password<span className="text-red-500"> *</span>
-                    </label>
-
-                    <div className="mt-2">
-                      <input
-                        type="password"
-                        id="password"
-                        {...register("password")}
-                        autoComplete="family-name"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        (Password must be at least 8 characters long, contain at
-                        least one uppercase letter, one lowercase letter, one
-                        digit, and one special character.)
-                      </p>
-                      {errors.password?.message && (
-                        <p className="mt-2 text-sm text-red-400">
-                          {errors.password.message}
-                        </p>
-                      )}
-                    </div>
-                  </div> */}
-
                   <div className="w-full md:w-1/3 p-2">
                     <label
                       htmlFor="password"
@@ -698,40 +657,6 @@ export default function Form_Doctor() {
                     </div>
                   </div>
 
-                  {/* ------------------------------------------ */}
-                  {/* <div className="w-full md:w-1/3 p-2">
-                    <label
-                      htmlFor="password"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                    >
-                      Password<span className="text-red-500"> *</span>
-                    </label>
-
-                    <div className="mt-2">
-                      <input
-                        type="password"
-                        id="password"
-                        {...register("password")} // Register the input field
-                        autoComplete="new-password"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
-                      />
-                      <div className="text-xs text-gray-500 mt-1">
-                        <ul className="list-disc pl-5">
-                          <li>At least 8 characters long</li>
-                          <li>Contains at least one uppercase letter</li>
-                          <li>Contains at least one lowercase letter</li>
-                          <li>Contains at least one digit</li>
-                          <li>Contains at least one special character</li>
-                        </ul>
-                      </div>
-
-                      {errors.password && (
-                        <p className="mt-2 text-sm text-red-400">
-                          {errors.password.message}
-                        </p>
-                      )}
-                    </div>
-                  </div> */}
                   {/*Confirm  Password */}
 
                   <div className="w-full md:w-1/3 p-2">

@@ -87,14 +87,14 @@ const ArticlePage = ({ params }: ArticlePageProps) => {
       </div>
       <section className="relative flex justify-center items-center h-auto py-10">
         <div className="absolute inset-0 bg-black opacity-50 z-0"></div>
-        <div className="relative z-10 flex justify-center items-center">
+        <div className="relative z-30 flex justify-center items-center">
           <img
             className="rounded-xl shadow-lg"
             src={article.image || "/images/default.jpg"}
             alt={article.title}
             style={{
               maxWidth: "100%",
-              maxHeight: "200px",
+              maxHeight: "220px",
               objectFit: "contain",
             }}
           />
@@ -113,7 +113,7 @@ const ArticlePage = ({ params }: ArticlePageProps) => {
       </section>
 
       {/* Article Info */}
-      <section className="max-w-4xl mx-auto px-4 py-10 bg-white shadow-lg rounded-lg -mt-10  z-20 relative">
+      <section className="max-w-4xl mx-auto px-4 py-10 bg-white   shadow-lg rounded-lg -mt-12  z-20 relative">
         <div className="text-center">
           <p className="text-lg text-gray-700">
             Category:{" "}

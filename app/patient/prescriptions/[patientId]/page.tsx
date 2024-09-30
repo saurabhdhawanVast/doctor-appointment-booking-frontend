@@ -218,7 +218,7 @@ const PrescriptionPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 mt-16">
+    <div className="container mx-auto p-4 mt-16 h-fit min-h-screen">
       {/* Search and Date Picker */}
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
         {/* Search Bar */}

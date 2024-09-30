@@ -4,13 +4,13 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, toZonedTime } from "date-fns-tz";
 
-import useDoctorStore from "@/store/useDoctorStoree";
 import { useSearchParams } from "next/navigation";
-import useBookAppointmentStore from "@/store/useBookAppointmentStore";
+
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
-import { set } from "react-hook-form";
-import { Console } from "console";
+
+import useDoctorStore from "@/store/useDoctorStore";
+import useAppointmentStore from "@/store/useAppointmentStore";
 
 const timeZone = "Asia/Kolkata"; // Set your preferred time zone
 
@@ -37,7 +37,7 @@ const BookAppointmentPage = () => {
     setBookingError,
     setBookingSuccess,
     bookSlot,
-  } = useBookAppointmentStore((state) => ({
+  } = useAppointmentStore((state) => ({
     selectedSlotId: state.selectedSlotId,
     showModal: state.showModal,
     bookingError: state.bookingError,
@@ -58,13 +58,10 @@ const BookAppointmentPage = () => {
     });
     return dateString;
   };
-  // const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+
   const [selectedDate, setSelectedDate] = useState<Date | null>(
     formattedDate(new Date())
   );
-  // const [todaysDate, settodaysDate] = useState<Date | null>(
-  //   formattedDate(new Date())
-  // );
 
   const [slots, setSlots] = useState<any[]>([]);
 
@@ -196,7 +193,7 @@ const BookAppointmentPage = () => {
   };
 
   return (
-    <div className="p-4 mt-16 w-[99.9%]  flex  flex-wrap h-screen min-h-screen">
+    <div className="p-4 mt-16 w-[99.9%]  flex  flex-wrap h-fit min-h-screen  ">
       <div className="flex flex-row flex-wrap  w-full h-full gap-4 ">
         <div className="flex flex-col flex-wrap w-96 h-fit p-2 ">
           <div className="flex flex-wrap space-x-4 mb-6 items-center  ">
@@ -276,12 +273,37 @@ const BookAppointmentPage = () => {
           <div className="bg-white rounded-lg shadow-md p-6  overflow-y-auto">
             {selectedDate && (
               <>
-                <h2 className="text-xl font-semibold text-gray-700 mb-4">
-                  Available Slots for
-                  {format(toZonedTime(selectedDate, timeZone), "d MMM yyyy", {
-                    timeZone,
-                  })}
-                </h2>
+                <div className="flex items-center justify-between bg-gray-200 p-2 rounded-lg mb-4">
+                  <div>
+                    <h1 className="text-lg font-normal ">
+                      Available Slots for{" "}
+                      {format(
+                        toZonedTime(selectedDate, timeZone),
+                        "d MMM yyyy",
+                        {
+                          timeZone,
+                        }
+                      )}
+                    </h1>
+                  </div>
+
+                  <div className="flex flex-wrap items-center space-x-2">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-green-400"></div>
+                      <span className="text-gray-700">Available</span>
+                    </div>
+                    {/* 
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-blue-500"></div>
+                      <span className="text-gray-700">Booked</span>
+                    </div> */}
+
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-gray-300"></div>
+                      <span className="text-gray-700">Not Available</span>
+                    </div>
+                  </div>
+                </div>
                 <ul className="flex flex-wrap gap-4">
                   {slots.length > 0 ? (
                     slots.map((slot) => {
@@ -325,7 +347,7 @@ const BookAppointmentPage = () => {
                           disabled={!isAvailable}
                           className={`w-28 rounded-lg pt-2 text-center  ${
                             isAvailable
-                              ? "bg-green-500 cursor-pointer"
+                              ? "bg-green-400 cursor-pointer"
                               : "bg-gray-300 cursor-not-allowed"
                           }`}
                         >
@@ -345,54 +367,6 @@ const BookAppointmentPage = () => {
                     </p>
                   )}
                 </ul>
-
-                {/* <ul className="flex flex-wrap gap-4">
-                  {slots.length > 0 ? (
-                    slots.map((slot) => {
-                      const slotTime = slot.time;
-                      const todayDate = new Date();
-                      const currentTime = new Date().toLocaleTimeString(
-                        "en-GB",
-                        {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          hour12: false,
-                        }
-                      );
-                      // console.log("date", selectedDate);
-                      // console.log("Todaydate", formattedDate(todayDate));
-                      // console.log(selectedDate === formattedDate(todayDate));
-
-                      // const isAvailable =
-                      //   slot.status === "available" && currentTime <= slotTime;
-
-                      return (
-                        <button
-                          key={slot.id}
-                          onClick={() => handleBookSlot(slot.id)}
-                          disabled={!isAvailable}
-                          className={`w-28 rounded-lg pt-2 text-center ${
-                            isAvailable
-                              ? "bg-green-500 cursor-pointer"
-                              : "bg-gray-300 cursor-not-allowed"
-                          }`}
-                        >
-                          <li>
-                            <div className="flex justify-center mb-2">
-                              <div>
-                                <span>{formatTime(slot.time)}</span>
-                              </div>
-                            </div>
-                          </li>
-                        </button>
-                      );
-                    })
-                  ) : (
-                    <p className="text-center text-gray-500 w-full">
-                      No available slots on this date.
-                    </p>
-                  )}
-                </ul> */}
               </>
             )}
           </div>

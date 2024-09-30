@@ -100,7 +100,7 @@ const MyArticlesList = () => {
 
                 {/* Article Content */}
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">
+                  <h3 className="text-lg font-medium text-blue-600 mb-2">
                     {article.title}
                   </h3>
                   <div className="text-sm text-gray-500 mb-3">

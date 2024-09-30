@@ -39,6 +39,8 @@ const https = axios.create({
   baseURL: "http://localhost:3000", // Adjust to your backend URL
 });
 
+const token = useLoginStore.getState().token;
+
 interface PrescriptionState {
   prescriptions: Prescription[];
   patients: Record<string, any>; // Store patient details
@@ -61,7 +63,7 @@ export const usePrescriptionStore = create<PrescriptionState>()(
     patients: {},
     fetchPrescriptions: async (patientId) => {
       try {
-        const token = useLoginStore.getState().token;
+
         console.log(`Fetching prescriptions for patientId ${patientId}`);
         const response = await https.get(`/prescriptions/byPatient`, {
           params: { patientId },
@@ -77,7 +79,7 @@ export const usePrescriptionStore = create<PrescriptionState>()(
       console.log(`Saving prescription: ${JSON.stringify(prescription)}`);
       console.log("Store Date", prescription.appointmentDate);
       try {
-        const token = useLoginStore.getState().token;
+
         const response = await https.post("/prescriptions/save", prescription, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -92,7 +94,7 @@ export const usePrescriptionStore = create<PrescriptionState>()(
 
     fetchPrescriptionsByDoctor: async (doctorId) => {
       try {
-        const token = useLoginStore.getState().token;
+
         console.log(`Fetching prescriptions for doctorId ${doctorId}`);
         const response = await https.get(
           `/prescriptions/findPrescriptionByDoctorId/${doctorId}`,
@@ -115,8 +117,8 @@ export const usePrescriptionStore = create<PrescriptionState>()(
       }
 
       try {
-        const token = useLoginStore.getState().token;
-        const response = await https.get(`/patients/${patientId}`,{
+
+        const response = await https.get(`/patients/${patientId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const patientData = response.data;
@@ -139,7 +141,7 @@ export const usePrescriptionStore = create<PrescriptionState>()(
         console.log(
           `Fetching prescriptions for patientId ${patientId} and doctorId ${doctorId}`
         );
-        const token = useLoginStore.getState().token;
+
         const response = await https.get(
           `/prescriptions/findPrescriptionByPatientAndDoctor`,
           {
@@ -157,12 +159,12 @@ export const usePrescriptionStore = create<PrescriptionState>()(
 
     fetchPrescriptionsForSlot: async (slotId) => {
       try {
-        const token=useLoginStore.getState().token;
+        const token = useLoginStore.getState().token;
         console.log(`Fetching prescriptions for slotId ${slotId}`);
         const response = await https.get(
-          `/prescriptions/findPrescriptionBySlotId/${slotId}`,{
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          `/prescriptions/findPrescriptionBySlotId/${slotId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }
         );
         set({ prescriptions: response.data });
         console.log(

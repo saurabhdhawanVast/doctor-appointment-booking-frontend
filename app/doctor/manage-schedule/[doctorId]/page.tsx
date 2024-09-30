@@ -30,7 +30,7 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
   const {
     availableDates,
     fetchAvailableDates,
-    toggleAvailableDate,
+
     cancelSlot,
     cancelAllSlots,
     addAvailability,
@@ -39,7 +39,7 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
   } = useManageScheduleStore((state) => ({
     availableDates: state.availableDates,
     fetchAvailableDates: state.fetchAvailableDates,
-    toggleAvailableDate: state.toggleAvailableDate,
+
     cancelSlot: state.cancelSlot,
     cancelAllSlots: state.cancelAllSlots,
     addAvailability: state.addAvailability,

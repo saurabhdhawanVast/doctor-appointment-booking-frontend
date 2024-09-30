@@ -1,4 +1,4 @@
-import create from "zustand";
+import { create } from "zustand";
 import axios from "axios";
 import { toast } from "react-toastify";
 import useLoginStore from "./useLoginStore";
@@ -36,12 +36,14 @@ const https = axios.create({
   baseURL: "http://localhost:3000", // Adjust if necessary
 });
 
+const token = useLoginStore.getState().token;
+
 export const useRatingStore = create<RatingsState>((set) => ({
   ratings: [],
   createRating: async (Rating) => {
     console.log(`creating rating${JSON.stringify(Rating)}`);
     try {
-      const token = useLoginStore.getState().token;
+
       await https.post("/ratings", Rating, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -55,7 +57,7 @@ export const useRatingStore = create<RatingsState>((set) => ({
   },
   getRatingsForDoctor: async (doctorId) => {
     try {
-      const token = useLoginStore.getState().token;
+
       let response = await https.get(
         `/ratings/doctor/${doctorId}`,
         {

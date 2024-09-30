@@ -1,5 +1,5 @@
 // src/store/useArticleStore.ts
-import create from "zustand";
+import { create } from "zustand";
 import axios from "axios";
 import useLoginStore from "./useLoginStore";
 
@@ -34,6 +34,8 @@ const https = axios.create({
 });
 
 
+const token = useLoginStore.getState().token;
+
 export const useArticleStore = create<ArticleState>((set) => ({
   articles: [],
   article: null,
@@ -42,7 +44,7 @@ export const useArticleStore = create<ArticleState>((set) => ({
 
   fetchArticles: async (query = {}) => {
     try {
-      const token = useLoginStore.getState().token;
+
       const queryString = new URLSearchParams({
         filter: JSON.stringify(query),
       }).toString();
@@ -64,7 +66,7 @@ export const useArticleStore = create<ArticleState>((set) => ({
   },
   getArticle: async (id) => {
     try {
-      const token = useLoginStore.getState().token;
+
       const response = await https.get(`/articles/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -79,7 +81,7 @@ export const useArticleStore = create<ArticleState>((set) => ({
 
   createArticle: async (article) => {
     try {
-      const token = useLoginStore.getState().token;
+
       await https.post("/articles", article, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -91,7 +93,7 @@ export const useArticleStore = create<ArticleState>((set) => ({
   },
   updateArticle: async (article) => {
     try {
-      const token = useLoginStore.getState().token;
+
       let articleId = article._id;
       delete article._id;
       let updatedArticle = await https.patch(
@@ -118,7 +120,7 @@ export const useArticleStore = create<ArticleState>((set) => ({
   },
   removeArticle: async (id) => {
     try {
-      const token = useLoginStore.getState().token;
+
       await https.delete(`/articles/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
