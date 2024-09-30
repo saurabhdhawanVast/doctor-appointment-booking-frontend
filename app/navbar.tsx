@@ -338,12 +338,15 @@ const Navbar = () => {
               {isLoggedIn && (
                 <>
                   <li>
-                    <button
-                      onClick={handleProfile}
-                      className="w-full text-gray-700 hover:bg-gray-100 px-4 py-2 text-left"
-                    >
-                      Manage Profile
-                    </button>
+                    {role === "doctor" ||
+                      (role === "patient" && (
+                        <button
+                          onClick={handleProfile}
+                          className="w-full text-gray-700 hover:bg-gray-100 px-4 py-2 text-left"
+                        >
+                          Manage Profile
+                        </button>
+                      ))}
                   </li>
                   <li>
                     <button

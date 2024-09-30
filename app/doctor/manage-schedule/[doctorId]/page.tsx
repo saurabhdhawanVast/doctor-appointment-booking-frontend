@@ -30,6 +30,7 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
   const {
     availableDates,
     fetchAvailableDates,
+
     cancelSlot,
     cancelAllSlots,
     addAvailability,
@@ -38,6 +39,7 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
   } = useManageScheduleStore((state) => ({
     availableDates: state.availableDates,
     fetchAvailableDates: state.fetchAvailableDates,
+
     cancelSlot: state.cancelSlot,
     cancelAllSlots: state.cancelAllSlots,
     addAvailability: state.addAvailability,
@@ -117,27 +119,20 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
   const confirmCancelSlot = async () => {
     if (slotToCancel && selectedDates.length > 0) {
       try {
-        // Set loading state to true
-        setIsLoading(true);
-
         // Perform the API call to cancel the slot
-        await cancelSlot(params.doctorId, selectedDates[0], slotToCancel);
+        setIsLoading(true);
+        await cancelSlot(params.doctorId, selectedDates[0], slotToCancel!);
 
-        // Immediately update the slots in the local state
-        setSlots((prevSlots) =>
-          prevSlots.filter((slot) => slot.id !== slotToCancel)
-        );
-
-        // Optionally, you can re-fetch the available dates if needed
+        // Fetch the updated list of available dates
         await fetchAvailableDates(params.doctorId);
 
-        // Show a success message
+        // Optionally s`how a success message
         toast.success("Slot canceled successfully");
       } catch (error) {
         console.error("Failed to cancel slot:", error);
         toast.error("Failed to cancel slot.");
       } finally {
-        // Reset confirmation and loading states
+        // Close the confirmation dialog and reset the slotToCancel state
         setShowConfirmation(false);
         setSlotToCancel(null);
         setIsLoading(false);
@@ -340,9 +335,11 @@ const DoctorSchedulePage: React.FC<{ params: { doctorId: string } }> = ({
                     disabled={slot.status === "cancelled"}
                     className={`w-28 rounded-lg pt-2 text-center ${
                       slot.status === "available" &&
-                      "bg-green-400 cursor-pointer"
+                      "bg-green-500 cursor-pointer"
                     }
-                    ${slot.status === "booked" && "bg-blue-400 cursor-pointer"}
+                    ${
+                      slot.status === "booked" && "bg-blue-500 cursor-pointer"
+                    }  
                     ${
                       slot.status === "cancelled" &&
                       "bg-gray-300 cursor-not-allowed"

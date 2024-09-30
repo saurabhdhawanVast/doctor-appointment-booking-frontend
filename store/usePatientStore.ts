@@ -90,6 +90,7 @@ export const usePatientStore = create<PatientState>((set) => ({
   },
 
   deletePatient: async (id: string) => {
+
     try {
       await https.delete(`/patients/${id}`, {
         headers: {
