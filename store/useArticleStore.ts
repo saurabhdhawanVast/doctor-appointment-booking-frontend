@@ -34,7 +34,7 @@ const https = axios.create({
 });
 
 
-const token = useLoginStore.getState().token;
+
 
 export const useArticleStore = create<ArticleState>((set) => ({
   articles: [],
@@ -52,7 +52,7 @@ export const useArticleStore = create<ArticleState>((set) => ({
         `/articles?${queryString}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${sessionStorage.token}`,
           },
         }
       );
@@ -69,7 +69,7 @@ export const useArticleStore = create<ArticleState>((set) => ({
 
       const response = await https.get(`/articles/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${sessionStorage.token}`,
         },
       });
       console.log(response.data);
@@ -84,7 +84,7 @@ export const useArticleStore = create<ArticleState>((set) => ({
 
       await https.post("/articles", article, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${sessionStorage.token}`,
         },
       });
     } catch (error) {
@@ -101,7 +101,7 @@ export const useArticleStore = create<ArticleState>((set) => ({
         article,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${sessionStorage.token}`,
           },
         }
       );
@@ -123,7 +123,7 @@ export const useArticleStore = create<ArticleState>((set) => ({
 
       await https.delete(`/articles/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${sessionStorage.token}`,
         },
       });
       set((state) => ({

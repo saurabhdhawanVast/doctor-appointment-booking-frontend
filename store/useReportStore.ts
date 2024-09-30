@@ -33,7 +33,7 @@ interface ReportsState {
 const https = axios.create({
   baseURL: "http://localhost:3000", // Adjust if necessary
 });
-const token = useLoginStore.getState().token;
+
 
 export const useReportStore = create<ReportsState>((set) => ({
   reports: [],
@@ -48,7 +48,7 @@ export const useReportStore = create<ReportsState>((set) => ({
         `/reports?${queryString}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${sessionStorage.token}`,
           },
         }
       );
@@ -66,7 +66,7 @@ export const useReportStore = create<ReportsState>((set) => ({
         `/reports/${id}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${sessionStorage.token}`,
           },
         }
       );
@@ -83,7 +83,7 @@ export const useReportStore = create<ReportsState>((set) => ({
 
       await https.post("/reports", Report, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${sessionStorage.token}`,
         },
       });
       toast.success("Report added successfully");
