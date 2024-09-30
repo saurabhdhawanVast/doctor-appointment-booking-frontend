@@ -51,7 +51,7 @@ export default function DoctorProfile() {
         </button>
       </div>
 
-      <div className="flex  flex-wrap   rounded-xl shadow-2xl  h-fit min-h-screen ">
+      <div className="flex  flex-wrap  rounded-xl shadow-2xl  h-fit min-h-screen ">
         <div className="rounded-xl flex flex-wrap sm:w-96 md:w-2/3 px-4">
           {/* Doctor Profile Picture and Name */}
           <div className="flex  flex-wrap items-center mb-6">
@@ -62,7 +62,14 @@ export default function DoctorProfile() {
                 className="w-32 h-32 rounded-full object-cover border-4 border-teal-500 mr-6"
               />
             )}
-            <h2 className="text-4xl font-bold text-gray-800">{doctor.name}</h2>
+            <div>
+              <h2 className="text-4xl font-bold text-gray-800">
+                {doctor.name}
+              </h2>
+              <p className="text-gray-600 font-semibold">
+                {doctor.contactNumber}
+              </p>
+            </div>
           </div>
 
           {/* Doctor Details */}
@@ -101,7 +108,7 @@ export default function DoctorProfile() {
             </div>
           </div>
 
-          <div className="mt-6">
+          <div className="mt-6 w-full">
             <p className=" text-gray-700 mt-2 text-justify leading-relaxed ">
               <strong className="text-teal-600 text-lg">Bio:</strong>{" "}
               {doctor.bio}

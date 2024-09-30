@@ -167,9 +167,9 @@ const Users = () => {
                 filteredDoctors.map((doctor) => (
                   <li
                     key={doctor._id}
-                    className="p-2 bg-white mb-2 shadow rounded font-semibold flex justify-between items-center"
+                    className="p-2 bg-white mb-2 shadow rounded font-semibold flex flex-wrap justify-between items-center"
                   >
-                    <div className="flex items-center">
+                    <div className="flex flex-wrap justify-between items-center">
                       <img
                         src={doctor.profilePic || "/default-profile.png"} // Default profile picture if unavailable
                         alt={`${doctor.name}'s profile`}
@@ -184,14 +184,17 @@ const Users = () => {
                         </span>
                       </div>
                     </div>
-                    <button
-                      onClick={() => {
-                        handleDoctorDelete(doctor._id); // Open the modal
-                      }}
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                    >
-                      Disable
-                    </button>
+                    <div>
+                      <button
+                        onClick={() => {
+                          handleDoctorDelete(doctor._id);
+                          console.log(doctor._id); // Open the modal
+                        }}
+                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                      >
+                        Disable
+                      </button>
+                    </div>
                   </li>
                 ))
               ) : (
@@ -209,9 +212,9 @@ const Users = () => {
                 filteredPatients.map((patient) => (
                   <li
                     key={patient._id}
-                    className="p-2 bg-white mb-2 shadow rounded font-semibold flex justify-between items-center"
+                    className="p-2 bg-white mb-2 shadow rounded font-semibold flex flex-wrap justify-between items-center"
                   >
-                    <div className="flex items-center">
+                    <div className="flex flex-wrap justify-between items-center">
                       <img
                         src={patient.profilePic || "/default-profile.png"} // Use a default profile picture if none exists
                         alt={`${patient.name}'s profile`}

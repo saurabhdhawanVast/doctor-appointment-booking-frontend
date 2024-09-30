@@ -86,9 +86,7 @@ const Doctor = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPatient, setCurrentPatient] = useState<Patient | null>(null);
-  // const [appointmentDate, setAppointmentDate] = useState<string>(
-  //   new Date().toISOString()
-  // );
+
   const [appointmentDate, setAppointmentDate] = useState<string>("");
   const [slotId, setSlotId] = useState<string>("");
 
@@ -99,14 +97,13 @@ const Doctor = () => {
   ) => {
     setCurrentPatient({
       ...patient,
-      _id: patient.patientId, // Ensure patientId is properly mapped
+      _id: patient.patientId,
     });
     setAppointmentDate(appointmentDate);
     setSlotId(slotId);
     setIsModalOpen(true);
   };
 
-  // Filter appointments based on the selected filter
   const getFilteredAppointments = () => {
     const now = new Date();
     const tomorrow = new Date();
@@ -163,7 +160,6 @@ const Doctor = () => {
     );
   };
 
-  // Helper to apply class based on whether it's an appointment or not
   const getDateClassName = (date: any) => {
     return isAppointmentDate(date)
       ? "bg-green-500 text-white" // Appointment date (highlight with green)

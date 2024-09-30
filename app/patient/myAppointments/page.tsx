@@ -127,7 +127,7 @@ const MyAppointmentsList = () => {
           onClick={() => setActiveSection("upcoming")}
           className={`mx-2 px-4 py-2 rounded ${
             activeSection === "upcoming"
-              ? "bg-blue-500 text-white"
+              ? "bg-teal-600 text-white"
               : "bg-gray-200"
           }`}
         >
@@ -137,7 +137,7 @@ const MyAppointmentsList = () => {
           onClick={() => setActiveSection("completed")}
           className={`mx-2 px-4 py-2 rounded ${
             activeSection === "completed"
-              ? "bg-blue-500 text-white"
+              ? "bg-teal-600 text-white"
               : "bg-gray-200"
           }`}
         >
@@ -202,24 +202,32 @@ const MyAppointmentsList = () => {
                   )}
                 </span>
               </p>
+              {appointment.status === "accepted" && (
+                <p className="text-sm text-gray-500 mb-1">
+                  <strong>Time:</strong>{" "}
+                  {new Date(
+                    `1970-01-01T${appointment.slot.time}:00`
+                  ).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })}
+                </p>
+              )}
+
               <p className="text-sm text-gray-500 mb-1">
-                <strong>Time:</strong>{" "}
-                {new Date(
-                  `1970-01-01T${appointment.slot.time}:00`
-                ).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })}
-              </p>
-              <p
-                className={`text-sm ${
-                  appointment.status !== "accepted"
-                    ? "text-red-500"
-                    : "text-green-500"
-                }`}
-              >
-                <strong>Status:</strong> {appointment.status}
+                <strong>Status:</strong>{" "}
+                <span
+                  className={`text-sm ${
+                    appointment.status !== "accepted"
+                      ? "text-red-500"
+                      : "text-green-500"
+                  }`}
+                >
+                  {appointment.status
+                    .toLowerCase()
+                    .replace(/^\w/, (c) => c.toLocaleUpperCase())}
+                </span>
               </p>
               {appointment.status === "completed" && (
                 <button

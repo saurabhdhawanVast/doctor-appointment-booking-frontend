@@ -166,8 +166,6 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
 
   fetchDoctorsMain: async () => {
     try {
-      console.log("fetching doctors");
-
       const response = await https.get("/doctors", {
         headers: {
           Authorization: `Bearer ${token}`
@@ -245,7 +243,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
       console.error(`Error fetching doctor profile: ${error}`);
     }
   },
-  //update ...
+
   updateProfile: async (doctor) => {
     try {
       let doctorId = doctor._id;

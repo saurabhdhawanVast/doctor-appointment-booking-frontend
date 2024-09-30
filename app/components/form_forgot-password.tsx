@@ -62,23 +62,6 @@ const ForgotPasswordForm = () => {
   return (
     <div className="min-h-screen bg-gray-100 pt-24">
       {/* Navbar */}
-      <nav className="navbar bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 text-white shadow-lg fixed top-0 left-0 right-0 z-50">
-        <div className="container mx-auto px-4 py-2 flex items-center justify-between">
-          <h1 className="text-xl font-bold">DABS</h1>
-          <ul className="flex space-x-4">
-            <li>
-              <Link href="/" className="hover:underline">
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link href="/about" className="hover:underline">
-                About
-              </Link>
-            </li>
-          </ul>
-        </div>
-      </nav>
 
       <div className="flex items-center justify-center py-16">
         <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
