@@ -55,6 +55,7 @@ export interface Doctor {
   eveningEndTime: string;
   slotDuration: number;
   isVerified: boolean;
+  isVerifiedUpdatedQulaification?: boolean;
 }
 
 interface DoctorStoreState {
@@ -70,8 +71,7 @@ interface DoctorStoreState {
   loading: boolean;
   error: string | null;
 
-
-  updateProfile: (doctor: Partial<Doctor>) => void;
+  updateProfile: (doctor: Partial<Doctor>) => Promise<void>;
   fetchDoctors: (
     status: "all" | "verified" | "unverified",
     page: number,
@@ -91,7 +91,14 @@ interface DoctorStoreState {
     slotId: string,
     status: "available" | "booked" | "cancelled"
   ) => Promise<void>;
-
+  updateQualificationRequest: (
+    _id: string,
+    doctorName: string,
+    email: string,
+    speciality: string,
+    qualification: string,
+    documentLink: string
+  ) => Promise<void>;
   // Cancellation functions
   cancelSlot: (doctorId: string, date: Date, slotId: string) => Promise<void>;
   cancelAllSlots: (doctorId: string, date: Date) => Promise<void>;
@@ -112,7 +119,7 @@ const https = axios.create({
   baseURL: "http://localhost:3000",
 });
 
-const token = useLoginStore.getState().token
+const token = useLoginStore.getState().token;
 
 const useDoctorStore = create<DoctorStoreState>((set) => ({
   doctors: [],
@@ -128,7 +135,6 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
   fetchSlotsByDate: async (id: string, date: Date) => {
     set({ loading: true });
     try {
-
       const response = await https.get(`/doctors/getSlotsByDate`, {
         params: {
           id,
@@ -168,15 +174,14 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
     try {
       const response = await https.get("/doctors", {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       set({ doctors: response.data });
     } catch (error: any) {
       console.error(`Error fetching doctors: ${error.message}`);
     }
   },
-
 
   fetchDoctors: async (
     status: "all" | "verified" | "unverified",
@@ -185,8 +190,6 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
   ) => {
     set({ loading: true });
     try {
-
-
       const response = await https.get("/doctors/getAllDoctors-Admin", {
         params: {
           status,
@@ -194,7 +197,6 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
           pageSize,
         },
         headers: { Authorization: `Bearer ${token}` },
-
       });
 
       set({
@@ -212,18 +214,23 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
 
   disableDoctor: async (id: string) => {
     try {
-
       console.log(token);
-      await https.patch(`/doctors/disable/${id}`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await https.patch(
+        `/doctors/disable/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       set((state) => ({
-        doctors: state.doctors.map((doctor) =>
-          doctor._id === id ? { ...doctor, isVerified: false } : doctor
-        ).filter((doctor) => doctor.isVerified) // Remove disabled doctor from the list
+        doctors: state.doctors
+          .map((doctor) =>
+            doctor._id === id ? { ...doctor, isVerified: false } : doctor
+          )
+          .filter((doctor) => doctor.isVerified), // Remove disabled doctor from the list
       }));
       toast.success(`Doctor disabled successfully`);
     } catch (error: any) {
@@ -234,7 +241,6 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
   fetchDoctorProfile: async (id: string) => {
     set({ loading: true });
     try {
-
       const response = await https.get(`/doctors/getDoctorById/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -249,12 +255,9 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
       let doctorId = doctor._id;
       delete doctor._id;
 
-      let result = await https.patch(
-        `/doctors/${doctorId}`,
-        doctor, {
+      let result = await https.patch(`/doctors/${doctorId}`, doctor, {
         headers: { Authorization: `Bearer ${token}` },
-      }
-      );
+      });
       set({ doctor: result.data });
       useLoginStore.getState().setDoctor(result.data);
     } catch (error) {
@@ -265,12 +268,9 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
   fetchAvailableDates: async (id: string) => {
     set({ loading: true });
     try {
-
-      const response = await https.get(
-        `/doctors/getAvailableDates/${id}`, {
+      const response = await https.get(`/doctors/getAvailableDates/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
-      }
-      );
+      });
 
       if (Array.isArray(response.data)) {
         const availableDates: DateWithSlots[] = response.data.map(
@@ -311,7 +311,6 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
   verifyDoctor: async (id: string) => {
     set({ loading: true });
     try {
-
       await https.post(
         `/admin/verifyDoctor/${id}`,
         {},
@@ -343,15 +342,18 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
   ) => {
     set({ loading: true });
     try {
-
-      const response = await https.patch(`/doctors/updateSlotStatus`, {
-        doctorId,
-        date: date.toISOString(),
-        slotId,
-        status,
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await https.patch(
+        `/doctors/updateSlotStatus`,
+        {
+          doctorId,
+          date: date.toISOString(),
+          slotId,
+          status,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (response.status === 200) {
         set((state) => {
@@ -389,13 +391,17 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
         throw new Error("Slot ID is required to cancel a slot.");
       }
 
-      await https.post(`/doctors/cancelSlot`, {
-        doctorId,
-        date: date.toISOString(),
-        slotId,
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await https.post(
+        `/doctors/cancelSlot`,
+        {
+          doctorId,
+          date: date.toISOString(),
+          slotId,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       set((state) => {
         const dateStr = date.toISOString();
@@ -420,11 +426,14 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
   cancelAllSlots: async (doctorId: string, date: Date) => {
     set({ loading: true });
     try {
-
-      await https.post(`/doctors/cancelAllSlots`, {
-        doctorId,
-        date: date.toISOString(),
-      }, { headers: { Authorization: "Bearer " + token } });
+      await https.post(
+        `/doctors/cancelAllSlots`,
+        {
+          doctorId,
+          date: date.toISOString(),
+        },
+        { headers: { Authorization: "Bearer " + token } }
+      );
 
       set((state) => {
         const dateStr = date.toISOString();
@@ -451,14 +460,17 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
   ) => {
     set({ loading: true });
     try {
-
-      const response = await https.post(`/doctors/addAvailability`, {
-        doctorId,
-        dates,
-        timePerSlot,
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await https.post(
+        `/doctors/addAvailability`,
+        {
+          doctorId,
+          dates,
+          timePerSlot,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (response.status === 200) {
         set((state) => {
@@ -497,7 +509,34 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
       set({ loading: false, error: "Failed to add availability." });
     }
   },
+  updateQualificationRequest: async (
+    _id: string,
+    doctorName: string,
+    email: string,
+    speciality: string,
+    qualification: string,
+    documentLink: string
+  ) => {
+    console.log("UpdateQualificationRequest", {
+      _id,
+      doctorName,
+      email,
+      speciality,
+      qualification,
+      documentLink,
+    });
+    const token = useLoginStore.getState().token;
 
+    const response = await https.patch(
+      `/doctors/updateRequest`,
+      { _id, doctorName, email, speciality, qualification, documentLink },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    console.log("response: " + response.data);
+    toast.success("Email sent for verification will be updated very soon..");
+  },
   setError: (error: string | null) => set({ error }),
   clearError: () => set({ error: null }),
 }));

@@ -9,12 +9,14 @@ import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
 import useDoctorStore from "@/store/useDoctorStore";
+import UpdateQualificationModel from "@/app/components/UpdateQualificationModel";
 
 export default function DoctorProfile() {
   const { doctorId } = useParams(); // Get the doctorId from URL parameters
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
-
+  const [handleQualificationModel, setHandleQualificationModel] =
+    useState(false);
   const router = useRouter();
 
   const { doctor, fetchDoctorProfile, verifyDoctor } = useDoctorStore(
@@ -25,6 +27,13 @@ export default function DoctorProfile() {
     })
   );
 
+  const handleQualificationModelClose = () => {
+    setHandleQualificationModel(false);
+  };
+
+  const handleQualificationModelOpen = () => {
+    setHandleQualificationModel(true);
+  };
   useEffect(() => {
     if (doctorId) {
       fetchDoctorProfile(doctorId as string);
@@ -128,6 +137,17 @@ export default function DoctorProfile() {
             >
               {doctor.isVerified ? "Verified" : "Verify Doctor"}
             </button>
+            <button
+              onClick={() => handleQualificationModelOpen()}
+              className={`btn px-6 py-3 mx-6 text-white font-semibold
+               rounded-lg shadow-lg transition duration-300 ${
+                 !doctor.isVerifiedUpdatedQulaification
+                   ? "bg-gray-400 cursor-not-allowed"
+                   : "bg-teal-600 hover:bg-teal-700"
+               }`}
+            >
+              Update Qualification
+            </button>
           </div>
         </div>
         {/* Document Image Section */}
@@ -137,7 +157,7 @@ export default function DoctorProfile() {
               src={doctor.document}
               alt={`${doctor.name}'s document`}
               className="w-full h-auto rounded-lg cursor-pointer"
-              onClick={() => setIsModalOpen(true)} // Open modal on click
+              onClick={() => setIsModalOpen(true)}
             />
           </div>
         )}
@@ -211,6 +231,10 @@ export default function DoctorProfile() {
           </div>
         </div>
       )}
+      <UpdateQualificationModel
+        isOpen={handleQualificationModel}
+        onClose={handleQualificationModelClose}
+      />
     </div>
   );
 }

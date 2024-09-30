@@ -9,6 +9,7 @@ import Logo from "../public/images/logooo.png"; // Adjust the path
 import { Ellipsis } from "react-css-spinners"; // Import the Ellipsis spinner
 import ReviewList from "./components/reviewModel";
 import { useArticleStore } from "@/store/useArticleStore";
+import UpdateQualificationModel from "./components/UpdateQualificationModel";
 
 const Navbar = () => {
   const isLoggedIn = useLoginStore((state) => state.isLoggedIn);
@@ -21,6 +22,8 @@ const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isReviewModelOpen, setIsReviewModelOpen] = useState(false);
+  const [handleQualificationModel, setHandleQualificationModel] =
+    useState(false);
   // const [loading, setLoading] = useState(() => {
   //   return isLoggedIn ? true : false;
   // });
@@ -46,9 +49,16 @@ const Navbar = () => {
   const handleReviewModelClose = () => {
     setIsReviewModelOpen(false);
   };
+  const handleQualificationModelClose = () => {
+    setHandleQualificationModel(false);
+  };
   const handleReviewModelOpen = () => {
     setDropdownOpen(false);
     setIsReviewModelOpen(true);
+  };
+  const handleQualificationModelOpen = () => {
+    setDropdownOpen(false);
+    setHandleQualificationModel(true);
   };
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
@@ -74,10 +84,6 @@ const Navbar = () => {
       }
     };
     loadData();
-    console.log("loading user", loading);
-    console.log("User:", user);
-    console.log("role", isLoggedIn);
-    console.log("user", user);
   }, [isLoggedIn, fetchUser, setLoading]);
 
   const handleLogout = async () => {
@@ -262,15 +268,22 @@ const Navbar = () => {
 
                 {dropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                    {role === "doctor" ||
-                      (role === "patient" && (
-                        <button
-                          onClick={handleProfile}
-                          className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
-                        >
-                          Edit Profile
-                        </button>
-                      ))}
+                    {role !== "admin" && (
+                      <button
+                        onClick={handleProfile}
+                        className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                      >
+                        Edit Profile
+                      </button>
+                    )}
+                    {role === "doctor" && (
+                      <button
+                        onClick={handleQualificationModelOpen}
+                        className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                      >
+                        Update Qualification
+                      </button>
+                    )}
                     {role === "doctor" && (
                       <button
                         onClick={handleReviewModelOpen}
@@ -279,7 +292,6 @@ const Navbar = () => {
                         My Reviews
                       </button>
                     )}
-
                     <button
                       onClick={handleLogout}
                       className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
@@ -344,7 +356,7 @@ const Navbar = () => {
                           onClick={handleProfile}
                           className="w-full text-gray-700 hover:bg-gray-100 px-4 py-2 text-left"
                         >
-                          Manage Profile
+                          Edit Profile
                         </button>
                       ))}
                   </li>
@@ -366,6 +378,10 @@ const Navbar = () => {
         isOpen={isReviewModelOpen}
         onClose={handleReviewModelClose}
         doctorId={doctorId ? doctorId : ""}
+      />
+      <UpdateQualificationModel
+        isOpen={handleQualificationModel}
+        onClose={handleQualificationModelClose}
       />
     </div>
   );

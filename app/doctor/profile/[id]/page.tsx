@@ -113,12 +113,12 @@ const EditDoctorProfile = () => {
   const [selectedCity, setSelectedCity] = useState<string | undefined>("");
   const router = useRouter();
 
-  const doctorSpecialties = useRegisterDoctorStore(
-    (state) => state.doctorSpecialties
-  );
-  const doctorQualifications = useRegisterDoctorStore(
-    (state) => state.doctorQualifications
-  );
+  // const doctorSpecialties = useRegisterDoctorStore(
+  //   (state) => state.doctorSpecialties
+  // );
+  // const doctorQualifications = useRegisterDoctorStore(
+  //   (state) => state.doctorQualifications
+  // );
 
   useEffect(() => {
     if (doctor) {
@@ -159,7 +159,7 @@ const EditDoctorProfile = () => {
       );
       setValue("clinicDetails.slotDuration", 15);
       setImage(doctor.profilePic);
-      setUploadedDocument(doctor.document);
+      // setUploadedDocument(doctor.document);
       setSelectedState(doctor.clinicDetails?.state);
       setSelectedCity(doctor.clinicDetails?.city);
     }
@@ -253,10 +253,10 @@ const EditDoctorProfile = () => {
     }
   }, [selectedState]);
 
-  const handleUpdate: SubmitHandler<DoctorInputs> = (data) => {
+  const handleUpdate: SubmitHandler<DoctorInputs> = async (data) => {
     if (doctor) {
       console.log("Data is : ", data);
-      updateProfile({ ...data, _id: doctor?._id });
+      await updateProfile({ ...data, _id: doctor?._id });
       toast.success("Profile updated successfully");
       handleCancel();
     }
@@ -387,68 +387,6 @@ const EditDoctorProfile = () => {
                         </p>
                       )}
                     </div>
-
-                    {/* Continue with the rest of the fields */}
-                    <div className="mb-4">
-                      <label
-                        htmlFor="speciality"
-                        className="block text-gray-700 text-md font-semibold"
-                      >
-                        Speciality
-                      </label>
-                      <select
-                        id="speciality"
-                        {...register("speciality")}
-                        autoComplete="speciality"
-                        className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                          errors.speciality ? "border-red-500" : ""
-                        }`}
-                      >
-                        <option value="">Select Speciality</option>
-                        {doctorSpecialties.map((speciality) => (
-                          <option key={speciality} value={speciality}>
-                            {speciality}
-                          </option>
-                        ))}
-                      </select>
-                      {errors.speciality && (
-                        <p className="mt-1 text-sm text-red-500">
-                          {errors.speciality.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label
-                        htmlFor="qualification"
-                        className="block text-sm font-medium leading-6 text-gray-900"
-                      >
-                        Qualification
-                      </label>
-                      <div className="mt-2">
-                        <select
-                          id="qualification"
-                          {...register("qualification")}
-                          autoComplete="qualification"
-                          className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                            errors.speciality ? "border-red-500" : ""
-                          }`}
-                        >
-                          <option value="">Select Qualification</option>
-                          {doctorQualifications.map((qualification) => (
-                            <option key={qualification} value={qualification}>
-                              {qualification}
-                            </option>
-                          ))}
-                        </select>
-                        {errors.qualification?.message && (
-                          <p className="mt-2 text-sm text-red-400">
-                            {errors.qualification.message}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    {/* Include additional fields similarly */}
-
                     {/* Clinic Details */}
                     <div className="mt-4">
                       <div className="mb-4">
@@ -698,36 +636,6 @@ const EditDoctorProfile = () => {
                           </p>
                         )}
                       </div>
-                    </div>
-                  </div>
-                  <div className="flex justify-center">
-                    <div className="relative w-48 h-48">
-                      <img
-                        src={uploadeddocument} // Placeholder image
-                        alt="Document"
-                        className="w-full h-full object-cover border border-gray-300"
-                      />
-                      <label
-                        htmlFor="document"
-                        className="absolute bottom-0 right-0 bg-blue-600 text-white p-1 cursor-pointer"
-                      >
-                        <input
-                          id="document"
-                          type="file"
-                          onChange={uploadDocument}
-                          accept=".jpg,.jpeg,.png"
-                          className="sr-only"
-                        />
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 16 16"
-                          fill="currentColor"
-                          className="w-6 h-6"
-                        >
-                          <path d="M13.488 2.513a1.75 1.75 0 0 0-2.475 0L6.75 6.774a2.75 2.75 0 0 0-.596.892l-.848 2.047a.75.75 0 0 0 .98.98l2.047-.848a2.75 2.75 0 0 0 .892-.596l4.261-4.262a1.75 1.75 0 0 0 0-2.474Z" />
-                          <path d="M4.75 3.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h6.5c.69 0 1.25-.56 1.25-1.25V9A.75.75 0 0 1 14 9v2.25A2.75 2.75 0 0 1 11.25 14h-6.5A2.75 2.75 0 0 1 2 11.25v-6.5A2.75 2.75 0 0 1 4.75 2H7a.75.75 0 0 1 0 1.5H4.75Z" />
-                        </svg>
-                      </label>
                     </div>
                   </div>
                 </div>
