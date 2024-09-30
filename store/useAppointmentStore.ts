@@ -70,7 +70,6 @@ const https = axios.create({
   baseURL: "http://localhost:3000", // Adjust if necessary
 });
 
-const token = useLoginStore.getState().token;
 
 const useAppointmentStore = create<AppointmentStore>((set) => ({
   appointments: [],
@@ -96,7 +95,7 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
       console.log("Query String is ", queryString);
       const response = await https.get(`/appointments?${queryString}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${sessionStorage.token}`,
         },
       });
       for (let appointment of response.data) {
@@ -118,7 +117,7 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
           `/ratings/appointment/${appointment._id}`,
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${sessionStorage.token}`,
             },
           }
         );
@@ -142,7 +141,7 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
         `/appointments/getAppointmentsByDoctorId?doctorId=${doctorId}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${sessionStorage.token}`,
           },
         }
       );
@@ -235,7 +234,7 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
     try {
       const response = await https.get(`/doctors/getDoctorById/${doctorId}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${sessionStorage.token}`,
         },
       });
       const doctorDetails: DoctorDetails = response.data;
@@ -266,7 +265,7 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
     try {
       await https.post("/prescriptions/savePrescription", prescription, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${sessionStorage.token}`,
         },
       });
       console.log("Prescription saved successfully");
@@ -295,7 +294,7 @@ const useAppointmentStore = create<AppointmentStore>((set) => ({
           appointmentDate: selectedDate,
         },
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${sessionStorage.token}` },
         }
       );
 

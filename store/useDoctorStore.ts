@@ -140,7 +140,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
           id,
           date: date.toISOString().split("T")[0],
         },
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${sessionStorage.token}` },
       });
 
       if (response.status === 200) {
@@ -174,7 +174,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
     try {
       const response = await https.get("/doctors", {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${sessionStorage.token}`,
         },
       });
       set({ doctors: response.data });
@@ -196,7 +196,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
           page,
           pageSize,
         },
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${sessionStorage.token}` },
       });
 
       set({
@@ -220,7 +220,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
         {},
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${sessionStorage.token}`,
           },
         }
       );
@@ -242,7 +242,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
     set({ loading: true });
     try {
       const response = await https.get(`/doctors/getDoctorById/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${sessionStorage.token}` },
       });
       set({ doctor: response.data, loading: false });
     } catch (error) {
@@ -256,7 +256,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
       delete doctor._id;
 
       let result = await https.patch(`/doctors/${doctorId}`, doctor, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${sessionStorage.token}` },
       });
       set({ doctor: result.data });
       useLoginStore.getState().setDoctor(result.data);
@@ -269,7 +269,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
     set({ loading: true });
     try {
       const response = await https.get(`/doctors/getAvailableDates/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${sessionStorage.token}` },
       });
 
       if (Array.isArray(response.data)) {
@@ -315,7 +315,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
         `/admin/verifyDoctor/${id}`,
         {},
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${sessionStorage.token}` },
         }
       );
       set((state) => ({
@@ -351,7 +351,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
           status,
         },
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${sessionStorage.token}` },
         }
       );
 
@@ -399,7 +399,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
           slotId,
         },
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${sessionStorage.token}` },
         }
       );
 
@@ -432,7 +432,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
           doctorId,
           date: date.toISOString(),
         },
-        { headers: { Authorization: "Bearer " + token } }
+        { headers: { Authorization: `Bearer ${sessionStorage.token}` } },
       );
 
       set((state) => {
@@ -468,7 +468,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
           timePerSlot,
         },
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${sessionStorage.token}` },
         }
       );
 
@@ -531,7 +531,7 @@ const useDoctorStore = create<DoctorStoreState>((set) => ({
       `/doctors/updateRequest`,
       { _id, doctorName, email, speciality, qualification, documentLink },
       {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${sessionStorage.token}` },
       }
     );
     console.log("response: " + response.data);

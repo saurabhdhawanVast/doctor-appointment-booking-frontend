@@ -36,7 +36,7 @@ const https = axios.create({
   baseURL: "http://localhost:3000", // Adjust if necessary
 });
 
-const token = useLoginStore.getState().token;
+
 
 export const useRatingStore = create<RatingsState>((set) => ({
   ratings: [],
@@ -46,7 +46,7 @@ export const useRatingStore = create<RatingsState>((set) => ({
 
       await https.post("/ratings", Rating, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${sessionStorage.token}`,
         },
       });
       toast.success("Thank you for providing your feedback!");
@@ -62,7 +62,7 @@ export const useRatingStore = create<RatingsState>((set) => ({
         `/ratings/doctor/${doctorId}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${sessionStorage.token}`,
           },
         }
       );

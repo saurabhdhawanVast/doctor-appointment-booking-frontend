@@ -35,59 +35,14 @@ interface ManageScheduleStore {
 const https = axios.create({
   baseURL: "http://localhost:3000",
 });
-const token = useLoginStore.getState().token;
+
 const useManageScheduleStore = create<ManageScheduleStore>((set) => ({
   availableDates: [],
   slotsByDate: {},
   selectedDate: null,
   loading: false,
   error: null,
-  // fetchAvailableDates: async (id: string) => {
-  //   set({ loading: true });
-  //   try {
 
-  //     const response = await https.get(
-  //       `/doctors/getAvailableDates/${id}`, {
-  //       headers: {
-  //         'Authorization': `Bearer ${token}`,
-  //       },
-  //     }
-  //     );
-  //     if (Array.isArray(response.data)) {
-  //       const availableDates: DateWithSlots[] = await response.data.map(
-  //         (entry: any) => ({
-  //           date: new Date(entry.date),
-  //           slots: entry.slots.map((slot: any) => ({
-  //             id: slot._id,
-  //             time: slot.time,
-  //             status: slot.status,
-  //           })),
-  //         })
-  //       );
-
-  //       const slotsByDate: Record<string, Slot[]> = availableDates.reduce(
-  //         (acc: Record<string, Slot[]>, dateWithSlots) => {
-  //           acc[dateWithSlots.date.toISOString()] = dateWithSlots.slots;
-  //           return acc;
-  //         },
-  //         {}
-  //       );
-
-  //       await set({ availableDates, slotsByDate, loading: false });
-  //     } else {
-  //       console.error("Unexpected response format:", response.data);
-  //       set({ availableDates: [], slotsByDate: {}, loading: false });
-  //     }
-  //   } catch (error) {
-  //     console.error(`Error fetching available dates: ${error}`);
-  //     set({
-  //       availableDates: [],
-  //       slotsByDate: {},
-  //       loading: false,
-  //       error: "Failed to fetch available dates.",
-  //     });
-  //   }
-  // },
 
   fetchAvailableDates: async (id: string) => {
     set({ loading: true });
@@ -95,7 +50,7 @@ const useManageScheduleStore = create<ManageScheduleStore>((set) => ({
     try {
       const response = await https.get(`/doctors/getAvailableDates/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${sessionStorage.token}`,
         },
       });
 
@@ -165,7 +120,7 @@ const useManageScheduleStore = create<ManageScheduleStore>((set) => ({
         slotId,
       }, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${sessionStorage.token}`,
         },
       });
 
@@ -204,7 +159,7 @@ const useManageScheduleStore = create<ManageScheduleStore>((set) => ({
         date: formattedDate,
       }, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${sessionStorage.token}`,
         },
       });
 
@@ -238,7 +193,7 @@ const useManageScheduleStore = create<ManageScheduleStore>((set) => ({
         timePerSlot,
       }, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${sessionStorage.token}`,
         },
       });
 

@@ -51,7 +51,7 @@ const https = axios.create({
   baseURL: "http://localhost:3000",
 });
 
-const token = useLoginStore.getState().token;
+
 export const usePatientStore = create<PatientState>((set) => ({
   patient: null,
   doctors: null,
@@ -64,7 +64,7 @@ export const usePatientStore = create<PatientState>((set) => ({
     try {
       const response = await https.get(`/patients/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${sessionStorage.token}`,
         },
       });
       set({ patient: response.data });
@@ -79,7 +79,7 @@ export const usePatientStore = create<PatientState>((set) => ({
       console.log("patient", patient);
       let result = await https.patch(`/patients/${patientId}`, patient, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${sessionStorage.token}`,
         },
       });
       set({ patient: result.data });
@@ -94,7 +94,7 @@ export const usePatientStore = create<PatientState>((set) => ({
     try {
       await https.delete(`/patients/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${sessionStorage.token}`,
         },
       });
       set((state) => ({
@@ -114,7 +114,7 @@ export const usePatientStore = create<PatientState>((set) => ({
         {
           params: { page, limit: 10 }, // Implement pagination
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${sessionStorage.token}`,
           },
         }
       );
@@ -132,7 +132,7 @@ export const usePatientStore = create<PatientState>((set) => ({
             `http://localhost:3000/patients/${id}`,
             {
               headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${sessionStorage.token}`,
               },
             }
           );
@@ -153,7 +153,7 @@ export const usePatientStore = create<PatientState>((set) => ({
       const response = await https.get(`/doctors/search`, {
         params: { state, city, specialty, gender, radius, location },
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${sessionStorage.token}`,
         },
       });
       set({ doctors: response.data }); // Set the doctors in the store
@@ -170,7 +170,7 @@ export const usePatientStore = create<PatientState>((set) => ({
         `patients/fetchPatientByUserId/${userId}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${sessionStorage.token}`,
           },
         }
       );
@@ -184,7 +184,7 @@ export const usePatientStore = create<PatientState>((set) => ({
     try {
       const response = await https.get("patients/allPatients", {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${sessionStorage.token}`,
         },
       });
       set({ patients: response.data });

@@ -61,7 +61,7 @@ export default function DoctorProfile() {
       </div>
 
       <div className="flex  flex-wrap  rounded-xl shadow-2xl  h-fit min-h-screen ">
-        <div className="rounded-xl flex flex-wrap sm:w-96 md:w-2/3 px-4">
+        <div className="rounded-xl flex flex-col flex-wrap sm:w-96 md:w-2/3 px-4">
           {/* Doctor Profile Picture and Name */}
           <div className="flex  flex-wrap items-center mb-6">
             {doctor.profilePic && (
@@ -138,7 +138,10 @@ export default function DoctorProfile() {
               {doctor.isVerified ? "Verified" : "Verify Doctor"}
             </button>
             <button
-              onClick={() => handleQualificationModelOpen()}
+              onClick={() =>
+                doctor.isVerifiedUpdatedQulaification &&
+                handleQualificationModelOpen()
+              }
               className={`btn px-6 py-3 mx-6 text-white font-semibold
                rounded-lg shadow-lg transition duration-300 ${
                  !doctor.isVerifiedUpdatedQulaification
