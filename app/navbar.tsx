@@ -350,23 +350,40 @@ const Navbar = () => {
               {isLoggedIn && (
                 <>
                   <li>
-                    {role === "doctor" ||
-                      (role === "patient" && (
+                    <div className="flex flex-col">
+                      {(role === "doctor" || role === "patient") && (
                         <button
                           onClick={handleProfile}
-                          className="w-full text-gray-700 hover:bg-gray-100 px-4 py-2 text-left"
+                          className=" text-gray-700 hover:bg-gray-100 px-4 text-left text-sm my-2"
                         >
                           Edit Profile
                         </button>
-                      ))}
-                  </li>
-                  <li>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-gray-700 hover:bg-gray-100 px-4 py-2 text-left"
-                    >
-                      Logout
-                    </button>
+                      )}
+                      {role === "doctor" && (
+                        <button
+                          onClick={handleReviewModelOpen}
+                          className=" text-gray-700 hover:bg-gray-100 px-4 text-sm my-2 text-left"
+                        >
+                          My Reviews
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex flex-col">
+                      {role === "doctor" && (
+                        <button
+                          onClick={handleQualificationModelOpen}
+                          className="px-4 text-left text-gray-700 hover:bg-gray-100 text-sm my-2"
+                        >
+                          Update Qualification
+                        </button>
+                      )}
+                      <button
+                        onClick={handleLogout}
+                        className=" text-gray-700 hover:bg-gray-100 px-4 text-left text-sm my-2"
+                      >
+                        Logout
+                      </button>
+                    </div>
                   </li>
                 </>
               )}

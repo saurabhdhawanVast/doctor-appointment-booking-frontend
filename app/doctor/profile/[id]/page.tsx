@@ -667,10 +667,10 @@ const EditDoctorProfile = () => {
   };
 
   return (
-    <div className="container mx-auto py-10">
-      <h2 className="text-2xl font-semibold text-gray-700 mb-6 text-center">
+    <div className="container mx-auto mt-16 py-10">
+      {/* <h2 className="text-2xl font-semibold text-gray-700 mb-6 text-center">
         Edit Doctor Profile
-      </h2>
+      </h2> */}
       {renderProfile()}
     </div>
   );

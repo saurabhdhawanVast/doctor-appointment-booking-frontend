@@ -38,11 +38,12 @@ export default function DoctorProfile() {
     if (doctorId) {
       fetchDoctorProfile(doctorId as string);
     }
-  }, [doctorId, fetchDoctorProfile]);
+  }, [doctorId]);
 
   const handleVerify = async () => {
     if (doctorId) {
       await verifyDoctor(doctorId as string);
+      await fetchDoctorProfile(doctorId as string);
       toast.success("Doctor verified successfully");
     }
   };
@@ -168,18 +169,8 @@ export default function DoctorProfile() {
 
       {isVerificationModalOpen && (
         <AnimatePresence>
-          <motion.div
-            className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md"
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.8 }}
-            >
+          <motion.div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+            <motion.div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
               <h3 className="text-lg font-semibold mb-4">
                 Confirm Verification
               </h3>

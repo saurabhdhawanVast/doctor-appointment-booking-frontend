@@ -24,7 +24,7 @@ interface Article {
 
 const ArticlePage = ({ params }: ArticlePageProps) => {
   const { id } = params;
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const article = useArticleStore((state) => state.article);
   const getArticle = useArticleStore((state) => state.getArticle);
@@ -34,6 +34,7 @@ const ArticlePage = ({ params }: ArticlePageProps) => {
     if (id) {
       const fetchArticle = async () => {
         try {
+          setLoading(true);
           await getArticle(id);
         } catch (error) {
           setError("Failed to load article");
@@ -81,7 +82,7 @@ const ArticlePage = ({ params }: ArticlePageProps) => {
       <div className="absolute left-4 top-4 z-10">
         <button
           onClick={() => router.back()}
-          className="p-3 bg-white hover:bg-gray-200 rounded-full shadow-lg flex items-center justify-center transition-transform duration-300 hover:scale-105"
+          className="p-3 bg-white hover:bg-gray-200 rounded-full shadow-lg flex items-center justify-center hover:scale-105"
         >
           <IoMdArrowRoundBack className="text-black text-3xl" />
         </button>
