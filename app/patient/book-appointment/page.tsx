@@ -272,7 +272,7 @@ const BookAppointmentPage = () => {
         <div className="w-2/3  ">
           <div className="bg-white rounded-lg shadow-md p-6  overflow-y-auto">
             {selectedDate && (
-              <>
+              <div>
                 <div className="flex items-center justify-between bg-gray-200 p-2 rounded-lg mb-4">
                   <div>
                     <h1 className="text-lg font-normal ">
@@ -367,7 +367,7 @@ const BookAppointmentPage = () => {
                     </p>
                   )}
                 </ul>
-              </>
+              </div>
             )}
           </div>
         </div>

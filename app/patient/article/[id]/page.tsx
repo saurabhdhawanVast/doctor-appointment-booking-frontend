@@ -24,7 +24,7 @@ interface Article {
 
 const ArticlePage = ({ params }: ArticlePageProps) => {
   const { id } = params;
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const article = useArticleStore((state) => state.article);
   const getArticle = useArticleStore((state) => state.getArticle);
@@ -33,6 +33,7 @@ const ArticlePage = ({ params }: ArticlePageProps) => {
     if (id) {
       const fetchArticle = async () => {
         try {
+          setLoading(true);
           await getArticle(id);
         } catch (error) {
           setError("Failed to load article");

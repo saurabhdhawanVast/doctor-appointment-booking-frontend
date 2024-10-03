@@ -42,7 +42,7 @@ const Doctor = () => {
 
   const [appointmentsFetched, setAppointmentsFetched] = useState(false);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<"today" | "tomorrow" | "custom">(
     "today"
@@ -324,7 +324,7 @@ const Doctor = () => {
       <aside
         className={`fixed z-30 p-6 mt-16 top-0 left-0 w-72 bg-gray-100  border-r border-gray-200 transform ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } md:relative md:translate-x-0 transition-transform duration-300`}
+        } md:relative md:translate-x-0`}
       >
         <button
           className="md:hidden text-2xl absolute top-4 right-4"
@@ -523,12 +523,12 @@ const Doctor = () => {
             <p className="text-gray-500">No appointments found.</p>
           )}
           {getFilteredAppointments().length > 0 ? (
-            <>
+            <div>
               {getPaginatedAppointments(getFilteredAppointments()).map(
                 renderAppointmentDetails
               )}
               {renderPaginationControls()}
-            </>
+            </div>
           ) : (
             !loading && (
               <p className="text-gray-500 p-2">

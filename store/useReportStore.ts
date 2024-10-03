@@ -34,26 +34,23 @@ const https = axios.create({
   baseURL: "http://localhost:3000", // Adjust if necessary
 });
 
-
 export const useReportStore = create<ReportsState>((set) => ({
   reports: [],
   report: null,
   fetchReports: async (query = {}) => {
     try {
-
       const queryString = new URLSearchParams({
         filter: JSON.stringify(query),
       }).toString();
-      const response = await https.get(
-        `/reports?${queryString}`,
-        {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.token}`,
-          },
-        }
-      );
-      console.log(response.data);
-      set({ reports: response.data });
+      const response = await https.get(`/reports?${queryString}`, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.token}`,
+        },
+      });
+      const sortedData = response.data.sort((a: Report, b: Report) => {
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      });
+      set({ reports: sortedData });
     } catch (error) {
       console.error("Error fetching Reports:", error);
     }
@@ -61,15 +58,11 @@ export const useReportStore = create<ReportsState>((set) => ({
 
   removeReport: async (id) => {
     try {
-
-      const response = await https.delete(
-        `/reports/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.token}`,
-          },
-        }
-      );
+      const response = await https.delete(`/reports/${id}`, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.token}`,
+        },
+      });
       set((state) => ({
         reports: state.reports.filter((report) => report._id !== id),
       }));
@@ -80,7 +73,6 @@ export const useReportStore = create<ReportsState>((set) => ({
 
   createReport: async (Report) => {
     try {
-
       await https.post("/reports", Report, {
         headers: {
           Authorization: `Bearer ${sessionStorage.token}`,

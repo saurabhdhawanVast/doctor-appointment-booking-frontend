@@ -188,293 +188,297 @@ const EditProfile = () => {
   //         case "patient":
 
   return (
-    <>
-      <form
-        onSubmit={handleSubmit(handleUpdate)}
-        className="space-y-6 mt-20 p-6"
-      >
-        <div className="relative flex flex-col items-center justify-center space-y-4 md:flex-row md:space-x-4 md:space-y-0 ">
-          <div className="relative">
-            <img
-              src={profilePicPreview || "/images/default.jpg"}
-              alt="Profile Picture"
-              className="w-24 h-24 rounded-full object-cover cursor-pointer md:w-32 md:h-32"
-              onClick={handleImageClick}
-            />
-            <label className="absolute bottom-0 right-0 bg-blue-600 text-white p-1 rounded-full cursor-pointer">
-              <input
-                type="file"
-                onChange={uploadImage}
-                accept=".jpg,.jpeg,.png"
-                className="hidden"
+    <div className="space-y-6 pb-8 mt-20">
+      <h2 className="text-2xl font-semibold text-gray-700 mb-6 text-center">
+        Edit Patient Profile
+      </h2>
+      <div className="flex justify-center">
+        <form onSubmit={handleSubmit(handleUpdate)} className="px-6 w-2/3">
+          <div className="relative flex flex-col items-center justify-center space-y-4 md:flex-row md:space-x-4 md:space-y-0 ">
+            <div className="relative">
+              <img
+                src={profilePicPreview || "/images/default.jpg"}
+                alt="Profile Picture"
+                className="w-24 h-24 rounded-full object-cover cursor-pointer md:w-32 md:h-32"
+                onClick={handleImageClick}
               />
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 16 16"
-                fill="currentColor"
-                className="w-6 h-6"
-              >
-                <path d="M13.488 2.513a1.75 1.75 0 0 0-2.475 0L6.75 6.774a2.75 2.75 0 0 0-.596.892l-.848 2.047a.75.75 0 0 0 .98.98l2.047-.848a2.75 2.75 0 0 0 .892-.596l4.261-4.262a1.75 1.75 0 0 0 0-2.474Z" />
-                <path d="M4.75 3.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h6.5c.69 0 1.25-.56 1.25-1.25V9A.75.75 0 0 1 14 9v2.25A2.75 2.75 0 0 1 11.25 14h-6.5A2.75 2.75 0 0 1 2 11.25v-6.5A2.75 2.75 0 0 1 4.75 2H7a.75.75 0 0 1 0 1.5H4.75Z" />
-              </svg>
-            </label>
-          </div>
-          <div className="text-center">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">
-              Profile Picture
-            </h3>
-          </div>
-        </div>
-
-        <div className="mt-4">
-          <label
-            htmlFor="name"
-            className="block text-gray-700 text-sm font-bold mb-2"
-          >
-            Name
-          </label>
-          <input
-            id="name"
-            type="text"
-            {...register("name")}
-            className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-              errors.name ? "border-red-500" : ""
-            }`}
-          />
-          {errors.name && (
-            <p className="text-red-500 text-xs italic">{errors.name.message}</p>
-          )}
-        </div>
-
-        <div className="mt-4">
-          <label
-            htmlFor="contactNumber"
-            className="block text-gray-700 text-sm font-bold mb-2"
-          >
-            Contact Number
-          </label>
-          <input
-            id="contactNumber"
-            type="text"
-            {...register("contactNumber")}
-            className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-              errors.contactNumber ? "border-red-500" : ""
-            }`}
-          />
-          {errors.contactNumber && (
-            <p className="text-red-500 text-xs italic">
-              {errors.contactNumber.message}
-            </p>
-          )}
-        </div>
-
-        <div className="mt-4">
-          <label
-            htmlFor="address"
-            className="block text-gray-700 text-sm font-bold mb-2"
-          >
-            Address
-          </label>
-          <input
-            id="address"
-            type="text"
-            {...register("address.address")}
-            className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-              errors.address?.address ? "border-red-500" : ""
-            }`}
-          />
-          {errors.address?.address && (
-            <p className="text-red-500 text-xs italic">
-              {errors.address.address.message}
-            </p>
-          )}
-        </div>
-
-        <div className="mt-4">
-          <label
-            htmlFor="state"
-            className="block text-gray-700 text-sm font-bold mb-2"
-          >
-            State
-          </label>
-          <select
-            id="state"
-            {...register("address.state")}
-            value={selectedState}
-            onChange={(e) => setSelectedState(e.target.value)}
-            className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-              errors.address?.state ? "border-red-500" : ""
-            }`}
-          >
-            <option value="">Select State</option>
-            {states.map((state) => (
-              <option key={state.iso2} value={state.iso2}>
-                {state.name}
-              </option>
-            ))}
-          </select>
-          {errors.address?.state && (
-            <p className="text-red-500 text-xs italic">
-              {errors.address.state.message}
-            </p>
-          )}
-        </div>
-
-        <div className="mt-4">
-          <label
-            htmlFor="city"
-            className="block text-gray-700 text-sm font-bold mb-2"
-          >
-            City
-          </label>
-          <select
-            id="city"
-            {...register("address.city")}
-            value={selectedCity}
-            onChange={(e) => setSelectedCity(e.target.value)}
-            className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-              errors.address?.city ? "border-red-500" : ""
-            }`}
-          >
-            <option value="">Select City</option>
-            {cities.map((city, index) => (
-              <option key={index} value={city}>
-                {city}
-              </option>
-            ))}
-          </select>
-          {errors.address?.city && (
-            <p className="text-red-500 text-xs italic">
-              {errors.address.city.message}
-            </p>
-          )}
-        </div>
-
-        <div className="mt-4">
-          <label
-            htmlFor="pinCode"
-            className="block text-gray-700 text-sm font-bold mb-2"
-          >
-            Pin Code
-          </label>
-          <input
-            id="pinCode"
-            type="number"
-            {...register("address.pinCode", {
-              setValueAs: (value) =>
-                value === "" ? undefined : parseInt(value, 10),
-            })}
-            className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-              errors.address?.pinCode ? "border-red-500" : ""
-            }`}
-          />
-          {errors.address?.pinCode && (
-            <p className="text-red-500 text-xs italic">
-              {errors.address.pinCode.message}
-            </p>
-          )}
-        </div>
-
-        <div className="mt-4">
-          <label
-            htmlFor="bloodGroup"
-            className="block text-gray-700 text-sm font-bold mb-2"
-          >
-            Blood Group
-          </label>
-          <select
-            id="bloodGroup"
-            {...register("bloodGroup")}
-            className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-              errors.bloodGroup ? "border-red-500" : ""
-            }`}
-          >
-            <option value="">Select Blood Group</option>
-            {bloodGroups.map((group) => (
-              <option key={group} value={group}>
-                {group}
-              </option>
-            ))}
-          </select>
-          {errors.bloodGroup && (
-            <p className="text-red-500 text-xs italic">
-              {errors.bloodGroup.message}
-            </p>
-          )}
-        </div>
-
-        <div className="mt-4">
-          <label
-            htmlFor="gender"
-            className="block text-gray-700 text-sm font-bold mb-2"
-          >
-            Gender
-          </label>
-          <select
-            id="gender"
-            {...register("gender")}
-            className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-              errors.gender ? "border-red-500" : ""
-            }`}
-          >
-            <option value="">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
-          {errors.gender && (
-            <p className="text-red-500 text-xs italic">
-              {errors.gender.message}
-            </p>
-          )}
-        </div>
-
-        <div className="flex justify-between items-center mt-8">
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-gray-700"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700"
-          >
-            Update Profile
-          </button>
-        </div>
-      </form>
-
-      {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
-          <div className="bg-white p-8 rounded shadow-lg relative">
-            <button
-              onClick={handleCloseModal}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 9.293l5.646-5.647a.5.5 0 0 1 .708.708L10.707 10l5.647 5.646a.5.5 0 0 1-.708.708L10 10.707l-5.646 5.647a.5.5 0 1 1-.708-.708L9.293 10 3.646 4.354a.5.5 0 0 1 .708-.708L10 9.293Z"
-                  clipRule="evenodd"
+              <label className="absolute bottom-0 right-0 bg-blue-600 text-white p-1 rounded-full cursor-pointer">
+                <input
+                  type="file"
+                  onChange={uploadImage}
+                  accept=".jpg,.jpeg,.png"
+                  className="hidden"
                 />
-              </svg>
-            </button>
-            <img
-              src={profilePicPreview || "/default-profile-pic.png"}
-              alt="Profile Picture"
-              className="w-full h-full rounded-lg object-cover"
-            />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path d="M13.488 2.513a1.75 1.75 0 0 0-2.475 0L6.75 6.774a2.75 2.75 0 0 0-.596.892l-.848 2.047a.75.75 0 0 0 .98.98l2.047-.848a2.75 2.75 0 0 0 .892-.596l4.261-4.262a1.75 1.75 0 0 0 0-2.474Z" />
+                  <path d="M4.75 3.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h6.5c.69 0 1.25-.56 1.25-1.25V9A.75.75 0 0 1 14 9v2.25A2.75 2.75 0 0 1 11.25 14h-6.5A2.75 2.75 0 0 1 2 11.25v-6.5A2.75 2.75 0 0 1 4.75 2H7a.75.75 0 0 1 0 1.5H4.75Z" />
+                </svg>
+              </label>
+            </div>
+            <div className="text-center">
+              {/* <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                Profile Picture
+              </h3> */}
+            </div>
           </div>
-        </div>
-      )}
-    </>
+
+          <div className="mt-4">
+            <label
+              htmlFor="name"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Name
+            </label>
+            <input
+              id="name"
+              type="text"
+              {...register("name")}
+              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                errors.name ? "border-red-500" : ""
+              }`}
+            />
+            {errors.name && (
+              <p className="text-red-500 text-xs italic">
+                {errors.name.message}
+              </p>
+            )}
+          </div>
+
+          <div className="mt-4">
+            <label
+              htmlFor="contactNumber"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Contact Number
+            </label>
+            <input
+              id="contactNumber"
+              type="text"
+              {...register("contactNumber")}
+              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                errors.contactNumber ? "border-red-500" : ""
+              }`}
+            />
+            {errors.contactNumber && (
+              <p className="text-red-500 text-xs italic">
+                {errors.contactNumber.message}
+              </p>
+            )}
+          </div>
+
+          <div className="mt-4">
+            <label
+              htmlFor="address"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Address
+            </label>
+            <input
+              id="address"
+              type="text"
+              {...register("address.address")}
+              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                errors.address?.address ? "border-red-500" : ""
+              }`}
+            />
+            {errors.address?.address && (
+              <p className="text-red-500 text-xs italic">
+                {errors.address.address.message}
+              </p>
+            )}
+          </div>
+
+          <div className="mt-4">
+            <label
+              htmlFor="state"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              State
+            </label>
+            <select
+              id="state"
+              {...register("address.state")}
+              value={selectedState}
+              onChange={(e) => setSelectedState(e.target.value)}
+              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                errors.address?.state ? "border-red-500" : ""
+              }`}
+            >
+              <option value="">Select State</option>
+              {states.map((state) => (
+                <option key={state.iso2} value={state.iso2}>
+                  {state.name}
+                </option>
+              ))}
+            </select>
+            {errors.address?.state && (
+              <p className="text-red-500 text-xs italic">
+                {errors.address.state.message}
+              </p>
+            )}
+          </div>
+
+          <div className="mt-4">
+            <label
+              htmlFor="city"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              City
+            </label>
+            <select
+              id="city"
+              {...register("address.city")}
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
+              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                errors.address?.city ? "border-red-500" : ""
+              }`}
+            >
+              <option value="">Select City</option>
+              {cities.map((city, index) => (
+                <option key={index} value={city}>
+                  {city}
+                </option>
+              ))}
+            </select>
+            {errors.address?.city && (
+              <p className="text-red-500 text-xs italic">
+                {errors.address.city.message}
+              </p>
+            )}
+          </div>
+
+          <div className="mt-4">
+            <label
+              htmlFor="pinCode"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Pin Code
+            </label>
+            <input
+              id="pinCode"
+              type="number"
+              {...register("address.pinCode", {
+                setValueAs: (value) =>
+                  value === "" ? undefined : parseInt(value, 10),
+              })}
+              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                errors.address?.pinCode ? "border-red-500" : ""
+              }`}
+            />
+            {errors.address?.pinCode && (
+              <p className="text-red-500 text-xs italic">
+                {errors.address.pinCode.message}
+              </p>
+            )}
+          </div>
+
+          <div className="mt-4">
+            <label
+              htmlFor="bloodGroup"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Blood Group
+            </label>
+            <select
+              id="bloodGroup"
+              {...register("bloodGroup")}
+              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                errors.bloodGroup ? "border-red-500" : ""
+              }`}
+            >
+              <option value="">Select Blood Group</option>
+              {bloodGroups.map((group) => (
+                <option key={group} value={group}>
+                  {group}
+                </option>
+              ))}
+            </select>
+            {errors.bloodGroup && (
+              <p className="text-red-500 text-xs italic">
+                {errors.bloodGroup.message}
+              </p>
+            )}
+          </div>
+
+          <div className="mt-4">
+            <label
+              htmlFor="gender"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Gender
+            </label>
+            <select
+              id="gender"
+              {...register("gender")}
+              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                errors.gender ? "border-red-500" : ""
+              }`}
+            >
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+            {errors.gender && (
+              <p className="text-red-500 text-xs italic">
+                {errors.gender.message}
+              </p>
+            )}
+          </div>
+
+          <div className="flex justify-between items-center mt-8">
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-gray-700"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700"
+            >
+              Update Profile
+            </button>
+          </div>
+        </form>
+
+        {showModal && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-50">
+            <div className="bg-white p-8 rounded shadow-lg relative">
+              <button
+                onClick={handleCloseModal}
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 9.293l5.646-5.647a.5.5 0 0 1 .708.708L10.707 10l5.647 5.646a.5.5 0 0 1-.708.708L10 10.707l-5.646 5.647a.5.5 0 1 1-.708-.708L9.293 10 3.646 4.354a.5.5 0 0 1 .708-.708L10 9.293Z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+              <img
+                src={profilePicPreview || "/default-profile-pic.png"}
+                alt="Profile Picture"
+                className="w-full h-full rounded-lg object-cover"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

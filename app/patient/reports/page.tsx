@@ -138,7 +138,7 @@ export default function ReportsPage() {
         {reports.map((report) => (
           <div
             key={report._id}
-            className="bg-white shadow-lg hover:shadow-2xl transform transition-transform duration-300 ease-in-out hover:scale-105 rounded-lg p-6 mb-6 flex flex-col"
+            className="bg-white shadow-lg hover:shadow-2xl transform ease-in-out hover:scale-105 rounded-lg p-6 mb-6 flex flex-col"
           >
             {/* Report Image */}
             <img

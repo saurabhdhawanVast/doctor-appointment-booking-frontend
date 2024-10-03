@@ -30,7 +30,7 @@ export default function DoctorList() {
     setFilter(newFilter);
     fetchDoctors(newFilter, 1, 9);
     if (sidebarOpen) {
-      setSidebarOpen(false);
+      // setSidebarOpen(false);
     }
   };
 
@@ -46,7 +46,7 @@ export default function DoctorList() {
     <div className="flex mt-16  h-fit min-h-screen">
       {/* Sidebar */}
       <div
-        className={`transition-transform duration-300 bg-white  ${
+        className={`transition-transform duration-150 bg-white  ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } fixed top-0 left-0 h-full  border-r border-gray-300 w-64 p-4 mt-16`}
       >
@@ -88,7 +88,7 @@ export default function DoctorList() {
 
       {/* Main content */}
       <div
-        className={`flex-1 transition-all duration-300 ${
+        className={`flex-1 transition-all duration-150 ${
           sidebarOpen ? "ml-64" : "ml-0"
         }`}
       >
